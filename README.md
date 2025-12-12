@@ -502,7 +502,7 @@ cp 新城市数据.csv data/processed/data_newcity_2023_2025.csv
 |---------|---------|------|
 | **DeepSeek-V3** | 智能对话、数据分析解读 | 基于用户输入实时生成分析报告 |
 | **DeepSeek-V3** | 房价预测分析 | 结合历史数据生成预测和建议 |
-| **Qwen-Image** | 图像生成 | 生成梦想家园等创意图像 |
+| **FLUX.1-schnell** | 图像生成 | 生成梦想家园等创意图像（Black Forest Labs） |
 
 ### 开发者声明
 
