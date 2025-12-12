@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: AI 智能房价分析系统 API
+  version: 1.0.0
+  description: 基于 DeepSeek-V3 的房价分析系统 API
+servers:
+  - url: http://localhost:5001
+tags:
+  - name: auth
+    description: 用户认证
+  - name: city
+    description: 城市数据
+  - name: ai
+    description: AI 服务
+  - name: prediction
+    description: 房价预测
+paths:
+  /api/auth/register:
+    post:
+      tags: [auth]
+      summary: 用户注册
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: {type: string}
+                password: {type: string}
+                role: {type: string}
+      responses:
+        '200': {description: 成功}
+  /api/auth/login:
+    post:
+      tags: [auth]
+      summary: 用户登录
+      responses:
+        '200': {description: 成功}
+  /api/city/{city}/stats:
+    get:
+      tags: [city]
+      summary: 城市统计
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: 成功}
+  /api/ai/chat:
+    post:
+      tags: [ai]
+      summary: AI对话
+      responses:
+        '200': {description: 成功}
+  /api/prediction/stats:
+    post:
+      tags: [prediction]
+      summary: 房价预测
+      responses:
+        '200': {description: 成功}
+

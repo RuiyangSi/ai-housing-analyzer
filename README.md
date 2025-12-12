@@ -357,6 +357,8 @@ ai-housing-analyzer/
 
 ## 🔌 API 接口
 
+> 📚 **完整文档**：[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md) | [OpenAPI 规范](docs/openapi.yaml)
+
 ### 主要接口列表
 
 | 接口 | 方法 | 说明 |
