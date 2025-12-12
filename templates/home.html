@@ -63,6 +63,128 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
+    /* AI 亮点展示区域 */
+    .ai-highlights {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 24px;
+        padding: 40px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        animation: slideUp 0.7s ease-out backwards;
+        animation-delay: 0.1s;
+    }
+    
+    .ai-highlights::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+        pointer-events: none;
+    }
+    
+    .ai-highlights-header {
+        text-align: center;
+        margin-bottom: 32px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .ai-highlights-header h2 {
+        color: white;
+        font-size: 1.8em;
+        font-weight: 800;
+        margin: 0 0 8px 0;
+        background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .ai-highlights-header p {
+        color: #94a3b8;
+        font-size: 1em;
+        margin: 0;
+    }
+    
+    .ai-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .ai-feature {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+    }
+    
+    .ai-feature:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(139, 92, 246, 0.5);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    }
+    
+    .ai-feature-icon {
+        font-size: 2em;
+        margin-bottom: 12px;
+        display: block;
+    }
+    
+    .ai-feature-title {
+        color: white;
+        font-size: 1.1em;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    
+    .ai-feature-desc {
+        color: #94a3b8;
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+    
+    .ai-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        font-size: 0.7em;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+    
+    @media (max-width: 1024px) {
+        .ai-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .ai-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .ai-highlights {
+            padding: 28px 20px;
+        }
+    }
+    
     .welcome-section h1 {
         font-size: 2.4em;
         font-weight: 800;
@@ -567,6 +689,46 @@
     <div class="welcome-section">
         <h1>👋 欢迎，{{ user.username if user else '用户' }}！</h1>
         <p>这是一个 <strong>AI驱动</strong> 的智能购房决策平台，基于 32万+ 条真实成交数据，为您提供专业的房价分析和个性化购房建议。</p>
+    </div>
+    
+    <!-- AI 亮点展示 -->
+    <div class="ai-highlights">
+        <div class="ai-highlights-header">
+            <h2>🚀 六大 AI 核心能力</h2>
+            <p>深度融合 DeepSeek-V3 大模型，打造全方位智能购房体验</p>
+        </div>
+        <div class="ai-grid">
+            <div class="ai-feature">
+                <span class="ai-feature-icon">🤖</span>
+                <div class="ai-feature-title">多场景 AI 对话 <span class="ai-badge">实时</span></div>
+                <div class="ai-feature-desc">侧边栏随时提问，AI 基于真实数据即时解答您的购房疑问</div>
+            </div>
+            <div class="ai-feature">
+                <span class="ai-feature-icon">📊</span>
+                <div class="ai-feature-title">AI 图表智能解读</div>
+                <div class="ai-feature-desc">每张图表都能一键让 AI 分析，发现隐藏的市场规律</div>
+            </div>
+            <div class="ai-feature">
+                <span class="ai-feature-icon">🔮</span>
+                <div class="ai-feature-title">AI 房价预测 <span class="ai-badge">双轨</span></div>
+                <div class="ai-feature-desc">统计模型 + 大模型推理，预测未来 6 个月房价走势</div>
+            </div>
+            <div class="ai-feature">
+                <span class="ai-feature-icon">🎨</span>
+                <div class="ai-feature-title">AI 图像生成</div>
+                <div class="ai-feature-desc">FLUX.1 模型生成梦想家园，提前可视化您的未来生活</div>
+            </div>
+            <div class="ai-feature">
+                <span class="ai-feature-icon">📝</span>
+                <div class="ai-feature-title">AI 策略规划</div>
+                <div class="ai-feature-desc">输入预算和需求，AI 生成个性化购房方案和区域推荐</div>
+            </div>
+            <div class="ai-feature">
+                <span class="ai-feature-icon">🎭</span>
+                <div class="ai-feature-title">角色化 AI <span class="ai-badge">3种</span></div>
+                <div class="ai-feature-desc">首次购房者/投资顾问/改善型，不同视角的专属分析</div>
+            </div>
+        </div>
     </div>
     
     <!-- 数据统计 -->
