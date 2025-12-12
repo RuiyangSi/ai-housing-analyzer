@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 / 注册 - 房价分析系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,58 +13,139 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden;
         }
         
-        .auth-container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 450px;
+        /* 动态渐变背景 */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            z-index: -2;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 浮动装饰元素 */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        
+        .shape:nth-child(1) { width: 80px; height: 80px; left: 10%; top: 20%; animation-delay: 0s; }
+        .shape:nth-child(2) { width: 120px; height: 120px; left: 70%; top: 15%; animation-delay: 2s; }
+        .shape:nth-child(3) { width: 60px; height: 60px; left: 30%; top: 70%; animation-delay: 4s; }
+        .shape:nth-child(4) { width: 150px; height: 150px; left: 80%; top: 60%; animation-delay: 1s; }
+        .shape:nth-child(5) { width: 40px; height: 40px; left: 5%; top: 80%; animation-delay: 3s; }
+        .shape:nth-child(6) { width: 100px; height: 100px; left: 50%; top: 40%; animation-delay: 5s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+        }
+        
+        /* 玻璃态登录卡片 */
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+            max-width: 480px;
+            width: 100%;
+            animation: cardAppear 0.6s ease-out;
+        }
+        
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
         
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 36px;
+        }
+        
+        .logo-icon {
+            font-size: 3.5em;
+            margin-bottom: 12px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
         
         .logo h1 {
-            font-size: 2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 1.8em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .logo p {
             color: #64748b;
-            font-size: 0.9em;
+            font-size: 0.95em;
+            font-weight: 500;
         }
         
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 8px;
+            margin-bottom: 32px;
             background: #f1f5f9;
-            padding: 5px;
-            border-radius: 10px;
+            padding: 6px;
+            border-radius: 14px;
         }
         
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: none;
             background: transparent;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1em;
             font-weight: 600;
             color: #64748b;
@@ -73,8 +155,12 @@
         
         .tab.active {
             background: white;
-            color: #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            color: #6366f1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab:hover:not(.active) {
+            color: #1e293b;
         }
         
         .form-container {
@@ -83,48 +169,68 @@
         
         .form-container.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeSlide 0.4s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
             color: #1e293b;
             font-size: 0.95em;
         }
         
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper .icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+        
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 16px 14px 48px;
             border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1em;
             transition: all 0.3s ease;
+            background: white;
         }
         
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-group input:focus + .icon,
+        .input-wrapper:focus-within .icon {
+            color: #6366f1;
         }
         
         .role-selector {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
-        .role-selector label {
+        .role-selector > label {
             display: block;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             font-weight: 600;
             color: #1e293b;
             font-size: 0.95em;
@@ -145,91 +251,209 @@
         }
         
         .role-option label {
-            display: block;
-            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
             background: #f8fafc;
             border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         
+        .role-option label:hover {
+            border-color: #c7d2fe;
+            background: #faf5ff;
+        }
+        
         .role-option input[type="radio"]:checked + label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .role-icon {
+            font-size: 1.8em;
+            flex-shrink: 0;
+        }
+        
+        .role-content {
+            flex: 1;
         }
         
         .role-option label .role-name {
-            font-weight: 600;
-            font-size: 1em;
-            margin-bottom: 5px;
+            font-weight: 700;
+            font-size: 1.05em;
+            margin-bottom: 4px;
             display: block;
         }
         
         .role-option label .role-desc {
             font-size: 0.85em;
-            opacity: 0.9;
+            opacity: 0.85;
+            line-height: 1.4;
         }
         
         .submit-btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 14px;
             font-size: 1.1em;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
         }
         
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
         }
         
         .error-message {
-            background: #fee;
-            color: #c00;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 22px;
             display: none;
             font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid #fecaca;
         }
         
         .error-message.show {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             animation: shake 0.5s ease;
+        }
+        
+        .error-message::before {
+            content: '⚠️';
+            font-size: 1.2em;
         }
         
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
         }
         
         .footer-text {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 24px;
             color: #64748b;
+            font-size: 0.9em;
+        }
+        
+        .footer-text a {
+            color: #6366f1;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-text a:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+        
+        /* 底部装饰 */
+        .footer-decoration {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-decoration p {
+            color: #94a3b8;
+            font-size: 0.8em;
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 12px;
             font-size: 0.85em;
+            color: #4338ca;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 520px) {
+            .auth-container {
+                padding: 32px 24px;
+            }
+            
+            .logo h1 {
+                font-size: 1.5em;
+            }
+            
+            .role-option label {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 动态背景 -->
+    <div class="animated-background"></div>
+    
+    <!-- 浮动装饰 -->
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    
     <div class="auth-container">
         <div class="logo">
-            <h1>🏠 房价分析系统</h1>
+            <span class="logo-icon">🏠</span>
+            <h1>房价分析系统</h1>
             <p>AI驱动的智能购房决策平台</p>
         </div>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('login')">登录</button>
-            <button class="tab" onclick="switchTab('register')">注册</button>
+            <button class="tab active" onclick="switchTab('login', event)">登录</button>
+            <button class="tab" onclick="switchTab('register', event)">注册</button>
         </div>
         
         <div id="error-message" class="error-message"></div>
@@ -239,19 +463,25 @@
             <form onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label>用户名</label>
-                    <input type="text" name="username" placeholder="请输入用户名" required>
+                    <div class="input-wrapper">
+                        <input type="text" name="username" placeholder="请输入用户名" required>
+                        <span class="icon">👤</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label>密码</label>
-                    <input type="password" name="password" placeholder="请输入密码" required>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" placeholder="请输入密码" required>
+                        <span class="icon">🔒</span>
+                    </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">登录</button>
+                <button type="submit" class="submit-btn">登 录</button>
             </form>
             
             <div class="footer-text">
-                还没有账号？<span style="color: #667eea; cursor: pointer;" onclick="switchTab('register')">立即注册</span>
+                还没有账号？<a onclick="switchTab('register', event)">立即注册</a>
             </div>
         </div>
         
@@ -260,17 +490,26 @@
             <form onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>用户名</label>
-                    <input type="text" name="username" placeholder="请输入用户名（3-20个字符）" required minlength="3" maxlength="20">
+                    <div class="input-wrapper">
+                        <input type="text" name="username" placeholder="请输入用户名（3-20个字符）" required minlength="3" maxlength="20">
+                        <span class="icon">👤</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label>密码</label>
-                    <input type="password" name="password" placeholder="请输入密码（至少6个字符）" required minlength="6">
+                    <div class="input-wrapper">
+                        <input type="password" name="password" placeholder="请输入密码（至少6个字符）" required minlength="6">
+                        <span class="icon">🔒</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label>确认密码</label>
-                    <input type="password" name="password_confirm" placeholder="请再次输入密码" required minlength="6">
+                    <div class="input-wrapper">
+                        <input type="password" name="password_confirm" placeholder="请再次输入密码" required minlength="6">
+                        <span class="icon">🔐</span>
+                    </div>
                 </div>
                 
                 <div class="role-selector">
@@ -279,43 +518,61 @@
                         <div class="role-option">
                             <input type="radio" name="role" value="investment_advisor" id="role1" required>
                             <label for="role1">
-                                <span class="role-name">💼 投资顾问</span>
-                                <span class="role-desc">专业投资分析师视角，关注ROI和增值潜力</span>
+                                <span class="role-icon">💼</span>
+                                <div class="role-content">
+                                    <span class="role-name">投资顾问</span>
+                                    <span class="role-desc">专业投资分析师视角，关注ROI和增值潜力</span>
+                                </div>
                             </label>
                         </div>
                         
                         <div class="role-option">
                             <input type="radio" name="role" value="first_time_buyer" id="role2">
                             <label for="role2">
-                                <span class="role-name">🏠 首次购房者</span>
-                                <span class="role-desc">新手购房指导，通俗易懂的实用建议</span>
+                                <span class="role-icon">🏠</span>
+                                <div class="role-content">
+                                    <span class="role-name">首次购房者</span>
+                                    <span class="role-desc">新手购房指导，通俗易懂的实用建议</span>
+                                </div>
                             </label>
                         </div>
                         
                         <div class="role-option">
                             <input type="radio" name="role" value="upgrader" id="role3">
                             <label for="role3">
-                                <span class="role-name">🏡 改善型购房者</span>
-                                <span class="role-desc">换房策略专家，资金规划和置换建议</span>
+                                <span class="role-icon">🏡</span>
+                                <div class="role-content">
+                                    <span class="role-name">改善型购房者</span>
+                                    <span class="role-desc">换房策略专家，资金规划和置换建议</span>
+                                </div>
                             </label>
                         </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">注册</button>
+                <button type="submit" class="submit-btn">注 册</button>
             </form>
             
             <div class="footer-text">
-                已有账号？<span style="color: #667eea; cursor: pointer;" onclick="switchTab('login')">立即登录</span>
+                已有账号？<a onclick="switchTab('login', event)">立即登录</a>
+            </div>
+        </div>
+        
+        <div class="footer-decoration">
+            <p>基于 32万+ 条真实成交数据</p>
+            <div class="ai-badge">
+                🤖 DeepSeek-V3 智能驱动
             </div>
         </div>
     </div>
     
     <script>
-        function switchTab(tab) {
+        function switchTab(tab, event) {
+            if (event) event.preventDefault();
+            
             // 切换标签样式
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.tab')[tab === 'login' ? 0 : 1].classList.add('active');
             
             // 切换表单
             document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
@@ -353,16 +610,13 @@
             try {
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 登录成功，跳转到首页
                     window.location.href = '/';
                 } else {
                     showError(result.error || '登录失败，请重试');
@@ -381,7 +635,6 @@
             const password = formData.get('password');
             const passwordConfirm = formData.get('password_confirm');
             
-            // 验证密码匹配
             if (password !== passwordConfirm) {
                 showError('两次输入的密码不一致');
                 return;
@@ -396,16 +649,13 @@
             try {
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
                 
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 注册成功，跳转到首页
                     window.location.href = '/';
                 } else {
                     showError(result.error || '注册失败，请重试');
@@ -418,4 +668,3 @@
     </script>
 </body>
 </html>
-

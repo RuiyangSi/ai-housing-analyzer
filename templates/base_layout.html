@@ -27,10 +27,10 @@
             display: flex;
         }
         
-        /* 侧边栏 */
+        /* 侧边栏 - 现代化设计 */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--sidebar-bg);
+            background: linear-gradient(180deg, #1a1a2e 0%, #16162a 100%);
             height: 100vh;
             position: fixed;
             left: 0;
@@ -40,105 +40,148 @@
             z-index: 1000;
             transition: transform 0.3s ease;
             overflow: hidden;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
         }
         
         .sidebar-header {
-            padding: 15px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             flex-shrink: 0;
+            background: rgba(255,255,255,0.02);
         }
         
         .sidebar-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             color: white;
             text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-logo:hover {
+            transform: translateX(4px);
         }
         
         .sidebar-logo-icon {
-            font-size: 1.6em;
+            font-size: 2em;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         
         .sidebar-logo-text h1 {
-            font-size: 1.1em;
-            font-weight: 700;
+            font-size: 1.15em;
+            font-weight: 800;
             margin-bottom: 2px;
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .sidebar-logo-text p {
-            font-size: 0.7em;
-            opacity: 0.7;
+            font-size: 0.72em;
+            opacity: 0.6;
+            font-weight: 500;
         }
         
         .sidebar-nav {
             flex: 1;
-            padding: 10px 0;
+            padding: 12px 0;
             overflow-y: auto;
             overflow-x: hidden;
             min-height: 0;
         }
         
-        /* 自定义滚动条 */
+        /* 精美滚动条 */
         .sidebar-nav::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         
         .sidebar-nav::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
+            background: transparent;
         }
         
         .sidebar-nav::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 4px;
         }
         
         .sidebar-nav::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.4);
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
         }
         
         .nav-section {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            padding: 0 8px;
         }
         
         .nav-section-title {
-            color: rgba(255,255,255,0.4);
-            font-size: 0.7em;
-            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.68em;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0 15px;
-            margin-bottom: 6px;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin-bottom: 10px;
         }
         
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 15px;
-            color: rgba(255,255,255,0.75);
+            gap: 12px;
+            padding: 12px 14px;
+            margin: 3px 0;
+            color: rgba(255,255,255,0.7);
             text-decoration: none;
-            transition: all 0.2s ease;
-            border-left: 3px solid transparent;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
             font-size: 0.9em;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.25s ease;
         }
         
         .nav-item:hover {
-            background: var(--sidebar-hover);
+            background: rgba(255,255,255,0.06);
             color: white;
-            border-left-color: rgba(102, 126, 234, 0.5);
+            transform: translateX(4px);
+        }
+        
+        .nav-item:hover::before {
+            height: 60%;
         }
         
         .nav-item.active {
-            background: var(--sidebar-active);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
             color: white;
-            border-left-color: #667eea;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+        
+        .nav-item.active::before {
+            height: 70%;
         }
         
         .nav-item-icon {
-            font-size: 1.1em;
-            width: 24px;
+            font-size: 1.15em;
+            width: 26px;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item:hover .nav-item-icon {
+            transform: scale(1.15);
         }
         
         .nav-item-text {
@@ -146,42 +189,51 @@
         }
         
         .nav-item-badge {
-            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
             color: white;
             font-size: 0.6em;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
         }
         
         .nav-item-badge.hot {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            animation: badge-pulse 2s infinite;
         }
         
-        /* 用户信息 */
+        @keyframes badge-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.05); }
+        }
+        
+        /* 用户信息区域 */
         .sidebar-user {
-            padding: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.2);
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.05) 100%);
             flex-shrink: 0;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
         
         .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1em;
+            font-size: 1.2em;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
         
         .user-details {
@@ -191,8 +243,8 @@
         
         .user-name {
             color: white;
-            font-weight: 600;
-            font-size: 0.85em;
+            font-weight: 700;
+            font-size: 0.9em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -200,42 +252,45 @@
         
         .user-role {
             font-size: 0.7em;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 8px;
             display: inline-block;
-            margin-top: 2px;
+            margin-top: 4px;
+            font-weight: 600;
         }
         
         .user-role.investment_advisor {
-            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            color: #667eea;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(129, 140, 248, 0.2) 100%);
+            color: #818cf8;
         }
         
         .user-role.first_time_buyer {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.2) 100%);
+            color: #34d399;
         }
         
         .user-role.upgrader {
-            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-            color: #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.2) 100%);
+            color: #fbbf24;
         }
         
         .logout-btn {
             width: 100%;
-            padding: 8px;
-            background: rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.8);
-            border: none;
-            border-radius: 6px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 0.8em;
-            transition: all 0.2s ease;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.25s ease;
         }
         
         .logout-btn:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
         }
         
         /* 主内容区域 */
@@ -301,32 +356,61 @@
             }
         }
         
-        /* AI标识 - 更紧凑 */
+        /* AI标识 - 精美设计 */
         .ai-powered {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-            margin: 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            gap: 10px;
+            padding: 14px 14px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+            margin: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-powered::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            animation: ai-shine 3s infinite;
+        }
+        
+        @keyframes ai-shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
         }
         
         .ai-powered-icon {
-            font-size: 1.2em;
+            font-size: 1.5em;
+            animation: ai-bounce 2s infinite;
+        }
+        
+        @keyframes ai-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
         
         .ai-powered-text {
-            color: rgba(255,255,255,0.85);
-            font-size: 0.75em;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.78em;
         }
         
         .ai-powered-text strong {
             display: block;
-            font-size: 1.05em;
-            margin-bottom: 1px;
+            font-size: 1.1em;
+            margin-bottom: 2px;
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
     </style>
     {% block extra_styles %}{% endblock %}

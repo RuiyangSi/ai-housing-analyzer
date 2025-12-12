@@ -3,48 +3,85 @@
 {% block title %}房价分析系统 - AI驱动的智能购房决策平台{% endblock %}
 
 {% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modern-theme.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    
     .home-container {
         padding: 30px;
         max-width: 1400px;
         margin: 0 auto;
     }
     
+    /* 欢迎区域 - 增强视觉效果 */
     .welcome-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 40px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+        border-radius: 24px;
+        padding: 48px;
         color: white;
         margin-bottom: 30px;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        animation: slideUp 0.6s ease-out;
     }
     
     .welcome-section::before {
         content: '';
         position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 400px;
-        height: 400px;
-        background: rgba(255,255,255,0.1);
+        top: -60%;
+        right: -15%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255,255,255,0.08);
         border-radius: 50%;
+        animation: pulse-slow 8s infinite;
+    }
+    
+    .welcome-section::after {
+        content: '';
+        position: absolute;
+        bottom: -40%;
+        left: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+        animation: pulse-slow 6s infinite reverse;
+    }
+    
+    @keyframes pulse-slow {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     .welcome-section h1 {
-        font-size: 2.2em;
-        margin-bottom: 15px;
+        font-size: 2.4em;
+        font-weight: 800;
+        margin-bottom: 16px;
         position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 20px rgba(0,0,0,0.1);
     }
     
     .welcome-section p {
-        font-size: 1.1em;
+        font-size: 1.15em;
         opacity: 0.95;
-        max-width: 600px;
-        line-height: 1.6;
+        max-width: 650px;
+        line-height: 1.7;
         position: relative;
+        z-index: 1;
     }
     
+    /* 统计卡片 - 现代化设计 */
     .stats-row {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -54,138 +91,239 @@
     
     .stat-card {
         background: white;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out backwards;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
     
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    
+    .stat-card:hover::before {
+        opacity: 1;
     }
     
     .stat-icon {
-        font-size: 2.5em;
-        margin-bottom: 15px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8em;
+        margin-bottom: 18px;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
     }
     
     .stat-value {
-        font-size: 2em;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 5px;
+        font-size: 2.2em;
+        font-weight: 800;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
     }
     
     .stat-label {
         color: #64748b;
         font-size: 0.95em;
+        font-weight: 500;
     }
     
+    /* 城市区域 */
     .cities-section {
         background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border-radius: 24px;
+        padding: 36px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        animation: slideUp 0.6s ease-out 0.3s backwards;
     }
     
     .section-title {
-        font-size: 1.5em;
-        font-weight: 700;
+        font-size: 1.6em;
+        font-weight: 800;
         color: #1e293b;
-        margin-bottom: 25px;
+        margin-bottom: 28px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
+    }
+    
+    .section-title::after {
+        content: '';
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg, #e2e8f0 0%, transparent 100%);
+        margin-left: 20px;
     }
     
     .city-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        gap: 24px;
     }
     
     .city-card {
-        background: #f8fafc;
-        border-radius: 15px;
-        padding: 25px;
-        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 20px;
+        padding: 28px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
         border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .city-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
     
     .city-card:hover {
-        border-color: #667eea;
-        background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+        border-color: #6366f1;
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
+    }
+    
+    .city-card:hover::before {
+        opacity: 1;
     }
     
     .city-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
     }
     
     .city-name {
-        font-size: 1.3em;
-        font-weight: 700;
+        font-size: 1.4em;
+        font-weight: 800;
         color: #1e293b;
     }
     
     .city-icon {
-        font-size: 1.5em;
+        font-size: 2em;
+        transition: transform 0.3s ease;
+    }
+    
+    .city-card:hover .city-icon {
+        transform: scale(1.2) rotate(-10deg);
     }
     
     .city-stats {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
     }
     
     .city-stat {
         text-align: center;
+        background: white;
+        padding: 14px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     
     .city-stat-value {
-        font-size: 1.2em;
-        font-weight: 700;
-        color: #667eea;
+        font-size: 1.3em;
+        font-weight: 800;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .city-stat-label {
         font-size: 0.8em;
         color: #64748b;
+        font-weight: 500;
+        margin-top: 4px;
     }
     
     .city-actions {
         display: flex;
-        gap: 10px;
-        margin-top: 15px;
+        gap: 12px;
+        margin-top: 20px;
+        position: relative;
+        z-index: 1;
     }
     
     .city-btn {
         flex: 1;
-        padding: 10px;
+        padding: 12px 16px;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
-        font-size: 0.85em;
+        font-size: 0.9em;
         font-weight: 600;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
     
     .city-btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+    
+    .city-btn-primary:hover {
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        transform: translateY(-2px);
     }
     
     .city-btn-secondary {
-        background: #e2e8f0;
+        background: white;
         color: #64748b;
+        border: 2px solid #e2e8f0;
     }
     
-    .city-btn:hover {
-        transform: translateY(-2px);
+    .city-btn-secondary:hover {
+        background: #f8fafc;
+        color: #1e293b;
+        border-color: #6366f1;
     }
     
     @media (max-width: 1024px) {
@@ -201,6 +339,14 @@
     @media (max-width: 768px) {
         .home-container {
             padding: 20px;
+        }
+        
+        .welcome-section {
+            padding: 32px 24px;
+        }
+        
+        .welcome-section h1 {
+            font-size: 1.8em;
         }
         
         .stats-row {
