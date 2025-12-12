@@ -411,12 +411,29 @@
         color: #f1f5f9;
     }
     
+    body.dark-mode .city-stat {
+        background: #0f172a !important;
+        border: 1px solid #334155;
+    }
+    
     body.dark-mode .city-stat-value {
-        color: #a5b4fc;
+        background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
     
     body.dark-mode .city-stat-label {
         color: #94a3b8;
+    }
+    
+    /* 城市数据分析区域 */
+    body.dark-mode .cities-section {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+        border-color: #475569 !important;
+    }
+    
+    body.dark-mode .section-title::after {
+        background: linear-gradient(90deg, #475569 0%, transparent 100%);
     }
     
     body.dark-mode .btn-3d {
@@ -467,6 +484,79 @@
         background: #0f172a;
         border-color: #334155;
         color: #e2e8f0;
+    }
+    
+    /* 详情区域深色 - 使用选择器覆盖内联样式 */
+    body.dark-mode #city-detail-section {
+        background: linear-gradient(135deg, #1e293b 0%, #293548 100%) !important;
+        border-color: #475569 !important;
+    }
+    
+    /* 统计卡片 */
+    body.dark-mode #city-detail-section > div:nth-child(2) > div {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    body.dark-mode #city-detail-section > div:nth-child(2) > div > div:first-child {
+        color: #94a3b8 !important;
+    }
+    
+    body.dark-mode #city-detail-section > div:nth-child(2) > div > div:last-child {
+        color: #64748b !important;
+    }
+    
+    /* 图表区域 */
+    body.dark-mode #city-detail-section > div:nth-child(3) > div {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    body.dark-mode #city-detail-section > div:nth-child(3) > div h3 {
+        color: #e2e8f0 !important;
+    }
+    
+    /* 年度统计表格 */
+    body.dark-mode #city-detail-section > div:nth-child(4) {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    body.dark-mode #city-detail-section > div:nth-child(4) h3 {
+        color: #e2e8f0 !important;
+    }
+    
+    body.dark-mode #city-detail-section table {
+        background: transparent !important;
+    }
+    
+    body.dark-mode #city-detail-section tr[style*="background: #e2e8f0"],
+    body.dark-mode #city-detail-section thead tr {
+        background: #334155 !important;
+    }
+    
+    body.dark-mode #city-detail-section th,
+    body.dark-mode #city-detail-section td {
+        color: #e2e8f0 !important;
+        border-bottom: 1px solid #475569 !important;
+    }
+    
+    /* 关闭按钮 */
+    body.dark-mode #city-detail-section button[onclick*="closeCityDetail"] {
+        background: #334155 !important;
+        color: #e2e8f0 !important;
+    }
+    
+    body.dark-mode .chart-title {
+        color: #e2e8f0 !important;
+    }
+    
+    /* Markdown 深色模式变量 */
+    body.dark-mode {
+        --md-heading: #a5b4fc;
+        --md-bold: #93c5fd;
+        --md-text: #e2e8f0;
+        --md-list-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
 </style>
 {% endblock %}

@@ -513,6 +513,38 @@
             });
         }
         
+        // Markdown 渲染函数
+        function renderMarkdown(text) {
+            if (!text) return '';
+            let html = text;
+            
+            // 1. 先处理标题（带加粗的标题）
+            html = html.replace(/^### \*\*(.+?)\*\*$/gm, '<h4 style="color: #fbbf24; margin: 18px 0 10px 0; font-size: 1.1em; font-weight: 700;">$1</h4>');
+            html = html.replace(/^### (.+)$/gm, '<h4 style="color: #fbbf24; margin: 18px 0 10px 0; font-size: 1.1em; font-weight: 600;">$1</h4>');
+            html = html.replace(/^## \*\*(.+?)\*\*$/gm, '<h3 style="color: #fde047; margin: 22px 0 12px 0; font-size: 1.2em; font-weight: 700;">$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h3 style="color: #fde047; margin: 22px 0 12px 0; font-size: 1.2em; font-weight: 600;">$1</h3>');
+            
+            // 2. 加粗 **text**
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #fde047; font-weight: 700;">$1</strong>');
+            
+            // 3. 数字列表
+            html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin: 10px 0; padding-left: 5px;"><span style="color: #fbbf24; font-weight: 600;">$1.</span> $2</div>');
+            
+            // 4. 无序列表
+            html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin: 8px 0; margin-left: 20px; list-style: disc;">$1</li>');
+            
+            // 5. 段落处理
+            const lines = html.split('\n');
+            html = lines.map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return '';
+                if (trimmed.startsWith('<')) return trimmed;
+                return `<p style="margin: 12px 0; line-height: 1.85;">${trimmed}</p>`;
+            }).filter(line => line).join('');
+            
+            return html;
+        }
+        
         // 加载 AI 概览（流式）
         async function loadCityAIOverview() {
             const contentDiv = document.getElementById('city-ai-overview-content');
@@ -541,10 +573,8 @@
                     
                     if (data.content) {
                         fullText += data.content;
-                        const paragraphs = fullText.split('\n').filter(p => p.trim());
-                        contentDiv.innerHTML = paragraphs.map(p => 
-                            `<p style="margin: 10px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">${p}</p>`
-                        ).join('');
+                        // 使用 Markdown 渲染
+                        contentDiv.innerHTML = renderMarkdown(fullText);
                     }
                 } catch (e) {
                     console.error('解析SSE数据错误:', e);

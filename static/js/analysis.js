@@ -479,42 +479,50 @@ function renderMarkdownAnalysis(text) {
     
     let html = text;
     
-    // 先处理 Markdown 格式，再考虑安全转义
-    // 加粗 **text** 或 __text__
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1e40af; font-weight: 700;">$1</strong>');
-    html = html.replace(/__(.+?)__/g, '<strong style="color: #1e40af; font-weight: 700;">$1</strong>');
+    // 1. 先处理标题（标题内的加粗稍后单独处理）
+    html = html.replace(/^### \*\*(.+?)\*\*$/gm, '<h4 class="md-h4"><strong>$1</strong></h4>');
+    html = html.replace(/^### (.+)$/gm, '<h4 class="md-h4">$1</h4>');
+    html = html.replace(/^## \*\*(.+?)\*\*$/gm, '<h3 class="md-h3"><strong>$1</strong></h3>');
+    html = html.replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>');
+    html = html.replace(/^# \*\*(.+?)\*\*$/gm, '<h2 class="md-h2"><strong>$1</strong></h2>');
+    html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>');
     
-    // 斜体 *text* （不在 ** 内）
+    // 2. 处理加粗 **text** 或 __text__
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="md-bold">$1</strong>');
+    html = html.replace(/__(.+?)__/g, '<strong class="md-bold">$1</strong>');
+    
+    // 3. 斜体 *text*
     html = html.replace(/(?<![*<])\*([^*<>]+)\*(?![*>])/g, '<em>$1</em>');
     
-    // 标题
-    html = html.replace(/^### (.+)$/gm, '<h4 style="color: #667eea; margin: 18px 0 10px 0; font-size: 1.05em; font-weight: 600;">$1</h4>');
-    html = html.replace(/^## (.+)$/gm, '<h3 style="color: #667eea; margin: 22px 0 12px 0; font-size: 1.15em; font-weight: 700;">$1</h3>');
-    html = html.replace(/^# (.+)$/gm, '<h2 style="color: #4f46e5; margin: 24px 0 14px 0; font-size: 1.25em; font-weight: 800;">$1</h2>');
-    
-    // 数字列表 - 带粗体
+    // 4. 数字列表
     html = html.replace(/^(\d+)\.\s+<strong[^>]*>(.+?)<\/strong>(.*)$/gm, 
-        '<div style="margin: 16px 0; padding: 12px 16px; background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); border-radius: 10px; border-left: 4px solid #6366f1;"><span style="color: #667eea; font-weight: 700; font-size: 1.1em;">$1.</span> <strong style="color: #1e40af;">$2</strong>$3</div>');
-    
-    // 普通数字列表
+        '<div class="md-list-item"><span class="md-num">$1.</span> <strong class="md-bold">$2</strong>$3</div>');
     html = html.replace(/^(\d+)\.\s+(.+)$/gm, 
-        '<div style="margin: 10px 0; padding-left: 5px;"><span style="color: #667eea; font-weight: 600;">$1.</span> $2</div>');
+        '<div class="md-list-item-simple"><span class="md-num">$1.</span> $2</div>');
     
-    // 列表项
-    html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin: 8px 0; margin-left: 20px; list-style: disc; line-height: 1.6;">$1</li>');
+    // 5. 无序列表
+    html = html.replace(/^[-*]\s+(.+)$/gm, '<li class="md-li">$1</li>');
     
-    // 处理段落
+    // 6. 处理段落
     const lines = html.split('\n');
     html = lines.map(line => {
         const trimmed = line.trim();
         if (!trimmed) return '';
-        // 如果已经是 HTML 标签开头，不再包装
-        if (trimmed.startsWith('<h') || trimmed.startsWith('<li') || trimmed.startsWith('<div') || 
-            trimmed.startsWith('<p') || trimmed.startsWith('<strong') || trimmed.startsWith('<em')) {
-            return trimmed;
-        }
-        return `<p style="margin: 12px 0; line-height: 1.85; color: #374151;">${trimmed}</p>`;
+        if (trimmed.startsWith('<')) return trimmed;
+        return `<p class="md-p">${trimmed}</p>`;
     }).filter(line => line).join('');
+    
+    // 7. 添加内联样式（支持深色模式）
+    html = html
+        .replace(/class="md-h2"/g, 'style="color: var(--md-heading, #4f46e5); margin: 24px 0 14px 0; font-size: 1.25em; font-weight: 800;"')
+        .replace(/class="md-h3"/g, 'style="color: var(--md-heading, #667eea); margin: 22px 0 12px 0; font-size: 1.15em; font-weight: 700;"')
+        .replace(/class="md-h4"/g, 'style="color: var(--md-heading, #667eea); margin: 18px 0 10px 0; font-size: 1.08em; font-weight: 600;"')
+        .replace(/class="md-bold"/g, 'style="color: var(--md-bold, #1e40af); font-weight: 700;"')
+        .replace(/class="md-list-item"/g, 'style="margin: 16px 0; padding: 12px 16px; background: var(--md-list-bg, linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%)); border-radius: 10px; border-left: 4px solid #6366f1;"')
+        .replace(/class="md-list-item-simple"/g, 'style="margin: 10px 0; padding-left: 5px;"')
+        .replace(/class="md-num"/g, 'style="color: #667eea; font-weight: 700; font-size: 1.05em;"')
+        .replace(/class="md-li"/g, 'style="margin: 8px 0; margin-left: 20px; list-style: disc; line-height: 1.6;"')
+        .replace(/class="md-p"/g, 'style="margin: 12px 0; line-height: 1.85; color: var(--md-text, #374151);"');
     
     return html;
 }
