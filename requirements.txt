@@ -10,3 +10,7 @@ openpyxl==3.1.5
 openai>=2.8.0
 requests>=2.32.0
 httpx>=0.28.0
+
+# Testing
+pytest>=8.0.0
+pytest-cov>=4.0.0

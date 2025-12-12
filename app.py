@@ -1,3 +1,30 @@
+"""
+AI 驱动的智能房价分析系统 - Flask 主应用
+
+本模块是系统的核心入口，负责：
+1. Flask 应用初始化和配置
+2. 数据管理器初始化
+3. AI 模块集成（对话、分析、预测、图像生成）
+4. 用户认证和会话管理
+5. API 路由定义
+
+主要组件：
+- DataManager: 城市房价数据管理
+- AIAssistant: AI 对话助手
+- PricePredictor: 房价预测引擎
+- AIImageGenerator: AI 图像生成
+- StrategyAnalyzer: 购房策略分析
+
+技术栈：
+- Flask 3.1.2: Web 框架
+- Pandas 2.3.3: 数据处理
+- SQLite: 用户数据存储
+- DeepSeek-V3: AI 大语言模型
+
+作者: Python 课程大作业
+日期: 2024-2025
+"""
+
 from flask import Flask, render_template, jsonify, request, Response, stream_with_context, session, redirect, url_for
 import pandas as pd
 import json
