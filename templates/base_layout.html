@@ -473,6 +473,16 @@
                 </a>
             </div>
             
+            <!-- 实用工具 -->
+            <div class="nav-section">
+                <div class="nav-section-title">实用工具</div>
+                <a href="javascript:void(0)" class="nav-item" onclick="openMortgageCalculator()">
+                    <span class="nav-item-icon">🧮</span>
+                    <span class="nav-item-text">房贷计算器</span>
+                    <span class="nav-item-badge" style="background: linear-gradient(135deg, #10b981, #34d399);">HOT</span>
+                </a>
+            </div>
+            
             <!-- 城市分析 -->
             <div class="nav-section">
                 <div class="nav-section-title">城市分析</div>
@@ -526,6 +536,23 @@
                     {% endif %}
                 </div>
             </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button id="dark-mode-btn" onclick="toggleDarkMode()" style="
+                    flex: 1;
+                    padding: 10px;
+                    background: rgba(255,255,255,0.05);
+                    color: rgba(255,255,255,0.7);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    border-radius: 10px;
+                    cursor: pointer;
+                    font-size: 0.85em;
+                    font-weight: 600;
+                    transition: all 0.25s ease;
+                " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.borderColor='rgba(99, 102, 241, 0.3)'; this.style.color='#a5b4fc'" 
+                   onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.08)'; this.style.color='rgba(255,255,255,0.7)'">
+                    🌙 深色模式
+                </button>
+            </div>
             <button class="logout-btn" onclick="handleLogout()">🚪 退出登录</button>
         </div>
     </nav>
@@ -555,7 +582,363 @@
                 }
             }
         }
+        
+        // ==================== 房贷计算器 ====================
+        function openMortgageCalculator() {
+            document.getElementById('mortgage-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMortgageCalculator() {
+            document.getElementById('mortgage-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function calculateMortgage() {
+            const totalPrice = parseFloat(document.getElementById('mc-total-price').value) || 0;
+            const downPaymentRatio = parseFloat(document.getElementById('mc-down-payment').value) / 100;
+            const loanYears = parseInt(document.getElementById('mc-loan-years').value);
+            const interestRate = parseFloat(document.getElementById('mc-interest-rate').value) / 100;
+            const repaymentType = document.getElementById('mc-repayment-type').value;
+            
+            if (totalPrice <= 0) {
+                alert('请输入有效的房屋总价');
+                return;
+            }
+            
+            const downPayment = totalPrice * downPaymentRatio;
+            const loanAmount = totalPrice - downPayment;
+            const monthlyRate = interestRate / 12;
+            const totalMonths = loanYears * 12;
+            
+            let monthlyPayment, totalInterest, totalPayment;
+            
+            if (repaymentType === 'equal') {
+                // 等额本息
+                monthlyPayment = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / 
+                                (Math.pow(1 + monthlyRate, totalMonths) - 1);
+                totalPayment = monthlyPayment * totalMonths;
+                totalInterest = totalPayment - loanAmount;
+            } else {
+                // 等额本金（首月）
+                const monthlyPrincipal = loanAmount / totalMonths;
+                monthlyPayment = monthlyPrincipal + loanAmount * monthlyRate;
+                totalInterest = (loanAmount * monthlyRate * (totalMonths + 1)) / 2;
+                totalPayment = loanAmount + totalInterest;
+            }
+            
+            // 更新显示
+            document.getElementById('mc-result-down').textContent = downPayment.toFixed(2);
+            document.getElementById('mc-result-loan').textContent = loanAmount.toFixed(2);
+            document.getElementById('mc-result-monthly').textContent = monthlyPayment.toFixed(2);
+            document.getElementById('mc-result-interest').textContent = totalInterest.toFixed(2);
+            document.getElementById('mc-result-total').textContent = totalPayment.toFixed(2);
+            
+            // 显示结果区域
+            document.getElementById('mc-result-section').style.display = 'block';
+            
+            // 更新进度条
+            const principalRatio = (loanAmount / totalPayment * 100).toFixed(1);
+            const interestRatio = (totalInterest / totalPayment * 100).toFixed(1);
+            document.getElementById('mc-principal-bar').style.width = principalRatio + '%';
+            document.getElementById('mc-interest-bar').style.width = interestRatio + '%';
+            document.getElementById('mc-principal-percent').textContent = principalRatio + '%';
+            document.getElementById('mc-interest-percent').textContent = interestRatio + '%';
+        }
+        
+        // 暗色主题切换
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+            updateDarkModeIcon();
+        }
+        
+        function updateDarkModeIcon() {
+            const isDark = document.body.classList.contains('dark-mode');
+            const btn = document.getElementById('dark-mode-btn');
+            if (btn) {
+                btn.innerHTML = isDark ? '☀️ 浅色模式' : '🌙 深色模式';
+            }
+        }
+        
+        // 页面加载时检查暗色模式设置
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            updateDarkModeIcon();
+        });
     </script>
+    
+    <!-- 房贷计算器模态框 -->
+    <div id="mortgage-modal" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    " onclick="if(event.target === this) closeMortgageCalculator()">
+        <div style="
+            background: white;
+            border-radius: 24px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        ">
+            <!-- 头部 -->
+            <div style="
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+                padding: 24px 28px;
+                border-radius: 24px 24px 0 0;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.4em; font-weight: 800;">🧮 房贷计算器</h2>
+                    <p style="margin: 6px 0 0 0; opacity: 0.9; font-size: 0.9em;">快速计算月供和还款总额</p>
+                </div>
+                <button onclick="closeMortgageCalculator()" style="
+                    background: rgba(255,255,255,0.2);
+                    border: none;
+                    color: white;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 1.2em;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div style="padding: 28px;">
+                <div style="display: grid; gap: 20px;">
+                    <!-- 房屋总价 -->
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 0.9em;">房屋总价</label>
+                        <div style="position: relative;">
+                            <input type="number" id="mc-total-price" value="500" style="
+                                width: 100%;
+                                padding: 14px 60px 14px 16px;
+                                border: 2px solid #e5e7eb;
+                                border-radius: 12px;
+                                font-size: 1.1em;
+                                font-weight: 600;
+                                transition: all 0.3s ease;
+                                box-sizing: border-box;
+                            " onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#e5e7eb'">
+                            <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #6b7280; font-weight: 500;">万元</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 首付比例 & 贷款年限 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 0.9em;">首付比例</label>
+                            <select id="mc-down-payment" style="
+                                width: 100%;
+                                padding: 14px 16px;
+                                border: 2px solid #e5e7eb;
+                                border-radius: 12px;
+                                font-size: 1em;
+                                font-weight: 500;
+                                background: white;
+                                cursor: pointer;
+                                box-sizing: border-box;
+                            ">
+                                <option value="20">20%（首套最低）</option>
+                                <option value="30" selected>30%（常规）</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 0.9em;">贷款年限</label>
+                            <select id="mc-loan-years" style="
+                                width: 100%;
+                                padding: 14px 16px;
+                                border: 2px solid #e5e7eb;
+                                border-radius: 12px;
+                                font-size: 1em;
+                                font-weight: 500;
+                                background: white;
+                                cursor: pointer;
+                                box-sizing: border-box;
+                            ">
+                                <option value="10">10年</option>
+                                <option value="15">15年</option>
+                                <option value="20">20年</option>
+                                <option value="25">25年</option>
+                                <option value="30" selected>30年</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 贷款利率 & 还款方式 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 0.9em;">年利率 (LPR)</label>
+                            <div style="position: relative;">
+                                <input type="number" id="mc-interest-rate" value="3.1" step="0.01" style="
+                                    width: 100%;
+                                    padding: 14px 40px 14px 16px;
+                                    border: 2px solid #e5e7eb;
+                                    border-radius: 12px;
+                                    font-size: 1em;
+                                    font-weight: 500;
+                                    box-sizing: border-box;
+                                ">
+                                <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #6b7280;">%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 0.9em;">还款方式</label>
+                            <select id="mc-repayment-type" style="
+                                width: 100%;
+                                padding: 14px 16px;
+                                border: 2px solid #e5e7eb;
+                                border-radius: 12px;
+                                font-size: 1em;
+                                font-weight: 500;
+                                background: white;
+                                cursor: pointer;
+                                box-sizing: border-box;
+                            ">
+                                <option value="equal" selected>等额本息</option>
+                                <option value="principal">等额本金</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 计算按钮 -->
+                <button onclick="calculateMortgage()" style="
+                    width: 100%;
+                    margin-top: 24px;
+                    padding: 16px;
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 14px;
+                    font-size: 1.1em;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 28px rgba(99, 102, 241, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(99, 102, 241, 0.3)'">
+                    🔢 立即计算
+                </button>
+                
+                <!-- 结果区域 -->
+                <div id="mc-result-section" style="display: none; margin-top: 28px;">
+                    <div style="
+                        background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+                        border-radius: 16px;
+                        padding: 24px;
+                        border: 1px solid rgba(99, 102, 241, 0.2);
+                    ">
+                        <h3 style="margin: 0 0 20px 0; color: #4338ca; font-size: 1.1em;">📊 计算结果</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="background: white; padding: 16px; border-radius: 12px; text-align: center;">
+                                <div style="color: #6b7280; font-size: 0.85em; margin-bottom: 6px;">首付金额</div>
+                                <div style="font-size: 1.4em; font-weight: 700; color: #10b981;"><span id="mc-result-down">0</span> 万</div>
+                            </div>
+                            <div style="background: white; padding: 16px; border-radius: 12px; text-align: center;">
+                                <div style="color: #6b7280; font-size: 0.85em; margin-bottom: 6px;">贷款金额</div>
+                                <div style="font-size: 1.4em; font-weight: 700; color: #6366f1;"><span id="mc-result-loan">0</span> 万</div>
+                            </div>
+                        </div>
+                        
+                        <div style="
+                            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                            border-radius: 14px;
+                            padding: 20px;
+                            margin-top: 16px;
+                            text-align: center;
+                            color: white;
+                        ">
+                            <div style="opacity: 0.9; font-size: 0.9em; margin-bottom: 6px;">每月还款</div>
+                            <div style="font-size: 2.2em; font-weight: 800;"><span id="mc-result-monthly">0</span> <span style="font-size: 0.5em;">元</span></div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+                            <div style="background: white; padding: 16px; border-radius: 12px; text-align: center;">
+                                <div style="color: #6b7280; font-size: 0.85em; margin-bottom: 6px;">利息总额</div>
+                                <div style="font-size: 1.2em; font-weight: 700; color: #f59e0b;"><span id="mc-result-interest">0</span> 万</div>
+                            </div>
+                            <div style="background: white; padding: 16px; border-radius: 12px; text-align: center;">
+                                <div style="color: #6b7280; font-size: 0.85em; margin-bottom: 6px;">还款总额</div>
+                                <div style="font-size: 1.2em; font-weight: 700; color: #1e293b;"><span id="mc-result-total">0</span> 万</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 本金/利息比例 -->
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85em;">
+                                <span style="color: #6366f1; font-weight: 600;">本金 <span id="mc-principal-percent">0%</span></span>
+                                <span style="color: #f59e0b; font-weight: 600;">利息 <span id="mc-interest-percent">0%</span></span>
+                            </div>
+                            <div style="height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; display: flex;">
+                                <div id="mc-principal-bar" style="height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width 0.5s ease;"></div>
+                                <div id="mc-interest-bar" style="height: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="margin: 16px 0 0 0; color: #9ca3af; font-size: 0.8em; text-align: center;">
+                        💡 以上结果仅供参考，实际以银行审批为准
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* 暗色主题 */
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+        
+        body.dark-mode .main-content {
+            background: #0f172a;
+        }
+        
+        body.dark-mode .sidebar {
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        }
+    </style>
+    
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
