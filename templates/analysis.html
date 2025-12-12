@@ -96,109 +96,109 @@
             
             <!-- 投资指数卡片 - 仅投资顾问和改善型购房者可见 -->
             <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
-                <div class="index-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0;">📊 综合投资指数</h2>
-                        <button onclick="toggleIndexExplanation()" style="
-                            background: transparent;
-                            border: 1px solid #667eea;
-                            color: #667eea;
-                            padding: 5px 15px;
-                            border-radius: 15px;
-                            cursor: pointer;
-                            font-size: 0.85em;
-                            transition: all 0.3s ease;
-                        " onmouseover="this.style.background='#667eea'; this.style.color='white'" 
-                           onmouseout="this.style.background='transparent'; this.style.color='#667eea'">
-                            💡 查看计算方法
-                        </button>
-                    </div>
-                    
-                    <!-- 计算说明（默认隐藏） -->
-                    <div id="index-explanation" style="
-                        display: none;
-                        background: #f8fafc;
-                        padding: 20px;
-                        border-radius: 10px;
-                        margin-bottom: 20px;
-                        border-left: 4px solid #667eea;
-                        font-size: 0.9em;
-                        line-height: 1.8;
-                    ">
-                        <h4 style="margin-top: 0; color: #667eea;">投资指数计算方法说明</h4>
-                        
-                        <p><strong>1. 价格趋势分数（40%权重）</strong></p>
-                        <p style="margin-left: 20px; color: #64748b;">
-                            对比最近6个月与之前6个月的均价变化率<br>
-                            公式：(最近6月均价 - 之前6月均价) / 之前6月均价 × 100<br>
-                            正值表示上涨，负值表示下跌
-                        </p>
-                        
-                        <p><strong>2. 成交量趋势分数（20%权重）</strong></p>
-                        <p style="margin-left: 20px; color: #64748b;">
-                            对比最近6个月与之前6个月的成交量变化率<br>
-                            正值表示市场活跃度提升，负值表示活跃度下降
-                        </p>
-                        
-                        <p><strong>3. 市场稳定性分数（40%权重）</strong></p>
-                        <p style="margin-left: 20px; color: #64748b;">
-                            基于价格变异系数(CV)计算：CV = 标准差/均值 × 100%<br>
-                            公式：100 / (1 + CV/10)<br>
-                            CV越小，市场越稳定，分数越高<br>
-                            <span style="color: #10b981;">● CV&lt;30%：稳定</span> 
-                            <span style="color: #f59e0b;">● 30-50%：一般</span> 
-                            <span style="color: #ef4444;">● &gt;50%：波动较大</span>
-                        </p>
-                        
-                        <p><strong>4. 综合评分</strong></p>
-                        <p style="margin-left: 20px; color: #64748b;">
-                            加权平均后归一化到0-100分<br>
-                            <span style="color: #10b981;">● 80-100分：优秀</span>
-                            <span style="color: #667eea;">● 60-79分：良好</span>
-                            <span style="color: #f59e0b;">● 40-59分：一般</span>
-                            <span style="color: #ef4444;">● 0-39分：较差</span>
-                        </p>
-                    </div>
-                    
-                    <div class="index-score-container">
-                        <div class="index-score" id="investment-score">--</div>
-                        <div class="index-level" id="investment-level">--</div>
-                    </div>
-                    <div class="index-breakdown">
-                        <div class="breakdown-item">
-                            <span>价格趋势</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="price-trend-bar"></div>
-                            </div>
-                            <span id="price-trend-score">--</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span>成交量趋势</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="volume-trend-bar"></div>
-                            </div>
-                            <span id="volume-trend-score">--</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span>市场稳定性</span>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="stability-bar"></div>
-                            </div>
-                            <span id="stability-score">--</span>
-                        </div>
-                    </div>
-                    <div class="recommendation" id="recommendation">--</div>
-                    
-                    <!-- 计算详情 -->
-                    <div id="calculation-details" style="
-                        margin-top: 20px;
-                        padding: 15px;
-                        background: #f8fafc;
-                        border-radius: 8px;
+            <div class="index-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">📊 综合投资指数</h2>
+                    <button onclick="toggleIndexExplanation()" style="
+                        background: transparent;
+                        border: 1px solid #667eea;
+                        color: #667eea;
+                        padding: 5px 15px;
+                        border-radius: 15px;
+                        cursor: pointer;
                         font-size: 0.85em;
-                        color: #64748b;
-                        display: none;
-                    "></div>
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='#667eea'; this.style.color='white'" 
+                       onmouseout="this.style.background='transparent'; this.style.color='#667eea'">
+                        💡 查看计算方法
+                    </button>
+                </div>
+                
+                <!-- 计算说明（默认隐藏） -->
+                <div id="index-explanation" style="
+                    display: none;
+                    background: #f8fafc;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    border-left: 4px solid #667eea;
+                    font-size: 0.9em;
+                    line-height: 1.8;
+                ">
+                    <h4 style="margin-top: 0; color: #667eea;">投资指数计算方法说明</h4>
+                    
+                    <p><strong>1. 价格趋势分数（40%权重）</strong></p>
+                    <p style="margin-left: 20px; color: #64748b;">
+                        对比最近6个月与之前6个月的均价变化率<br>
+                        公式：(最近6月均价 - 之前6月均价) / 之前6月均价 × 100<br>
+                        正值表示上涨，负值表示下跌
+                    </p>
+                    
+                    <p><strong>2. 成交量趋势分数（20%权重）</strong></p>
+                    <p style="margin-left: 20px; color: #64748b;">
+                        对比最近6个月与之前6个月的成交量变化率<br>
+                        正值表示市场活跃度提升，负值表示活跃度下降
+                    </p>
+                    
+                    <p><strong>3. 市场稳定性分数（40%权重）</strong></p>
+                    <p style="margin-left: 20px; color: #64748b;">
+                        基于价格变异系数(CV)计算：CV = 标准差/均值 × 100%<br>
+                        公式：100 / (1 + CV/10)<br>
+                        CV越小，市场越稳定，分数越高<br>
+                        <span style="color: #10b981;">● CV&lt;30%：稳定</span> 
+                        <span style="color: #f59e0b;">● 30-50%：一般</span> 
+                        <span style="color: #ef4444;">● &gt;50%：波动较大</span>
+                    </p>
+                    
+                    <p><strong>4. 综合评分</strong></p>
+                    <p style="margin-left: 20px; color: #64748b;">
+                        加权平均后归一化到0-100分<br>
+                        <span style="color: #10b981;">● 80-100分：优秀</span>
+                        <span style="color: #667eea;">● 60-79分：良好</span>
+                        <span style="color: #f59e0b;">● 40-59分：一般</span>
+                        <span style="color: #ef4444;">● 0-39分：较差</span>
+                    </p>
+                </div>
+                
+                <div class="index-score-container">
+                    <div class="index-score" id="investment-score">--</div>
+                    <div class="index-level" id="investment-level">--</div>
+                </div>
+                <div class="index-breakdown">
+                    <div class="breakdown-item">
+                        <span>价格趋势</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="price-trend-bar"></div>
+                        </div>
+                        <span id="price-trend-score">--</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>成交量趋势</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="volume-trend-bar"></div>
+                        </div>
+                        <span id="volume-trend-score">--</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>市场稳定性</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="stability-bar"></div>
+                        </div>
+                        <span id="stability-score">--</span>
+                    </div>
+                </div>
+                <div class="recommendation" id="recommendation">--</div>
+                
+                <!-- 计算详情 -->
+                <div id="calculation-details" style="
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    font-size: 0.85em;
+                    color: #64748b;
+                    display: none;
+                "></div>
                 </div>
             </div>
 

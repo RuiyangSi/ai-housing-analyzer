@@ -187,11 +187,11 @@
 - Python 3.11+
 - 现代浏览器（支持 WebGL）
 
-### 一键启动
+### 一键启动（推荐）
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/ai-housing-analyzer.git
+git clone https://github.com/RuiyangSi/ai-housing-analyzer.git
 cd ai-housing-analyzer
 
 # 创建虚拟环境
@@ -201,9 +201,28 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # 安装依赖
 pip install -r requirements.txt
 
-# 启动服务
-python app.py
+# 启动服务（已内置 API Key，可直接运行）
+./start.sh
 ```
+
+> 💡 `start.sh` 脚本已包含默认 API Key，可直接运行体验所有功能！
+
+### 使用自己的 API Key（可选）
+
+如果你想使用自己的 DeepSeek API Key：
+
+```bash
+# 复制配置文件
+cp env.example .env
+
+# 编辑 .env，填入你的 Key
+DEEPSEEK_API_KEY=sk-your-own-api-key
+
+# 启动
+./start.sh
+```
+
+> 🔑 获取 API Key：https://platform.siliconflow.cn/
 
 ### 访问系统
 

@@ -3,6 +3,8 @@ import pandas as pd
 import json
 import os
 import logging
+import sqlite3
+import hashlib
 from datetime import datetime
 from functools import wraps
 
@@ -20,19 +22,58 @@ from price_predictor import PricePredictor
 app = Flask(__name__)
 
 # Session配置
-app.secret_key = 'your-secret-key-change-this-in-production-2024'  # 生产环境应使用环境变量
+app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-this-in-production-2024')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24小时
 
-# 简单的用户存储（生产环境应使用数据库）
-users_db = {}
+# ============== SQLite 数据库配置 ==============
+DATABASE = 'users.db'
 
-# AI 助手配置 - 使用 SiliconFlow API 和 DeepSeek-V3
+def get_db():
+    """获取数据库连接"""
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row  # 返回字典格式
+    return conn
+
+def init_db():
+    """初始化数据库"""
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            role TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+    logger.info("数据库初始化完成")
+
+def hash_password(password):
+    """密码哈希（简单版，生产环境建议使用 bcrypt）"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password, password_hash):
+    """验证密码"""
+    return hash_password(password) == password_hash
+
+# 初始化数据库
+init_db()
+
+# ============== AI 配置（使用环境变量）==============
 AI_CONFIG = {
-    'api_url': 'https://api.siliconflow.cn/v1',
-    'api_key': 'sk-lmybvxylhwtivvlnwieusqugkflvppcctolnqchbhnekhtnp',
-    'model': 'deepseek-ai/DeepSeek-V3'
+    'api_url': os.getenv('AI_API_URL', 'https://api.siliconflow.cn/v1'),
+    'api_key': os.getenv('DEEPSEEK_API_KEY', ''),  # 从环境变量读取，默认为空
+    'model': os.getenv('AI_MODEL', 'deepseek-ai/DeepSeek-V3')
 }
+
+# 检查 API Key 是否配置
+if not AI_CONFIG['api_key']:
+    logger.warning("⚠️ 警告: DEEPSEEK_API_KEY 环境变量未设置，AI 功能将不可用")
+    logger.warning("请设置环境变量: export DEEPSEEK_API_KEY='your-api-key'")
 
 # 初始化 AI 助手
 ai_assistant = AIAssistant(
@@ -214,14 +255,26 @@ def register():
     if not username or not password or not role:
         return jsonify({'success': False, 'error': '请填写完整信息'})
     
-    if username in users_db:
+    # 检查用户名是否已存在
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM users WHERE username = ?', (username,))
+    if cursor.fetchone():
+        conn.close()
         return jsonify({'success': False, 'error': '用户名已存在'})
     
-    # 保存用户（简化版，生产环境应加密密码并使用数据库）
-    users_db[username] = {
-        'password': password,  # 生产环境应使用bcrypt加密
-        'role': role
-    }
+    # 保存用户到数据库（密码哈希存储）
+    try:
+        cursor.execute(
+            'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+            (username, hash_password(password), role)
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        conn.close()
+        logger.error(f"注册失败: {str(e)}")
+        return jsonify({'success': False, 'error': '注册失败，请重试'})
     
     # 自动登录
     session['user'] = {
@@ -244,17 +297,23 @@ def login():
     if not username or not password:
         return jsonify({'success': False, 'error': '请填写完整信息'})
     
-    # 验证用户
-    if username not in users_db:
+    # 从数据库验证用户
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT username, password_hash, role FROM users WHERE username = ?', (username,))
+    user = cursor.fetchone()
+    conn.close()
+    
+    if not user:
         return jsonify({'success': False, 'error': '用户名不存在'})
     
-    if users_db[username]['password'] != password:
+    if not verify_password(password, user['password_hash']):
         return jsonify({'success': False, 'error': '密码错误'})
     
     # 登录成功
     session['user'] = {
-        'username': username,
-        'role': users_db[username]['role']
+        'username': user['username'],
+        'role': user['role']
     }
     session.permanent = True
     

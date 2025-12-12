@@ -28,6 +28,11 @@ cookies.txt
 # Data files (too large for git)
 data/raw/*.xlsx
 
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
 # Distribution
 dist/
 build/
@@ -39,6 +44,7 @@ build/
 # Environment variables
 .env
 .env.local
+.env.production
 
 # Test
 .pytest_cache/

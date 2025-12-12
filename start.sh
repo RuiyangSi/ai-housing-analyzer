@@ -1,13 +1,25 @@
 #!/bin/bash
 
-# 房价数据分析系统启动脚本
+# AI 房价分析系统启动脚本
 
 echo "========================================"
-echo "  房价数据分析系统"
+echo "  AI 房价分析系统 v2.0"
 echo "========================================"
 
 # 进入项目目录
 cd "$(dirname "$0")"
+
+# 加载环境变量（如果存在 .env 文件）
+if [ -f ".env" ]; then
+    echo "✓ 加载环境变量..."
+    export $(cat .env | grep -v '#' | xargs)
+fi
+
+# 设置默认 API Key（如果未配置）
+if [ -z "$DEEPSEEK_API_KEY" ]; then
+    export DEEPSEEK_API_KEY="sk-lmybvxylhwtivvlnwieusqugkflvppcctolnqchbhnekhtnp"
+    echo "✓ 使用默认 API Key"
+fi
 
 # 激活虚拟环境
 if [ -d "venv" ]; then
@@ -30,13 +42,22 @@ if [ ! -f "data/processed/data_beijing_2023_2025.csv" ] || [ ! -f "data/processe
     fi
 fi
 
+# 关闭之前占用 5001 端口的进程
+echo "✓ 检查端口 5001..."
+PID=$(lsof -ti:5001 2>/dev/null)
+if [ ! -z "$PID" ]; then
+    echo "  关闭之前的进程 (PID: $PID)..."
+    kill -9 $PID 2>/dev/null
+    sleep 1
+fi
+
 echo ""
 echo "✓ 启动 Flask 服务器..."
 echo ""
-echo "访问地址: http://localhost:5001"
-echo "按 Ctrl+C 停止服务器"
+echo "🌐 访问地址: http://localhost:5001"
+echo "📝 首次使用请注册账号"
+echo "⏹  按 Ctrl+C 停止服务器"
 echo ""
 
 # 启动应用
 python app.py
-

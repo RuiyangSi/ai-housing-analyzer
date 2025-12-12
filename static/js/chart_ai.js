@@ -120,11 +120,8 @@ async function analyzeChart(chartType, chartId, chartTitle) {
                         const parsed = JSON.parse(data);
                         if (parsed.content) {
                             fullText += parsed.content;
-                            // 将文本按段落分隔并显示
-                            const paragraphs = fullText.split('\n').filter(p => p.trim());
-                            textDiv.innerHTML = paragraphs.map(p => 
-                                `<p style="margin: 10px 0;">${escapeHtml(p)}</p>`
-                            ).join('');
+                            // 渲染 Markdown 格式
+                            textDiv.innerHTML = renderMarkdown(fullText);
                         } else if (parsed.error) {
                             textDiv.innerHTML = `<p style="color: #ef4444;">❌ ${parsed.error}</p>`;
                         }
@@ -221,6 +218,47 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+/**
+ * 简单的 Markdown 渲染
+ */
+function renderMarkdown(text) {
+    if (!text) return '';
+    
+    // 转义 HTML（防止 XSS）
+    let html = escapeHtml(text);
+    
+    // 处理 Markdown 格式
+    // 加粗 **text** 或 __text__
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1e40af;">$1</strong>');
+    html = html.replace(/__(.+?)__/g, '<strong style="color: #1e40af;">$1</strong>');
+    
+    // 斜体 *text* 或 _text_
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+    
+    // 标题 ## 或 ###
+    html = html.replace(/^### (.+)$/gm, '<h4 style="color: #667eea; margin: 15px 0 10px 0; font-size: 1em;">$1</h4>');
+    html = html.replace(/^## (.+)$/gm, '<h3 style="color: #667eea; margin: 20px 0 10px 0; font-size: 1.1em;">$1</h3>');
+    
+    // 列表项 - 或 *
+    html = html.replace(/^[-*] (.+)$/gm, '<li style="margin: 5px 0; margin-left: 20px;">$1</li>');
+    
+    // 数字列表
+    html = html.replace(/^(\d+)\. (.+)$/gm, '<div style="margin: 8px 0; padding-left: 20px;"><span style="color: #667eea; font-weight: 600;">$1.</span> $2</div>');
+    
+    // 段落（连续换行变段落）
+    const paragraphs = html.split('\n').filter(p => p.trim());
+    html = paragraphs.map(p => {
+        // 已经是 HTML 标签的不再包裹
+        if (p.startsWith('<h') || p.startsWith('<li') || p.startsWith('<div')) {
+            return p;
+        }
+        return `<p style="margin: 10px 0; line-height: 1.8;">${p}</p>`;
+    }).join('');
+    
+    return html;
 }
 
 /**

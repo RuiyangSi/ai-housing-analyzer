@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             showError('数据加载超时，请刷新页面重试');
         } else {
             console.error('[Analysis] 加载分析数据失败:', error);
-            showError('数据加载失败: ' + error.message + '，请刷新页面重试');
+        showError('数据加载失败: ' + error.message + '，请刷新页面重试');
         }
     }
 });
@@ -442,12 +442,8 @@ function loadCityAIOverview() {
             
             if (data.content) {
                 fullText += data.content;
-                // 实时显示累积的文本
-                // 按段落分隔
-                const paragraphs = fullText.split('\n').filter(p => p.trim());
-                contentDiv.innerHTML = paragraphs.map(p => 
-                    `<p style="margin: 15px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">${p}</p>`
-                ).join('');
+                // 使用 Markdown 渲染
+                contentDiv.innerHTML = renderMarkdownAnalysis(fullText);
                 
                 // 自动滚动到底部
                 contentDiv.scrollTop = contentDiv.scrollHeight;
@@ -475,3 +471,49 @@ function refreshCityAIOverview() {
     loadCityAIOverview();
 }
 
+/**
+ * 简单的 Markdown 渲染（分析页面专用）
+ */
+function renderMarkdownAnalysis(text) {
+    if (!text) return '';
+    
+    // 转义 HTML（防止 XSS）
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    
+    // 处理 Markdown 格式
+    // 加粗 **text** 或 __text__
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1e40af; font-weight: 700;">$1</strong>');
+    html = html.replace(/__(.+?)__/g, '<strong style="color: #1e40af; font-weight: 700;">$1</strong>');
+    
+    // 斜体
+    html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+    
+    // 标题
+    html = html.replace(/^### (.+)$/gm, '<h4 style="color: #667eea; margin: 18px 0 10px 0; font-size: 1.05em; font-weight: 600;">$1</h4>');
+    html = html.replace(/^## (.+)$/gm, '<h3 style="color: #667eea; margin: 22px 0 12px 0; font-size: 1.15em; font-weight: 700;">$1</h3>');
+    
+    // 数字列表
+    html = html.replace(/^(\d+)\.\s+\*\*(.+?)\*\*(.*)$/gm, 
+        '<div style="margin: 16px 0;"><span style="color: #667eea; font-weight: 700; font-size: 1.1em;">$1.</span> <strong style="color: #1e40af;">$2</strong>$3</div>');
+    html = html.replace(/^(\d+)\.\s+(.+)$/gm, 
+        '<div style="margin: 10px 0; padding-left: 5px;"><span style="color: #667eea; font-weight: 600;">$1.</span> $2</div>');
+    
+    // 列表项
+    html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin: 6px 0; margin-left: 20px; list-style: disc;">$1</li>');
+    
+    // 段落
+    const lines = html.split('\n');
+    html = lines.map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+        if (trimmed.startsWith('<h') || trimmed.startsWith('<li') || trimmed.startsWith('<div')) {
+            return trimmed;
+        }
+        return `<p style="margin: 12px 0; line-height: 1.85;">${trimmed}</p>`;
+    }).filter(line => line).join('');
+    
+    return html;
+}

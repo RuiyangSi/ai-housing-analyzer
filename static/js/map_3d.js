@@ -153,15 +153,23 @@ function get3DBarOption(data, month) {
             },
             formatter: function(params) {
                 const data = params.data;
-                let html = `<strong style="font-size: 1.1em;">${data.district}</strong><br/>`;
+                if (!data) return '';
+                
+                // 安全获取数据属性
+                const district = data.district || '未知区域';
+                const avgPrice = data.avg_price != null ? data.avg_price.toFixed(1) : '暂无';
+                const volume = data.volume != null ? data.volume : '暂无';
+                const avgUnitPrice = data.avg_unit_price != null ? data.avg_unit_price.toLocaleString() : '暂无';
+                
+                let html = `<strong style="font-size: 1.1em;">${district}</strong><br/>`;
                 html += `<div style="margin-top: 8px;">`;
                 
                 if (currentViewMode === 'price') {
-                    html += `💰 平均价格：<span style="color:#60a5fa">${data.avg_price}万元</span><br/>`;
+                    html += `💰 平均价格：<span style="color:#60a5fa">${avgPrice}万元</span><br/>`;
                 } else if (currentViewMode === 'volume') {
-                    html += `📊 成交量：<span style="color:#60a5fa">${data.volume}套</span><br/>`;
+                    html += `📊 成交量：<span style="color:#60a5fa">${volume}套</span><br/>`;
                 } else if (currentViewMode === 'unit') {
-                    html += `🏢 平均单价：<span style="color:#60a5fa">${data.avg_unit_price.toLocaleString()}元/㎡</span><br/>`;
+                    html += `🏢 平均单价：<span style="color:#60a5fa">${avgUnitPrice}元/㎡</span><br/>`;
                 } else if (currentViewMode === 'trend') {
                     const summary = mapData.summary.find(s => s.district === data.district);
                     const trend = summary ? summary.trend_percent : 0;
@@ -170,19 +178,20 @@ function get3DBarOption(data, month) {
                 }
                 
                 // 根据角色显示不同信息
+                const price = data.avg_price || 0;
                 if (role === 'first_time_buyer') {
                     html += `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9em; opacity: 0.8;">`;
                     html += `💡 首次购房提示：<br/>`;
-                    if (data.avg_price < 200) {
+                    if (price < 200) {
                         html += `该区域价格相对友好，适合预算有限的购房者`;
-                    } else if (data.avg_price < 400) {
+                    } else if (price < 400) {
                         html += `该区域价格适中，建议结合地段和配套综合考虑`;
                     } else {
                         html += `该区域价格较高，建议谨慎评估自身承受能力`;
                     }
                     html += `</div>`;
                 } else if (role === 'investment_advisor') {
-                    const summary = mapData.summary.find(s => s.district === data.district);
+                    const summary = mapData.summary.find(s => s.district === district);
                     if (summary) {
                         html += `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9em; opacity: 0.8;">`;
                         html += `💼 投资价值：${summary.trend_percent > 2 ? '较高' : summary.trend_percent > 0 ? '中等' : '观望'}`;
@@ -273,7 +282,7 @@ function get3DBarOption(data, month) {
         },
         series: [{
             type: 'bar3D',
-            data: data.map(d => d.value),
+            data: data,  // 传递完整数据对象，包含区域名称等信息
             shading: 'realistic',
             label: {
                 show: false
