@@ -1,601 +1,594 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI购房策略规划师 - 个性化购房方案生成</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: transparent !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            padding: 40px 20px;
-            background: transparent;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            color: white;
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.95;
-            color: white;
-        }
-        
-        .back-btn {
-            display: inline-block;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 25px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .back-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateX(-5px);
-        }
-        
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            padding: 0 20px;
-        }
-        
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        
-        .step::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 60%;
-            width: 80%;
-            height: 2px;
-            background: #e2e8f0;
-            z-index: 0;
-        }
-        
-        .step:last-child::after {
-            display: none;
-        }
-        
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            color: #94a3b8;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-        
-        .step.active .step-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .step.completed .step-number {
-            background: #10b981;
-            color: white;
-        }
-        
-        .step-label {
-            font-size: 0.9em;
-            color: #64748b;
-        }
-        
-        .step.active .step-label {
-            color: #667eea;
-            font-weight: 600;
-        }
-        
-        .form-section {
-            display: none;
-        }
-        
-        .form-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 1.05em;
-        }
-        
-        .form-group label .required {
-            color: #ef4444;
-            margin-left: 5px;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .radio-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        
-        .radio-option {
-            position: relative;
-        }
-        
-        .radio-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-        
-        .radio-option label {
-            display: block;
-            padding: 15px 20px;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .radio-option input[type="radio"]:checked + label {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        #result-section {
-            display: none;
-        }
-        
-        .result-header {
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .result-header h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        
-        .result-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        
-        .result-card h3 {
-            color: #1e293b;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .stat-item {
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .stat-label {
-            font-size: 0.9em;
-            color: #64748b;
-            margin-bottom: 5px;
-        }
-        
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #1e293b;
-        }
-        
-        .district-list {
-            display: grid;
-            gap: 15px;
-        }
-        
-        .district-item {
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border-left: 4px solid #10b981;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .district-item.preferred {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left-color: #059669;
-        }
-        
-        .district-name {
-            font-weight: bold;
-            font-size: 1.2em;
-            color: #1e293b;
-        }
-        
-        .district-stats {
-            display: flex;
-            gap: 20px;
-            font-size: 0.9em;
-            color: #64748b;
-        }
-        
-        .action-list {
-            list-style: none;
-        }
-        
-        .action-list li {
-            padding: 15px 20px;
-            background: #f8fafc;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .ai-advice-box {
-            padding: 25px;
-            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-            border-radius: 15px;
-            border-left: 4px solid #f59e0b;
-            line-height: 1.8;
-            font-size: 1.05em;
-            color: #78350f;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .badge-warning {
-            background: #fed7aa;
-            color: #78350f;
-        }
-        
-        .badge-info {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <a href="/" class="back-btn">← 返回首页</a>
-        
-        <div class="header">
-            <h1>🏠 AI购房策略规划师</h1>
-            <p>基于真实数据 · DeepSeek-V3驱动 · 个性化方案生成</p>
-        </div>
-        
-        <div class="main-card">
-            <!-- 步骤指示器 -->
-            <div class="step-indicator">
-                <div class="step active" data-step="1">
-                    <div class="step-number">1</div>
-                    <div class="step-label">基本信息</div>
-                </div>
-                <div class="step" data-step="2">
-                    <div class="step-number">2</div>
-                    <div class="step-label">购房需求</div>
-                </div>
-                <div class="step" data-step="3">
-                    <div class="step-number">3</div>
-                    <div class="step-label">偏好设置</div>
-                </div>
-                <div class="step" data-step="4">
-                    <div class="step-number">4</div>
-                    <div class="step-label">生成方案</div>
-                </div>
-            </div>
-            
-            <!-- 表单 -->
-            <form id="strategy-form">
-                <!-- 步骤1：基本信息 -->
-                <div class="form-section active" data-section="1">
-                    <h2 style="margin-bottom: 30px; color: #1e293b;">📍 基本信息</h2>
-                    
-                    <div class="form-group">
-                        <label>选择城市 <span class="required">*</span></label>
-                        <select name="city" required>
-                            <option value="">请选择城市</option>
-                            {% for city in cities %}
-                            <option value="{{ city.name_en }}">{{ city.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>购房预算（万元）<span class="required">*</span></label>
-                        <input type="number" name="budget" placeholder="例如：300" min="50" step="10" required>
-                        <small style="color: #64748b; margin-top: 5px; display: block;">请输入您的总预算</small>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">下一步 →</button>
-                    </div>
-                </div>
-                
-                <!-- 步骤2：购房需求 -->
-                <div class="form-section" data-section="2">
-                    <h2 style="margin-bottom: 30px; color: #1e293b;">🎯 购房需求</h2>
-                    
-                    <div class="form-group">
-                        <label>购房目的 <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" name="purpose" value="self_living" id="purpose1" required>
-                                <label for="purpose1">🏠 自住</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="purpose" value="investment" id="purpose2">
-                                <label for="purpose2">💰 投资</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="purpose" value="education" id="purpose3">
-                                <label for="purpose3">🎓 学区</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>家庭人数 <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" name="family_size" value="1" id="family1" required>
-                                <label for="family1">👤 1人</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="family_size" value="2" id="family2">
-                                <label for="family2">👫 2人</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="family_size" value="3" id="family3">
-                                <label for="family3">👨‍👩‍👧 3人</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="family_size" value="4" id="family4">
-                                <label for="family4">👨‍👩‍👧‍👦 4人+</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>购房急迫程度 <span class="required">*</span></label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" name="urgency" value="urgent" id="urgency1" required>
-                                <label for="urgency1">🔴 急迫<br><small style="font-size: 0.8em;">3个月内</small></label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="urgency" value="moderate" id="urgency2">
-                                <label for="urgency2">🟡 适中<br><small style="font-size: 0.8em;">半年内</small></label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="urgency" value="relaxed" id="urgency3">
-                                <label for="urgency3">🟢 不急<br><small style="font-size: 0.8em;">1年内</small></label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep(1)">← 上一步</button>
-                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">下一步 →</button>
-                    </div>
-                </div>
-                
-                <!-- 步骤3：偏好设置 -->
-                <div class="form-section" data-section="3">
-                    <h2 style="margin-bottom: 30px; color: #1e293b;">⚙️ 偏好设置（可选）</h2>
-                    
-                    <div class="form-group">
-                        <label>期望区域</label>
-                        <input type="text" name="preferred_district" placeholder="例如：朝阳、海淀（留空则推荐全市）">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>工作地点</label>
-                        <input type="text" name="work_location" placeholder="例如：国贸、中关村">
-                    </div>
-                    
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" name="has_kid" id="has_kid" value="true">
-                        <label for="has_kid" style="margin: 0;">家有小孩（关注学区）</label>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">← 上一步</button>
-                        <button type="button" class="btn btn-primary" onclick="submitForm()">生成策略方案 🚀</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        
-        <!-- 结果展示区域 -->
-        <div id="result-section">
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>AI正在为您分析市场数据，生成个性化购房策略...</p>
-            </div>
-            
-            <div id="result-content" style="display: none;">
-                <!-- 结果内容将由JavaScript动态生成 -->
-            </div>
-        </div>
+{% extends "base_layout.html" %}
+
+{% block title %}AI购房策略规划师 - 个性化购房方案生成{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .strategy-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+        padding: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+    }
+    
+    .page-header h1 {
+        font-size: 2.2em;
+        margin: 0 0 15px 0;
+        font-weight: 800;
+    }
+    
+    .page-header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+        margin: 0;
+    }
+    
+    .main-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        padding: 0 20px;
+    }
+    
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    
+    .step::after {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 60%;
+        width: 80%;
+        height: 2px;
+        background: #e2e8f0;
+        z-index: 0;
+    }
+    
+    .step:last-child::after {
+        display: none;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e2e8f0;
+        color: #94a3b8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-number {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .step.completed .step-number {
+        background: #10b981;
+        color: white;
+    }
+    
+    .step-label {
+        font-size: 0.9em;
+        color: #64748b;
+    }
+    
+    .step.active .step-label {
+        color: #667eea;
+        font-weight: 600;
+    }
+    
+    .form-section {
+        display: none;
+    }
+    
+    .form-section.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1.05em;
+    }
+    
+    .form-group .required {
+        color: #ef4444;
+        margin-left: 5px;
+    }
+    
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .radio-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .radio-option {
+        position: relative;
+    }
+    
+    .radio-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .radio-option label {
+        display: block;
+        padding: 15px 20px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .radio-option input[type="radio"]:checked + label {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+    
+    .btn-secondary:hover {
+        background: #e2e8f0;
+    }
+    
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    #result-section {
+        display: none;
+    }
+    
+    .result-header {
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .result-header h2 {
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+    
+    .result-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .result-card h3 {
+        color: #1e293b;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-item {
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .stat-label {
+        font-size: 0.9em;
+        color: #64748b;
+        margin-bottom: 5px;
+    }
+    
+    .stat-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #1e293b;
+    }
+    
+    .district-list {
+        display: grid;
+        gap: 15px;
+    }
+    
+    .district-item {
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border-left: 4px solid #10b981;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .district-item.preferred {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left-color: #059669;
+    }
+    
+    .district-name {
+        font-weight: bold;
+        font-size: 1.2em;
+        color: #1e293b;
+    }
+    
+    .district-stats {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9em;
+        color: #64748b;
+    }
+    
+    .action-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .action-list li {
+        padding: 15px 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .ai-advice-box {
+        padding: 25px;
+        background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+        border-radius: 15px;
+        border-left: 4px solid #f59e0b;
+        line-height: 1.8;
+        font-size: 1.05em;
+        color: #78350f;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .spinner {
+        border: 3px solid #f3f4f6;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fed7aa; color: #78350f; }
+    .badge-info { background: #e0e7ff; color: #3730a3; }
+    
+    /* 深色模式 */
+    body.dark-mode .main-card,
+    body.dark-mode .result-card {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+    
+    body.dark-mode .form-group label,
+    body.dark-mode .form-section h2,
+    body.dark-mode .result-card h3 {
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group select {
+        background: #0f172a;
+        border-color: #475569;
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .radio-option label {
+        background: #0f172a;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .stat-item,
+    body.dark-mode .district-item,
+    body.dark-mode .action-list li {
+        background: #0f172a;
+    }
+    
+    body.dark-mode .stat-value,
+    body.dark-mode .district-name {
+        color: #f1f5f9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="strategy-container">
+    <div class="page-header">
+        <h1>🏠 AI购房策略规划师</h1>
+        <p>基于真实数据 · DeepSeek-V3驱动 · 个性化方案生成</p>
     </div>
     
-    <script src="{{ url_for('static', filename='js/strategy.js') }}"></script>
-</body>
-</html>
+    <div class="main-card">
+        <!-- 步骤指示器 -->
+        <div class="step-indicator">
+            <div class="step active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">基本信息</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">购房需求</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">偏好设置</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-label">生成方案</div>
+            </div>
+        </div>
+        
+        <!-- 表单 -->
+        <form id="strategy-form">
+            <!-- 步骤1：基本信息 -->
+            <div class="form-section active" data-section="1">
+                <h2 style="margin-bottom: 30px;">📍 基本信息</h2>
+                
+                <div class="form-group">
+                    <label>选择城市 <span class="required">*</span></label>
+                    <select name="city" required>
+                        <option value="">请选择城市</option>
+                        {% for city in cities %}
+                        <option value="{{ city.name_en }}">{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>购房预算（万元）<span class="required">*</span></label>
+                    <input type="number" name="budget" placeholder="例如：300" min="50" step="10" required>
+                    <small style="color: #64748b; margin-top: 5px; display: block;">请输入您的总预算</small>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">下一步 →</button>
+                </div>
+            </div>
+            
+            <!-- 步骤2：购房需求 -->
+            <div class="form-section" data-section="2">
+                <h2 style="margin-bottom: 30px;">🎯 购房需求</h2>
+                
+                <div class="form-group">
+                    <label>购房目的 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="purpose" value="self_living" id="purpose1" required>
+                            <label for="purpose1">🏠 自住</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="purpose" value="investment" id="purpose2">
+                            <label for="purpose2">💰 投资</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="purpose" value="education" id="purpose3">
+                            <label for="purpose3">🎓 学区</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>家庭人数 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="family_size" value="1" id="family1" required>
+                            <label for="family1">👤 1人</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="family_size" value="2" id="family2">
+                            <label for="family2">👫 2人</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="family_size" value="3" id="family3">
+                            <label for="family3">👨‍👩‍👧 3人</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="family_size" value="4" id="family4">
+                            <label for="family4">👨‍👩‍👧‍👦 4人+</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>购房急迫程度 <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="urgency" value="urgent" id="urgency1" required>
+                            <label for="urgency1">🔴 急迫<br><small style="font-size: 0.8em;">3个月内</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="urgency" value="moderate" id="urgency2">
+                            <label for="urgency2">🟡 适中<br><small style="font-size: 0.8em;">半年内</small></label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="urgency" value="relaxed" id="urgency3">
+                            <label for="urgency3">🟢 不急<br><small style="font-size: 0.8em;">1年内</small></label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(1)">← 上一步</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(3)">下一步 →</button>
+                </div>
+            </div>
+            
+            <!-- 步骤3：偏好设置 -->
+            <div class="form-section" data-section="3">
+                <h2 style="margin-bottom: 30px;">⚙️ 偏好设置（可选）</h2>
+                
+                <div class="form-group">
+                    <label>期望区域</label>
+                    <input type="text" name="preferred_district" placeholder="例如：朝阳、海淀（留空则推荐全市）">
+                </div>
+                
+                <div class="form-group">
+                    <label>工作地点</label>
+                    <input type="text" name="work_location" placeholder="例如：国贸、中关村">
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" name="has_kid" id="has_kid" value="true">
+                    <label for="has_kid" style="margin: 0;">家有小孩（关注学区）</label>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">← 上一步</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">生成策略方案 🚀</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 结果展示区域 -->
+    <div id="result-section">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI正在为您分析市场数据，生成个性化购房策略...</p>
+        </div>
+        
+        <div id="result-content" style="display: none;">
+            <!-- 结果内容将由JavaScript动态生成 -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/strategy.js') }}"></script>
+{% endblock %}
