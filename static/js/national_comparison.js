@@ -434,42 +434,75 @@ function renderAffordability() {
 
 function renderRecommendations() {
     const recs = comparisonData.recommendations;
+    const role = getRole(); // 获取当前用户角色
     
-    // 刚需购房者
-    document.getElementById('first-time-recommendations').innerHTML = 
-        recs.for_first_time_buyers.map(rec => `
-            <div class="recommendation-item">
-                <div class="recommendation-number">${rec.priority}</div>
-                <div>
-                    <strong>${rec.city}</strong><br>
-                    <span style="color: #64748b; font-size: 0.9em;">${rec.reason}</span>
+    // 角色配置
+    const roleConfig = {
+        'first_time_buyer': {
+            title: '🏠 首次购房者专属建议',
+            subtitle: '为您筛选性价比高、适合刚需的优质房源城市',
+            roleName: '首次购房者',
+            data: recs.for_first_time_buyers,
+            icon: '🏠',
+            gradient: 'linear-gradient(135deg, #10b981, #34d399)'
+        },
+        'upgrader': {
+            title: '🏡 改善型购房者专属建议',
+            subtitle: '为您推荐品质生活升级的理想置业城市',
+            roleName: '改善型购房者',
+            data: recs.for_upgraders,
+            icon: '🏡',
+            gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)'
+        },
+        'investment_advisor': {
+            title: '💼 投资顾问专属建议',
+            subtitle: '基于投资回报率和市场潜力的专业分析',
+            roleName: '投资顾问',
+            data: recs.for_investors,
+            icon: '💼',
+            gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+        }
+    };
+    
+    const config = roleConfig[role] || roleConfig['first_time_buyer'];
+    
+    // 更新标题
+    const titleEl = document.getElementById('advice-title');
+    const subtitleEl = document.getElementById('advice-subtitle');
+    const roleTitleEl = document.getElementById('recommendation-role-title');
+    const roleDisplayEl = document.getElementById('user-role-display');
+    
+    if (titleEl) titleEl.textContent = config.title;
+    if (subtitleEl) subtitleEl.textContent = config.subtitle;
+    if (roleTitleEl) {
+        roleTitleEl.innerHTML = `${config.icon} 为您推荐的购房城市`;
+    }
+    if (roleDisplayEl) roleDisplayEl.textContent = config.roleName;
+    
+    // 渲染个性化推荐
+    const container = document.getElementById('personalized-recommendations');
+    if (container && config.data) {
+        container.innerHTML = config.data.map((rec, index) => `
+            <div class="recommendation-item" style="animation: slideIn 0.4s ease-out ${index * 0.1}s backwards;">
+                <div class="recommendation-number" style="background: ${config.gradient};">${rec.priority}</div>
+                <div style="flex: 1;">
+                    <strong style="font-size: 1.1em; color: #1e293b;">${rec.city}</strong>
+                    <p style="color: #64748b; font-size: 0.92em; margin: 6px 0 0 0; line-height: 1.5;">${rec.reason}</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="
+                        display: inline-block;
+                        background: linear-gradient(135deg, #f0f4ff, #e8f0fe);
+                        color: #4338ca;
+                        padding: 4px 12px;
+                        border-radius: 20px;
+                        font-size: 0.8em;
+                        font-weight: 600;
+                    ">推荐指数 ${rec.priority}</span>
                 </div>
             </div>
         `).join('');
-    
-    // 改善型购房者
-    document.getElementById('upgrader-recommendations').innerHTML = 
-        recs.for_upgraders.map(rec => `
-            <div class="recommendation-item">
-                <div class="recommendation-number">${rec.priority}</div>
-                <div>
-                    <strong>${rec.city}</strong><br>
-                    <span style="color: #64748b; font-size: 0.9em;">${rec.reason}</span>
-                </div>
-            </div>
-        `).join('');
-    
-    // 投资者
-    document.getElementById('investor-recommendations').innerHTML = 
-        recs.for_investors.map(rec => `
-            <div class="recommendation-item">
-                <div class="recommendation-number">${rec.priority}</div>
-                <div>
-                    <strong>${rec.city}</strong><br>
-                    <span style="color: #64748b; font-size: 0.9em;">${rec.reason}</span>
-                </div>
-            </div>
-        `).join('');
+    }
 }
 
 function renderRegionalCharacteristics() {
