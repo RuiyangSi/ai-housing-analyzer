@@ -627,12 +627,15 @@
                 totalPayment = loanAmount + totalInterest;
             }
             
-            // 更新显示
-            document.getElementById('mc-result-down').textContent = downPayment.toFixed(2);
-            document.getElementById('mc-result-loan').textContent = loanAmount.toFixed(2);
-            document.getElementById('mc-result-monthly').textContent = monthlyPayment.toFixed(2);
-            document.getElementById('mc-result-interest').textContent = totalInterest.toFixed(2);
-            document.getElementById('mc-result-total').textContent = totalPayment.toFixed(2);
+            // 格式化数字（添加千分位）
+            const formatMoney = (num) => num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            // 更新显示（贷款金额是万元，月供转换为元显示更直观）
+            document.getElementById('mc-result-down').textContent = formatMoney(downPayment);
+            document.getElementById('mc-result-loan').textContent = formatMoney(loanAmount);
+            document.getElementById('mc-result-monthly').textContent = formatMoney(monthlyPayment * 10000);  // 万元转元
+            document.getElementById('mc-result-interest').textContent = formatMoney(totalInterest);
+            document.getElementById('mc-result-total').textContent = formatMoney(totalPayment);
             
             // 显示结果区域
             document.getElementById('mc-result-section').style.display = 'block';
@@ -922,20 +925,166 @@
             }
         }
         
-        /* 暗色主题 */
+        /* 暗色主题 - 完整样式 */
         body.dark-mode {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
+            --border-color: #334155;
         }
         
         body.dark-mode .main-content {
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
         }
         
         body.dark-mode .sidebar {
             background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        /* 卡片深色样式 */
+        body.dark-mode .glass-card,
+        body.dark-mode .stat-card,
+        body.dark-mode .city-card,
+        body.dark-mode .feature-card,
+        body.dark-mode .analysis-card,
+        body.dark-mode .recommendation-card,
+        body.dark-mode .info-card,
+        body.dark-mode [class*="card"] {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            border-color: #475569 !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* 文字颜色 */
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+        body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode p, body.dark-mode span, body.dark-mode div,
+        body.dark-mode label, body.dark-mode td, body.dark-mode th {
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .text-muted, body.dark-mode .text-secondary,
+        body.dark-mode small {
+            color: #94a3b8 !important;
+        }
+        
+        /* 统计数字保持渐变色 */
+        body.dark-mode .stat-value,
+        body.dark-mode .stat-number {
+            background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 输入框和选择器 */
+        body.dark-mode input, 
+        body.dark-mode select, 
+        body.dark-mode textarea {
+            background: #1e293b !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode input::placeholder {
+            color: #64748b !important;
+        }
+        
+        /* 按钮保持原色，但边框变深 */
+        body.dark-mode .btn-secondary,
+        body.dark-mode button:not([style*="background"]) {
+            background: #334155 !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        /* 分析区域 */
+        body.dark-mode .analysis-section,
+        body.dark-mode .section-content,
+        body.dark-mode .overview-section {
+            background: linear-gradient(135deg, #1e293b 0%, #293548 100%) !important;
+            border-color: #475569 !important;
+        }
+        
+        /* 表格 */
+        body.dark-mode table {
+            background: #1e293b !important;
+        }
+        
+        body.dark-mode tr:hover {
+            background: #334155 !important;
+        }
+        
+        body.dark-mode th {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode td {
+            border-color: #475569 !important;
+        }
+        
+        /* 欢迎横幅保持渐变，稍微调暗 */
+        body.dark-mode .welcome-banner {
+            background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #7c3aed 100%) !important;
+        }
+        
+        /* 图表容器背景 */
+        body.dark-mode .chart-container,
+        body.dark-mode [id*="chart"] {
+            background: #1e293b !important;
+            border-radius: 12px;
+        }
+        
+        /* AI 分析内容区域 */
+        body.dark-mode .ai-content,
+        body.dark-mode #city-ai-overview-content,
+        body.dark-mode .ai-analysis-content {
+            background: linear-gradient(135deg, #1e293b 0%, #293548 100%) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        /* 滚动条深色 */
+        body.dark-mode ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        /* 模态框深色 */
+        body.dark-mode #mortgage-modal > div:last-child {
+            background: #1e293b !important;
+        }
+        
+        body.dark-mode #mortgage-modal input,
+        body.dark-mode #mortgage-modal select {
+            background: #0f172a !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode #mc-result-section > div {
+            background: linear-gradient(135deg, #1e293b 0%, #293548 100%) !important;
+        }
+        
+        body.dark-mode #mc-result-section .grid > div,
+        body.dark-mode #mc-result-section [style*="background: white"] {
+            background: #0f172a !important;
         }
     </style>
     

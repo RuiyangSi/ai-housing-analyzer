@@ -357,6 +357,117 @@
             grid-template-columns: 1fr;
         }
     }
+    
+    /* ========== 深色模式样式 ========== */
+    body.dark-mode .home-container {
+        background: transparent;
+    }
+    
+    body.dark-mode .welcome-section {
+        background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6366f1 100%);
+    }
+    
+    body.dark-mode .stat-card {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border: 1px solid #475569;
+    }
+    
+    body.dark-mode .stat-card:hover {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        border-color: #6366f1;
+    }
+    
+    body.dark-mode .stat-icon {
+        background: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+    }
+    
+    body.dark-mode .stat-card:hover .stat-icon {
+        background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+    }
+    
+    body.dark-mode .stat-label {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .section-title {
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .city-card {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border: 1px solid #475569;
+    }
+    
+    body.dark-mode .city-card:hover {
+        border-color: #818cf8;
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.25);
+    }
+    
+    body.dark-mode .city-card::before {
+        background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+    }
+    
+    body.dark-mode .city-name {
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .city-stat-value {
+        color: #a5b4fc;
+    }
+    
+    body.dark-mode .city-stat-label {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .btn-3d {
+        background: #334155;
+        border-color: #475569;
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .btn-3d:hover {
+        background: #475569;
+        border-color: #6366f1;
+    }
+    
+    body.dark-mode #city-detail-section {
+        background: linear-gradient(135deg, #1e293b 0%, #293548 100%);
+        border-color: #475569;
+    }
+    
+    body.dark-mode .detail-header h3 {
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .chart-box {
+        background: #0f172a;
+        border-color: #334155;
+    }
+    
+    body.dark-mode .chart-title {
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .ai-chat-container {
+        background: linear-gradient(135deg, #1e293b 0%, #293548 100%);
+        border-color: #475569;
+    }
+    
+    body.dark-mode .ai-input {
+        background: #0f172a;
+        border-color: #475569;
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .ai-input::placeholder {
+        color: #64748b;
+    }
+    
+    body.dark-mode .ai-response {
+        background: #0f172a;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
 </style>
 {% endblock %}
 
