@@ -1,0 +1,925 @@
+{% extends "base_layout.html" %}
+
+{% block title %}AI 创意图像工作室{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .studio-container {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 30px;
+        min-height: calc(100vh - 100px);
+        padding: 20px 0;
+    }
+    
+    /* 左侧控制面板 */
+    .control-panel {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .panel-title {
+        font-size: 1.4em;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .panel-title::before {
+        content: '🎨';
+        font-size: 1.2em;
+    }
+    
+    /* 场景选择 */
+    .scene-section {
+        margin-bottom: 25px;
+    }
+    
+    .section-label {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .scene-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .scene-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 15px 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .scene-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    .scene-card.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+    }
+    
+    .scene-card.active .scene-icon,
+    .scene-card.active .scene-name {
+        color: white;
+    }
+    
+    .scene-icon {
+        font-size: 1.8em;
+        margin-bottom: 5px;
+    }
+    
+    .scene-name {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: #475569;
+    }
+    
+    /* 关键词标签 */
+    .tags-section {
+        margin-bottom: 25px;
+    }
+    
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .tag {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 0.85em;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .tag:hover {
+        background: #e0e7ff;
+        border-color: #c7d2fe;
+        color: #4f46e5;
+    }
+    
+    .tag.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+    }
+    
+    /* 自定义输入 */
+    .custom-input-section {
+        margin-bottom: 25px;
+    }
+    
+    .custom-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.95em;
+        resize: vertical;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+    
+    .custom-textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .custom-textarea::placeholder {
+        color: #94a3b8;
+    }
+    
+    /* 风格选择 */
+    .style-options {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .style-btn {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 25px;
+        background: white;
+        font-size: 0.85em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #64748b;
+    }
+    
+    .style-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+    }
+    
+    .style-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+    }
+    
+    /* 生成按钮 */
+    .generate-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .generate-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .generate-btn .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* 右侧展示区 */
+    .gallery-panel {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.1);
+    }
+    
+    .gallery-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .gallery-title {
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .gallery-count {
+        font-size: 0.85em;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+    
+    /* 空状态 */
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        color: #94a3b8;
+    }
+    
+    .empty-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    .empty-text {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+    
+    .empty-hint {
+        font-size: 0.9em;
+        color: #cbd5e1;
+    }
+    
+    /* 图片网格 */
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .image-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .image-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+    }
+    
+    .image-wrapper {
+        position: relative;
+        padding-top: 100%;
+        background: #f8fafc;
+        overflow: hidden;
+    }
+    
+    .image-wrapper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .image-card:hover .image-wrapper img {
+        transform: scale(1.05);
+    }
+    
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.7));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 15px;
+    }
+    
+    .image-card:hover .image-overlay {
+        opacity: 1;
+    }
+    
+    .image-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .action-btn {
+        padding: 8px 14px;
+        background: rgba(255,255,255,0.95);
+        border: none;
+        border-radius: 20px;
+        font-size: 0.8em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #475569;
+    }
+    
+    .action-btn:hover {
+        background: white;
+        color: #667eea;
+    }
+    
+    .image-info {
+        padding: 15px;
+    }
+    
+    .image-prompt {
+        font-size: 0.85em;
+        color: #64748b;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .image-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        font-size: 0.75em;
+        color: #94a3b8;
+    }
+    
+    /* 加载状态卡片 */
+    .loading-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        border-radius: 16px;
+        overflow: hidden;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    .loading-wrapper {
+        padding-top: 100%;
+        position: relative;
+    }
+    
+    .loading-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #667eea;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(102, 126, 234, 0.2);
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+    
+    /* 预览模态框 */
+    .preview-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+    
+    .preview-modal.active {
+        display: flex;
+    }
+    
+    .preview-content {
+        max-width: 90vw;
+        max-height: 90vh;
+        position: relative;
+    }
+    
+    .preview-content img {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
+    .preview-close {
+        position: absolute;
+        top: -50px;
+        right: 0;
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.5em;
+        transition: all 0.2s ease;
+    }
+    
+    .preview-close:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    
+    /* 响应式 */
+    @media (max-width: 900px) {
+        .studio-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .control-panel {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="studio-container">
+    <!-- 左侧控制面板 -->
+    <div class="control-panel">
+        <h2 class="panel-title">AI 创意工作室</h2>
+        
+        <!-- 场景选择 -->
+        <div class="scene-section">
+            <div class="section-label">选择场景类型</div>
+            <div class="scene-grid">
+                <div class="scene-card active" data-scene="dream_home">
+                    <div class="scene-icon">🏠</div>
+                    <div class="scene-name">梦想之家</div>
+                </div>
+                <div class="scene-card" data-scene="lifestyle">
+                    <div class="scene-icon">🌟</div>
+                    <div class="scene-name">生活场景</div>
+                </div>
+                <div class="scene-card" data-scene="renovation">
+                    <div class="scene-icon">🔨</div>
+                    <div class="scene-name">装修效果</div>
+                </div>
+                <div class="scene-card" data-scene="neighborhood">
+                    <div class="scene-icon">🏘️</div>
+                    <div class="scene-name">社区愿景</div>
+                </div>
+                <div class="scene-card" data-scene="seasonal">
+                    <div class="scene-icon">🍂</div>
+                    <div class="scene-name">四季氛围</div>
+                </div>
+                <div class="scene-card" data-scene="investment">
+                    <div class="scene-icon">📈</div>
+                    <div class="scene-name">投资故事</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 关键词标签 -->
+        <div class="tags-section">
+            <div class="section-label">添加关键词（可多选）</div>
+            <div class="tags-container" id="tags-container">
+                <!-- 会根据场景动态更新 -->
+            </div>
+        </div>
+        
+        <!-- 风格选择 -->
+        <div class="style-section" style="margin-bottom: 25px;">
+            <div class="section-label">选择风格</div>
+            <div class="style-options">
+                <button class="style-btn active" data-style="modern">现代简约</button>
+                <button class="style-btn" data-style="chinese">中式雅致</button>
+                <button class="style-btn" data-style="european">欧式奢华</button>
+                <button class="style-btn" data-style="japanese">日式禅意</button>
+                <button class="style-btn" data-style="industrial">工业风格</button>
+            </div>
+        </div>
+        
+        <!-- 自定义输入 -->
+        <div class="custom-input-section">
+            <div class="section-label">自定义描述（可选）</div>
+            <textarea class="custom-textarea" id="custom-prompt" 
+                placeholder="添加您的个性化描述，例如：&#10;• 温馨的三口之家&#10;• 落地窗看城市夜景&#10;• 有一只猫咪在沙发上"></textarea>
+        </div>
+        
+        <!-- 城市选择 -->
+        <div class="city-section" style="margin-bottom: 25px;">
+            <div class="section-label">选择城市</div>
+            <select id="city-select" style="width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95em; cursor: pointer;">
+                <option value="北京">北京</option>
+                <option value="上海">上海</option>
+                <option value="广州">广州</option>
+                <option value="深圳">深圳</option>
+                <option value="杭州">杭州</option>
+                <option value="成都">成都</option>
+                <option value="南京">南京</option>
+                <option value="苏州">苏州</option>
+            </select>
+        </div>
+        
+        <!-- 生成按钮 -->
+        <button class="generate-btn" id="generate-btn" onclick="generateImage()">
+            <span>✨ 生成创意图像</span>
+        </button>
+        
+        <p style="text-align: center; margin-top: 15px; font-size: 0.8em; color: #94a3b8;">
+            预计生成时间：10-20秒
+        </p>
+    </div>
+    
+    <!-- 右侧展示区 -->
+    <div class="gallery-panel">
+        <div class="gallery-header">
+            <h3 class="gallery-title">🖼️ 我的创意图库</h3>
+            <span class="gallery-count" id="gallery-count">0 张图片</span>
+        </div>
+        
+        <div id="gallery-content">
+            <!-- 空状态 -->
+            <div class="empty-state" id="empty-state">
+                <div class="empty-icon">🎨</div>
+                <div class="empty-text">还没有生成任何图片</div>
+                <div class="empty-hint">选择场景和关键词，开始创作您的专属图像</div>
+            </div>
+            
+            <!-- 图片网格 -->
+            <div class="image-grid" id="image-grid" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 图片预览模态框 -->
+<div class="preview-modal" id="preview-modal" onclick="closePreview(event)">
+    <div class="preview-content">
+        <button class="preview-close" onclick="closePreview()">&times;</button>
+        <img id="preview-image" src="" alt="预览图片">
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // 场景对应的关键词
+    const sceneTags = {
+        dream_home: [
+            '落地窗', '城市景观', '开放厨房', '书房角落', '阳台花园',
+            '大客厅', '步入式衣帽间', '智能家居', '温馨灯光', '木质元素'
+        ],
+        lifestyle: [
+            '家庭早餐', '周末休闲', '居家办公', '朋友聚会', '阅读时光',
+            '下午茶', '瑜伽空间', '亲子时光', '宠物陪伴', '浪漫晚餐'
+        ],
+        renovation: [
+            '客厅', '主卧', '厨房', '卫生间', '书房',
+            '儿童房', '阳台', '玄关', '餐厅', '衣帽间'
+        ],
+        neighborhood: [
+            '绿化公园', '商业中心', '优质学校', '地铁站', '医院',
+            '健身设施', '儿童乐园', '咖啡街区', '艺术中心', '河景湖景'
+        ],
+        seasonal: [
+            '春日阳光', '夏日清凉', '秋日温馨', '冬日暖意',
+            '清晨时分', '午后阳光', '黄昏余晖', '夜晚灯火'
+        ],
+        investment: [
+            '租金收入', '房产增值', '财务自由', '被动收入',
+            '成功投资', '资产配置', '家族传承', '稳健回报'
+        ]
+    };
+    
+    let currentScene = 'dream_home';
+    let currentStyle = 'modern';
+    let selectedTags = new Set();
+    let generatedImages = [];
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTags();
+        bindEvents();
+    });
+    
+    // 绑定事件
+    function bindEvents() {
+        // 场景选择
+        document.querySelectorAll('.scene-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentScene = this.dataset.scene;
+                selectedTags.clear();
+                updateTags();
+            });
+        });
+        
+        // 风格选择
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentStyle = this.dataset.style;
+            });
+        });
+    }
+    
+    // 更新关键词标签
+    function updateTags() {
+        const container = document.getElementById('tags-container');
+        const tags = sceneTags[currentScene] || [];
+        
+        container.innerHTML = tags.map(tag => 
+            `<span class="tag" onclick="toggleTag(this, '${tag}')">${tag}</span>`
+        ).join('');
+    }
+    
+    // 切换标签选择
+    function toggleTag(element, tag) {
+        element.classList.toggle('selected');
+        if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+        } else {
+            selectedTags.add(tag);
+        }
+    }
+    
+    // 生成图像
+    async function generateImage() {
+        const btn = document.getElementById('generate-btn');
+        const customPrompt = document.getElementById('custom-prompt').value.trim();
+        const city = document.getElementById('city-select').value;
+        
+        // 禁用按钮
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>正在生成...</span>';
+        
+        // 显示加载卡片
+        showLoadingCard();
+        
+        // 构建请求数据
+        const requestData = {
+            type: currentScene,
+            city: city,
+            style: currentStyle,
+            tags: Array.from(selectedTags),
+            custom_prompt: customPrompt
+        };
+        
+        // 根据场景设置额外参数
+        if (currentScene === 'lifestyle') {
+            const lifestyleMap = {
+                '家庭早餐': 'family_morning',
+                '周末休闲': 'weekend_relax',
+                '居家办公': 'home_office',
+                '朋友聚会': 'rooftop_party'
+            };
+            for (const tag of selectedTags) {
+                if (lifestyleMap[tag]) {
+                    requestData.lifestyle = lifestyleMap[tag];
+                    break;
+                }
+            }
+        }
+        
+        if (currentScene === 'renovation') {
+            const roomMap = {
+                '客厅': 'living_room',
+                '主卧': 'bedroom',
+                '厨房': 'kitchen',
+                '卫生间': 'bathroom'
+            };
+            for (const tag of selectedTags) {
+                if (roomMap[tag]) {
+                    requestData.room = roomMap[tag];
+                    break;
+                }
+            }
+        }
+        
+        if (currentScene === 'seasonal') {
+            const seasonMap = {
+                '春日阳光': 'spring',
+                '夏日清凉': 'summer',
+                '秋日温馨': 'autumn',
+                '冬日暖意': 'winter'
+            };
+            for (const tag of selectedTags) {
+                if (seasonMap[tag]) {
+                    requestData.season = seasonMap[tag];
+                    break;
+                }
+            }
+        }
+        
+        try {
+            const response = await fetch('/api/ai/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            });
+            
+            const result = await response.json();
+            
+            removeLoadingCard();
+            
+            if (result.success && result.image_url) {
+                addImageToGallery({
+                    url: result.image_url,
+                    scene: currentScene,
+                    style: currentStyle,
+                    tags: Array.from(selectedTags),
+                    customPrompt: customPrompt,
+                    city: city,
+                    timestamp: new Date().toLocaleString()
+                });
+            } else {
+                alert('图像生成失败：' + (result.error || '未知错误'));
+            }
+        } catch (error) {
+            removeLoadingCard();
+            alert('请求失败：' + error.message);
+        }
+        
+        // 恢复按钮
+        btn.disabled = false;
+        btn.innerHTML = '<span>✨ 生成创意图像</span>';
+    }
+    
+    // 显示加载卡片
+    function showLoadingCard() {
+        const grid = document.getElementById('image-grid');
+        const emptyState = document.getElementById('empty-state');
+        
+        emptyState.style.display = 'none';
+        grid.style.display = 'grid';
+        
+        const loadingCard = document.createElement('div');
+        loadingCard.id = 'loading-card';
+        loadingCard.className = 'loading-card';
+        loadingCard.innerHTML = `
+            <div class="loading-wrapper">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <div style="font-weight: 600;">AI 正在创作...</div>
+                    <div style="font-size: 0.85em; margin-top: 5px; opacity: 0.7;">预计 10-20 秒</div>
+                </div>
+            </div>
+        `;
+        
+        grid.insertBefore(loadingCard, grid.firstChild);
+    }
+    
+    // 移除加载卡片
+    function removeLoadingCard() {
+        const loadingCard = document.getElementById('loading-card');
+        if (loadingCard) {
+            loadingCard.remove();
+        }
+    }
+    
+    // 添加图片到图库
+    function addImageToGallery(imageData) {
+        generatedImages.unshift(imageData);
+        updateGalleryCount();
+        
+        const grid = document.getElementById('image-grid');
+        const emptyState = document.getElementById('empty-state');
+        
+        emptyState.style.display = 'none';
+        grid.style.display = 'grid';
+        
+        const sceneNames = {
+            dream_home: '🏠 梦想之家',
+            lifestyle: '🌟 生活场景',
+            renovation: '🔨 装修效果',
+            neighborhood: '🏘️ 社区愿景',
+            seasonal: '🍂 四季氛围',
+            investment: '📈 投资故事'
+        };
+        
+        const styleNames = {
+            modern: '现代简约',
+            chinese: '中式雅致',
+            european: '欧式奢华',
+            japanese: '日式禅意',
+            industrial: '工业风格'
+        };
+        
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        card.innerHTML = `
+            <div class="image-wrapper">
+                <img src="${imageData.url}" alt="AI生成图像" onclick="previewImage('${imageData.url}')">
+                <div class="image-overlay">
+                    <div class="image-actions">
+                        <button class="action-btn" onclick="previewImage('${imageData.url}')">🔍 查看</button>
+                        <button class="action-btn" onclick="downloadImage('${imageData.url}')">💾 下载</button>
+                    </div>
+                </div>
+            </div>
+            <div class="image-info">
+                <div class="image-prompt">
+                    ${sceneNames[imageData.scene] || imageData.scene} · ${styleNames[imageData.style] || imageData.style}
+                    ${imageData.tags.length > 0 ? ' · ' + imageData.tags.slice(0, 3).join('、') : ''}
+                    ${imageData.customPrompt ? ' · ' + imageData.customPrompt.substring(0, 30) : ''}
+                </div>
+                <div class="image-meta">
+                    <span>📍 ${imageData.city}</span>
+                    <span>${imageData.timestamp}</span>
+                </div>
+            </div>
+        `;
+        
+        grid.insertBefore(card, grid.firstChild);
+    }
+    
+    // 更新图库计数
+    function updateGalleryCount() {
+        document.getElementById('gallery-count').textContent = generatedImages.length + ' 张图片';
+    }
+    
+    // 预览图片
+    function previewImage(url) {
+        document.getElementById('preview-image').src = url;
+        document.getElementById('preview-modal').classList.add('active');
+    }
+    
+    // 关闭预览
+    function closePreview(event) {
+        if (!event || event.target.id === 'preview-modal' || event.target.classList.contains('preview-close')) {
+            document.getElementById('preview-modal').classList.remove('active');
+        }
+    }
+    
+    // 下载图片
+    async function downloadImage(url) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = 'ai-image-' + Date.now() + '.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            // 如果 CORS 阻止，直接打开新窗口
+            window.open(url, '_blank');
+        }
+    }
+    
+    // ESC 关闭预览
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePreview();
+        }
+    });
+</script>
+{% endblock %}
+

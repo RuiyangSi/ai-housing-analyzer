@@ -1,0 +1,822 @@
+{% extends "base_layout.html" %}
+
+{% block title %}房价分析系统 - AI驱动的智能购房决策平台{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .home-container {
+        padding: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .welcome-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .welcome-section h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .welcome-section p {
+        font-size: 1.1em;
+        opacity: 0.95;
+        max-width: 600px;
+        line-height: 1.6;
+        position: relative;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .stat-icon {
+        font-size: 2.5em;
+        margin-bottom: 15px;
+    }
+    
+    .stat-value {
+        font-size: 2em;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        color: #64748b;
+        font-size: 0.95em;
+    }
+    
+    .cities-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .city-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .city-card {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 25px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .city-card:hover {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+    }
+    
+    .city-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .city-name {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    .city-icon {
+        font-size: 1.5em;
+    }
+    
+    .city-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .city-stat {
+        text-align: center;
+    }
+    
+    .city-stat-value {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    .city-stat-label {
+        font-size: 0.8em;
+        color: #64748b;
+    }
+    
+    .city-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .city-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.85em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .city-btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .city-btn-secondary {
+        background: #e2e8f0;
+        color: #64748b;
+    }
+    
+    .city-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 1024px) {
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .city-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .home-container {
+            padding: 20px;
+        }
+        
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .city-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <!-- 欢迎区域 -->
+    <div class="welcome-section">
+        <h1>👋 欢迎，{{ user.username if user else '用户' }}！</h1>
+        <p>这是一个 <strong>AI驱动</strong> 的智能购房决策平台，基于 32万+ 条真实成交数据，为您提供专业的房价分析和个性化购房建议。</p>
+    </div>
+    
+    <!-- 数据统计 -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">32万+</div>
+            <div class="stat-label">真实成交数据</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏙️</div>
+            <div class="stat-value">3</div>
+            <div class="stat-label">覆盖城市</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🤖</div>
+            <div class="stat-value">AI</div>
+            <div class="stat-label">智能分析</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-value">2023-2025</div>
+            <div class="stat-label">数据时间跨度</div>
+        </div>
+    </div>
+    
+    <!-- 城市数据 -->
+    <div class="cities-section">
+        <h2 class="section-title">🏙️ 城市数据分析</h2>
+        <div class="city-grid">
+            {% for city in cities %}
+            <div class="city-card" onclick="loadCityDetail('{{ city.name_en }}', '{{ city.name }}')" id="card-{{ city.name_en }}">
+                <div class="city-header">
+                    <span class="city-name">{{ city.name }}</span>
+                    <span class="city-icon">
+                        {% if city.name_en == 'beijing' %}🏛️{% elif city.name_en == 'xiamen' %}🌊{% else %}🌸{% endif %}
+                    </span>
+                </div>
+                <div class="city-stats">
+                    <div class="city-stat">
+                        <div class="city-stat-value" id="count-{{ city.name_en }}">--</div>
+                        <div class="city-stat-label">成交套数</div>
+                    </div>
+                    <div class="city-stat">
+                        <div class="city-stat-value" id="price-{{ city.name_en }}">--</div>
+                        <div class="city-stat-label">平均价格</div>
+                    </div>
+                </div>
+                <div class="city-actions">
+                    <button class="city-btn city-btn-primary" onclick="event.stopPropagation(); window.location.href='/analysis/{{ city.name_en }}'">📊 专业分析</button>
+                    <button class="city-btn city-btn-secondary" onclick="event.stopPropagation(); window.location.href='/3d-map/{{ city.name_en }}'">🗺️ 3D地图</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- 城市详情展示区域 -->
+    <div id="city-detail-section" class="cities-section" style="display: none; margin-top: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 class="section-title" style="margin: 0;">
+                <span id="detail-city-icon">🏛️</span>
+                <span id="detail-city-name">北京</span> 数据详情
+            </h2>
+            <button onclick="closeCityDetail()" style="
+                background: #f1f5f9;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 0.9em;
+                color: #64748b;
+            ">✕ 关闭</button>
+        </div>
+        
+        <!-- 总体统计 -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 0.9em; color: #64748b; margin-bottom: 8px;">总成交量</div>
+                <div id="detail-total-count" style="font-size: 1.8em; font-weight: 700; color: #667eea;">--</div>
+                <div style="font-size: 0.8em; color: #94a3b8;">套</div>
+            </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 0.9em; color: #64748b; margin-bottom: 8px;">平均成交价</div>
+                <div id="detail-avg-price" style="font-size: 1.8em; font-weight: 700; color: #10b981;">--</div>
+                <div style="font-size: 0.8em; color: #94a3b8;">万元</div>
+            </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 0.9em; color: #64748b; margin-bottom: 8px;">平均单价</div>
+                <div id="detail-avg-unit-price" style="font-size: 1.8em; font-weight: 700; color: #f59e0b;">--</div>
+                <div style="font-size: 0.8em; color: #94a3b8;">元/m²</div>
+            </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 0.9em; color: #64748b; margin-bottom: 8px;">平均面积</div>
+                <div id="detail-avg-area" style="font-size: 1.8em; font-weight: 700; color: #764ba2;">--</div>
+                <div style="font-size: 0.8em; color: #94a3b8;">m²</div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <div style="background: #f8fafc; padding: 25px; border-radius: 15px; height: 320px;">
+                <h3 style="margin: 0 0 15px 0; color: #1e293b; font-size: 1.1em;">📈 月度价格趋势</h3>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="monthly-chart"></canvas>
+                </div>
+            </div>
+            <div style="background: #f8fafc; padding: 25px; border-radius: 15px; height: 320px;">
+                <h3 style="margin: 0 0 15px 0; color: #1e293b; font-size: 1.1em;">🏘️ 区域均价对比 (Top 10)</h3>
+                <div style="height: 250px; position: relative;">
+                    <canvas id="district-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 年度统计表格 -->
+        <div style="margin-top: 25px; background: #f8fafc; padding: 25px; border-radius: 15px;">
+            <h3 style="margin: 0 0 20px 0; color: #1e293b; font-size: 1.1em;">📊 年度统计</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #e2e8f0;">
+                        <th style="padding: 12px; text-align: left; font-size: 0.9em; color: #64748b;">年份</th>
+                        <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #64748b;">成交量</th>
+                        <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #64748b;">平均成交价</th>
+                        <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #64748b;">平均单价</th>
+                        <th style="padding: 12px; text-align: right; font-size: 0.9em; color: #64748b;">平均面积</th>
+                    </tr>
+                </thead>
+                <tbody id="yearly-tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- AI助手浮动按钮 -->
+<div id="ai-float-btn" onclick="openAIChat()" style="
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 100;
+">
+    <span style="font-size: 1.8em;">🤖</span>
+</div>
+
+<!-- AI助手侧边栏 -->
+<div id="ai-sidebar" style="
+    position: fixed;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+    transition: right 0.3s ease;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+">
+    <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="margin: 0;">🤖 AI 智能助手</h3>
+            <p style="margin: 5px 0 0 0; font-size: 0.85em; opacity: 0.9;">DeepSeek-V3 支持</p>
+        </div>
+        <button onclick="closeAIChat()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">✕</button>
+    </div>
+    
+    <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 20px;">
+        <div style="background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+            <p style="margin: 0; color: #1e293b;">你好！我是AI房价分析助手，有什么可以帮你的吗？</p>
+            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 0.85em;">💡 点击下方按钮可生成AI可视化图像</p>
+        </div>
+    </div>
+    
+    <!-- AI创意图像生成按钮 -->
+    <div style="padding: 10px 15px; border-top: 1px solid #e2e8f0;">
+        <p style="margin: 0 0 8px 0; font-size: 0.75em; color: #94a3b8;">✨ AI创意图像生成</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button onclick="generateAIImage('dream_home')" class="ai-img-btn" style="
+                padding: 5px 10px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 0.75em;
+                color: white;
+                transition: all 0.2s;
+            ">🏠 梦想之家</button>
+            <button onclick="generateAIImage('lifestyle')" class="ai-img-btn" style="
+                padding: 5px 10px;
+                background: #f1f5f9;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 0.75em;
+                color: #64748b;
+                transition: all 0.2s;
+            ">🌟 生活场景</button>
+            <button onclick="generateAIImage('renovation')" class="ai-img-btn" style="
+                padding: 5px 10px;
+                background: #f1f5f9;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 0.75em;
+                color: #64748b;
+                transition: all 0.2s;
+            ">🔨 装修效果</button>
+            <button onclick="generateAIImage('seasonal')" class="ai-img-btn" style="
+                padding: 5px 10px;
+                background: #f1f5f9;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 0.75em;
+                color: #64748b;
+                transition: all 0.2s;
+            ">🍂 四季氛围</button>
+        </div>
+    </div>
+    
+    <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px;">
+        <input type="text" id="chat-input" placeholder="输入你的问题..." style="
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 0.95em;
+            outline: none;
+        " onkeypress="if(event.key === 'Enter') sendChatMessage()">
+        <button onclick="sendChatMessage()" style="
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        ">发送</button>
+    </div>
+</div>
+
+<div id="ai-overlay" onclick="closeAIChat()" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: none;
+"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let monthlyChart = null;
+    let districtChart = null;
+    let currentCityData = null;
+    
+    // 加载城市数据
+    async function loadCityStats() {
+        const cities = ['beijing', 'xiamen', 'wuhan'];
+        for (const city of cities) {
+            try {
+                const response = await fetch(`/api/city/${city}/statistics`);
+                const stats = await response.json();
+                
+                if (stats && stats.overall) {
+                    document.getElementById(`count-${city}`).textContent = 
+                        (stats.overall.total_count / 10000).toFixed(1) + '万';
+                    document.getElementById(`price-${city}`).textContent = 
+                        (stats.overall.avg_price).toFixed(0) + '万';
+                }
+            } catch (error) {
+                console.error(`加载${city}数据失败:`, error);
+            }
+        }
+    }
+    
+    // 加载城市详情
+    async function loadCityDetail(cityEn, cityName) {
+        document.querySelectorAll('.city-card').forEach(card => {
+            card.style.borderColor = 'transparent';
+        });
+        document.getElementById(`card-${cityEn}`).style.borderColor = '#667eea';
+        
+        try {
+            const response = await fetch(`/api/city/${cityEn}/statistics`);
+            const stats = await response.json();
+            
+            if (stats && stats.overall) {
+                currentCityData = stats;
+                
+                const icons = { beijing: '🏛️', xiamen: '🌊', wuhan: '🌸' };
+                document.getElementById('detail-city-icon').textContent = icons[cityEn] || '🏙️';
+                document.getElementById('detail-city-name').textContent = cityName;
+                
+                document.getElementById('detail-total-count').textContent = stats.overall.total_count.toLocaleString();
+                document.getElementById('detail-avg-price').textContent = stats.overall.avg_price.toFixed(2);
+                document.getElementById('detail-avg-unit-price').textContent = stats.overall.avg_unit_price.toLocaleString();
+                document.getElementById('detail-avg-area').textContent = stats.overall.avg_area.toFixed(1);
+                
+                const tbody = document.getElementById('yearly-tbody');
+                tbody.innerHTML = stats.yearly.map(y => `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px; font-weight: 600;">${y.year}</td>
+                        <td style="padding: 12px; text-align: right;">${y.count.toLocaleString()} 套</td>
+                        <td style="padding: 12px; text-align: right;">${y.avg_price.toFixed(2)} 万</td>
+                        <td style="padding: 12px; text-align: right;">${y.avg_unit_price.toLocaleString()} 元/m²</td>
+                        <td style="padding: 12px; text-align: right;">${y.avg_area.toFixed(1)} m²</td>
+                    </tr>
+                `).join('');
+                
+                renderCharts(stats);
+                
+                document.getElementById('city-detail-section').style.display = 'block';
+                document.getElementById('city-detail-section').scrollIntoView({ behavior: 'smooth' });
+            }
+        } catch (error) {
+            console.error('加载城市详情失败:', error);
+        }
+    }
+    
+    function closeCityDetail() {
+        document.getElementById('city-detail-section').style.display = 'none';
+        document.querySelectorAll('.city-card').forEach(card => {
+            card.style.borderColor = 'transparent';
+        });
+    }
+    
+    function renderCharts(stats) {
+        if (monthlyChart) {
+            monthlyChart.destroy();
+            monthlyChart = null;
+        }
+        if (districtChart) {
+            districtChart.destroy();
+            districtChart = null;
+        }
+        
+        const monthlyCtx = document.getElementById('monthly-chart');
+        if (!monthlyCtx) return;
+        
+        monthlyChart = new Chart(monthlyCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: stats.monthly.map(m => m.month),
+                datasets: [{
+                    label: '平均成交价（万元）',
+                    data: stats.monthly.map(m => m.avg_price),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 500 },
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { maxTicksLimit: 8, font: { size: 9 } } },
+                    y: { beginAtZero: false, ticks: { font: { size: 10 } } }
+                }
+            }
+        });
+        
+        const districtCtx = document.getElementById('district-chart');
+        if (!districtCtx) return;
+        
+        districtChart = new Chart(districtCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: stats.district.map(d => d.district),
+                datasets: [{
+                    label: '平均单价（元/m²）',
+                    data: stats.district.map(d => d.avg_unit_price),
+                    backgroundColor: [
+                        '#667eea', '#764ba2', '#10b981', '#f59e0b', '#ef4444',
+                        '#8b5cf6', '#06b6d4', '#ec4899', '#84cc16', '#f97316'
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 500 },
+                indexAxis: 'y',
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { font: { size: 9 } } },
+                    y: { ticks: { font: { size: 10 } } }
+                }
+            }
+        });
+    }
+    
+    function openAIChat() {
+        document.getElementById('ai-sidebar').style.right = '0';
+        document.getElementById('ai-overlay').style.display = 'block';
+    }
+    
+    function closeAIChat() {
+        document.getElementById('ai-sidebar').style.right = '-400px';
+        document.getElementById('ai-overlay').style.display = 'none';
+    }
+    
+    async function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        const chatMessages = document.getElementById('chat-messages');
+        
+        // 显示用户消息
+        chatMessages.innerHTML += `
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; margin-left: 50px;">
+                <p style="margin: 0;">${message}</p>
+            </div>
+        `;
+        
+        input.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // 创建 AI 回复容器
+        const responseId = 'ai-response-' + Date.now();
+        chatMessages.innerHTML += `
+            <div id="${responseId}" style="background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                <p style="margin: 0; color: #1e293b; white-space: pre-wrap;"><span class="typing-cursor">🤖 思考中...</span></p>
+            </div>
+        `;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        try {
+            // 使用流式 API
+            const response = await fetch('/api/ai/chat-stream', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let fullText = '';
+            const responseDiv = document.getElementById(responseId);
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        if (data === '[DONE]') continue;
+                        
+                        try {
+                            const json = JSON.parse(data);
+                            if (json.content) {
+                                fullText += json.content;
+                                responseDiv.innerHTML = `
+                                    <p style="margin: 0; color: #1e293b; white-space: pre-wrap;">${fullText}</p>
+                                `;
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        } catch (e) {
+                            // 忽略解析错误
+                        }
+                    }
+                }
+            }
+            
+            // 如果没有收到任何内容
+            if (!fullText) {
+                responseDiv.innerHTML = `
+                    <p style="margin: 0; color: #1e293b;">抱歉，出现了一些问题，请重试。</p>
+                `;
+            }
+        } catch (error) {
+            console.error('发送消息失败:', error);
+            const responseDiv = document.getElementById(responseId);
+            if (responseDiv) {
+                responseDiv.innerHTML = `
+                    <p style="margin: 0; color: #dc2626;">❌ 发送失败: ${error.message}</p>
+                `;
+            }
+        }
+    }
+    
+    // AI创意图像生成
+    async function generateAIImage(type) {
+        const chatMessages = document.getElementById('chat-messages');
+        
+        // 根据类型设置不同的标题和参数
+        const typeConfig = {
+            'dream_home': { title: '🏠 梦想之家', desc: '根据您的预算和喜好生成的理想家园' },
+            'lifestyle': { title: '🌟 美好生活', desc: '想象购房后的温馨生活场景' },
+            'renovation': { title: '🔨 装修效果', desc: '现代风格客厅装修效果图' },
+            'seasonal': { title: '🍂 秋日温馨', desc: '秋天的家，温暖的时光' }
+        };
+        const config = typeConfig[type] || { title: '🎨 AI图像', desc: 'AI生成的创意图像' };
+        
+        // 显示加载状态
+        const loadingId = 'img-loading-' + Date.now();
+        chatMessages.innerHTML += `
+            <div id="${loadingId}" style="background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0;">
+                <p style="margin: 0; color: #667eea; font-weight: 600;">${config.title}</p>
+                <p style="margin: 8px 0; color: #64748b; font-size: 0.9em;">🎨 AI正在为您绘制创意图像...</p>
+                <div style="margin-top: 12px; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); animation: loading 1.5s infinite;"></div>
+                </div>
+                <p style="margin: 8px 0 0 0; color: #94a3b8; font-size: 0.8em;">预计需要 10-20 秒，请耐心等待...</p>
+            </div>
+        `;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        try {
+            const response = await fetch('/api/ai/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    type: type, 
+                    city: 'beijing',
+                    style: 'modern',
+                    lifestyle: 'family_morning',
+                    room: 'living_room',
+                    season: 'autumn'
+                })
+            });
+            
+            const result = await response.json();
+            
+            // 移除加载状态
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+            
+            if (result.success && result.image_url) {
+                chatMessages.innerHTML += `
+                    <div style="background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <span style="font-size: 1.5em;">${config.title.split(' ')[0]}</span>
+                            <div>
+                                <p style="margin: 0; color: #1e293b; font-weight: 600;">${config.title.split(' ').slice(1).join(' ')}</p>
+                                <p style="margin: 2px 0 0 0; color: #64748b; font-size: 0.8em;">${config.desc}</p>
+                            </div>
+                        </div>
+                        <img src="${result.image_url}" alt="AI生成图像" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" onerror="this.parentElement.innerHTML='<p style=\\'color:#dc2626;\\'>图像加载失败</p>'">
+                        <p style="margin: 10px 0 0 0; color: #94a3b8; font-size: 0.75em; text-align: center;">✨ 由 FLUX AI 生成</p>
+                    </div>
+                `;
+            } else {
+                chatMessages.innerHTML += `
+                    <div style="background: #fef2f2; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                        <p style="margin: 0; color: #dc2626;">❌ 图像生成失败: ${result.error || '未知错误'}</p>
+                    </div>
+                `;
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } catch (error) {
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
+            chatMessages.innerHTML += `
+                <div style="background: #fef2f2; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                    <p style="margin: 0; color: #dc2626;">❌ 请求失败: ${error.message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadCityStats);
+</script>
+<style>
+    @keyframes loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+    }
+    .ai-img-btn:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border-color: transparent !important;
+    }
+</style>
+{% endblock %}

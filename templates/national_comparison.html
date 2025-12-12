@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国房价对比分析</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+    <style>
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .city-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .city-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .city-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .rank-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .rank-badge.rank-1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+        
+        .rank-badge.rank-2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+        }
+        
+        .rank-badge.rank-3 {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+        
+        .comparison-chart {
+            height: 500px;
+            margin: 30px 0;
+        }
+        
+        .recommendation-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid #0284c7;
+        }
+        
+        .recommendation-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #0c4a6e;
+            margin-bottom: 15px;
+        }
+        
+        .recommendation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .recommendation-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .recommendation-number {
+            background: #0284c7;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="analysis-container">
+        <div class="analysis-header">
+            <div class="header-content">
+                <a href="/" class="back-btn">← 返回首页</a>
+                <h1>🌏 全国房价对比分析</h1>
+                <p class="subtitle">横向对比北京、厦门、武汉三城市房价数据 (2023-2025)</p>
+            </div>
+        </div>
+
+        <div id="loading-analysis" class="loading-section">
+            <div class="spinner"></div>
+            <p>正在进行全国数据对比分析...</p>
+        </div>
+
+        <div id="analysis-content" style="display: none;">
+            
+            <!-- AI智能概览 -->
+            <div class="analysis-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 30px; margin-bottom: 30px; color: white;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <span style="font-size: 2.5em;">🤖</span>
+                    <div>
+                        <h2 style="margin: 0; color: white;">AI 智能概览</h2>
+                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9em;">DeepSeek-V3 深度分析</p>
+                    </div>
+                    <button onclick="refreshAIOverview()" style="
+                        margin-left: auto;
+                        background: rgba(255,255,255,0.2);
+                        border: 1px solid rgba(255,255,255,0.5);
+                        color: white;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🔄 刷新分析
+                    </button>
+                </div>
+                <div id="ai-overview-content" style="
+                    background: rgba(255,255,255,0.15);
+                    backdrop-filter: blur(10px);
+                    padding: 25px;
+                    border-radius: 12px;
+                    line-height: 1.8;
+                    font-size: 1.05em;
+                    min-height: 150px;
+                ">
+                    <div class="spinner" style="margin: 50px auto;"></div>
+                    <p style="text-align: center;">AI正在分析数据...</p>
+                </div>
+            </div>
+            
+            <!-- 总体概览 -->
+            <div class="analysis-section">
+                <h2>📊 总体概览</h2>
+                <div class="stats-grid" id="overview-stats"></div>
+            </div>
+
+            <!-- 投资指数对比 -->
+            <div class="analysis-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">🏆 投资价值指数对比</h2>
+                    <button onclick="analyzeChart('investment_comparison', 'investment-chart', '投资价值指数对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
+                <div class="comparison-grid" id="investment-cards"></div>
+                <div class="chart-container comparison-chart">
+                    <canvas id="investment-chart"></canvas>
+                </div>
+                <div id="ai-insight-investment-chart" style="
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    border-left: 4px solid #10b981;
+                    border-radius: 8px;
+                    display: none;
+                "></div>
+            </div>
+
+            <!-- 价格对比 -->
+            <div class="analysis-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">💰 价格水平对比</h2>
+                    <button onclick="analyzeChart('price_comparison', 'price-comparison-chart', '价格水平对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
+                <div class="chart-container comparison-chart">
+                    <canvas id="price-comparison-chart"></canvas>
+                </div>
+                <div id="ai-insight-price-comparison-chart" style="
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    border-left: 4px solid #10b981;
+                    border-radius: 8px;
+                    display: none;
+                "></div>
+                <div class="stats-grid" id="price-stats"></div>
+            </div>
+
+            <!-- 市场规模对比 -->
+            <div class="analysis-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">📈 市场规模对比</h2>
+                    <button onclick="analyzeChart('market_scale', 'market-scale-chart', '市场规模对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
+                <div class="chart-container comparison-chart">
+                    <canvas id="market-scale-chart"></canvas>
+                </div>
+                <div id="ai-insight-market-scale-chart" style="
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    border-left: 4px solid #10b981;
+                    border-radius: 8px;
+                    display: none;
+                "></div>
+            </div>
+
+            <!-- 增长率对比 -->
+            <div class="analysis-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">📊 增长率对比</h2>
+                    <button onclick="analyzeChart('growth_comparison', 'growth-chart', '增长率对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
+                <div class="chart-container comparison-chart">
+                    <canvas id="growth-chart"></canvas>
+                </div>
+                <div id="ai-insight-growth-chart" style="
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    border-left: 4px solid #10b981;
+                    border-radius: 8px;
+                    display: none;
+                "></div>
+                <div id="growth-summary"></div>
+            </div>
+
+            <!-- 波动性对比 -->
+            <div class="analysis-section">
+                <h2>💹 市场稳定性对比</h2>
+                <div class="comparison-grid" id="volatility-cards"></div>
+            </div>
+
+            <!-- 可负担性对比 -->
+            <div class="analysis-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">💸 购房可负担性对比</h2>
+                    <button onclick="analyzeChart('affordability', 'affordability-chart', '购房可负担性对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
+                <div class="chart-container comparison-chart">
+                    <canvas id="affordability-chart"></canvas>
+                </div>
+                <div id="ai-insight-affordability-chart" style="
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    border-left: 4px solid #10b981;
+                    border-radius: 8px;
+                    display: none;
+                "></div>
+            </div>
+
+            <!-- 投资建议 -->
+            <div class="analysis-section">
+                <h2>💡 专业投资建议</h2>
+                
+                <div class="recommendation-card">
+                    <div class="recommendation-title">🏠 刚需购房者推荐</div>
+                    <div class="recommendation-list" id="first-time-recommendations"></div>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-title">🏡 改善型购房者推荐</div>
+                    <div class="recommendation-list" id="upgrader-recommendations"></div>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-title">💼 投资者推荐</div>
+                    <div class="recommendation-list" id="investor-recommendations"></div>
+                </div>
+            </div>
+
+            <!-- 区域特征对比 -->
+            <div class="analysis-section">
+                <h2>🗺️ 区域特征对比</h2>
+                <div class="comparison-grid" id="regional-characteristics"></div>
+            </div>
+
+        </div>
+
+        <div class="analysis-footer">
+            <p>数据来源：贝壳找房 | 分析时间：<span id="analysis-time"></span></p>
+            <p>⚠️ 本报告仅供参考，不构成投资建议。投资有风险，决策需谨慎。</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/role_content_filter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart_ai.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/national_comparison.js') }}"></script>
+    
+    <script>
+        // 全局变量，用于AI分析
+        const cityName = '全国对比';
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1198 @@
+{% extends "base_layout.html" %}
+
+{% block title %}AI 房价预测{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .prediction-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    
+    .page-header h1 {
+        font-size: 2em;
+        margin: 0 0 10px 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .page-header p {
+        opacity: 0.9;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* 控制面板 */
+    .control-section {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .control-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .control-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .control-label {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: #64748b;
+    }
+    
+    .control-select, .control-input {
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .control-select:focus, .control-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .predict-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .predict-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .predict-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .predict-btn .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* 预测结果区域 */
+    .results-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+    
+    @media (max-width: 900px) {
+        .results-section {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* 统计预测卡片 */
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .card-icon {
+        font-size: 1.8em;
+    }
+    
+    .card-title {
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    /* 趋势指示器 */
+    .trend-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .trend-value {
+        font-size: 2.5em;
+        font-weight: 700;
+    }
+    
+    .trend-up { color: #ef4444; }
+    .trend-down { color: #10b981; }
+    .trend-stable { color: #f59e0b; }
+    
+    .trend-label {
+        text-align: left;
+    }
+    
+    .trend-label .direction {
+        font-size: 1.2em;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .trend-label .desc {
+        font-size: 0.9em;
+        color: #64748b;
+    }
+    
+    /* 预测图表 */
+    .prediction-chart {
+        height: 300px;
+        margin-top: 20px;
+    }
+    
+    /* AI 预测卡片 */
+    .ai-card {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .ai-card .card-header {
+        border-bottom-color: rgba(255,255,255,0.2);
+    }
+    
+    .ai-card .card-title {
+        color: white;
+    }
+    
+    .ai-content {
+        line-height: 1.8;
+        font-size: 1em;
+        min-height: 200px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    .ai-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .ai-content::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 3px;
+    }
+    
+    .ai-loading {
+        text-align: center;
+        padding: 40px;
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .ai-loading .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.2);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+    
+    /* 市场因素卡片 */
+    .factors-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .factor-item {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    
+    .factor-value {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    .factor-label {
+        font-size: 0.8em;
+        color: #64748b;
+        margin-top: 5px;
+    }
+    
+    /* 区域排名 */
+    .district-list {
+        margin-top: 20px;
+    }
+    
+    .district-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 15px;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+    
+    .district-item:hover {
+        background: #e0e7ff;
+    }
+    
+    .district-rank {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85em;
+        font-weight: 600;
+    }
+    
+    .district-name {
+        flex: 1;
+        margin-left: 12px;
+        font-weight: 500;
+    }
+    
+    .district-price {
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .district-change {
+        font-size: 0.85em;
+        margin-left: 10px;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+    
+    .district-change.up {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .district-change.down {
+        background: #d1fae5;
+        color: #059669;
+    }
+    
+    /* 预测时间线 */
+    .timeline-section {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        margin-top: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .timeline-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .timeline-item {
+        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        padding: 20px 15px;
+        border-radius: 12px;
+        text-align: center;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .timeline-item:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+    }
+    
+    .timeline-month {
+        font-size: 0.9em;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+    
+    .timeline-price {
+        font-size: 1.4em;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    .timeline-range {
+        font-size: 0.75em;
+        color: #94a3b8;
+        margin-top: 5px;
+    }
+    
+    .timeline-confidence {
+        margin-top: 10px;
+        font-size: 0.8em;
+    }
+    
+    .confidence-bar {
+        height: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+    
+    /* 免责声明 */
+    .disclaimer {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 15px 20px;
+        margin-top: 25px;
+        border-radius: 0 12px 12px 0;
+        font-size: 0.9em;
+        color: #92400e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prediction-container">
+    <!-- 页面标题 -->
+    <div class="page-header">
+        <h1>🔮 AI 房价预测</h1>
+        <p>基于历史数据 + AI 深度分析，预测未来房价走势</p>
+    </div>
+    
+    <!-- 控制面板 -->
+    <div class="control-section">
+        <div class="control-grid">
+            <div class="control-item">
+                <label class="control-label">选择城市</label>
+                <select id="city-select" class="control-select">
+                    {% for city in cities %}
+                    <option value="{{ city.name_en }}" {% if city.name_en == 'beijing' %}selected{% endif %}>
+                        {{ city.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="control-item">
+                <label class="control-label">预测时长</label>
+                <select id="months-select" class="control-select">
+                    <option value="3">3个月</option>
+                    <option value="6" selected>6个月</option>
+                    <option value="12">12个月</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label class="control-label">目标区域（可选）</label>
+                <select id="district-select" class="control-select">
+                    <option value="">全市平均</option>
+                    <!-- 动态加载 -->
+                </select>
+            </div>
+            <div class="control-item" style="justify-content: flex-end;">
+                <button id="predict-btn" class="predict-btn" onclick="startPrediction()">
+                    <span>🔮 开始预测</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 结果区域 -->
+    <div id="results-area" style="display: none;">
+        <!-- 预测对比图表（全宽） -->
+        <div class="stat-card" style="margin-bottom: 25px;">
+            <div class="card-header">
+                <span class="card-icon">📈</span>
+                <span class="card-title">预测对比图表</span>
+                <span style="margin-left: auto; font-size: 0.85em; color: #64748b;">
+                    🔵 历史数据 &nbsp; 🟠 统计预测 &nbsp; 🟢 AI预测
+                </span>
+            </div>
+            <div id="prediction-chart" style="height: 400px;"></div>
+        </div>
+        
+        <div class="results-section">
+            <!-- 统计预测 -->
+            <div class="stat-card">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <span class="card-title">统计模型预测</span>
+                </div>
+                
+                <div class="trend-indicator">
+                    <div id="trend-value" class="trend-value trend-stable">--</div>
+                    <div class="trend-label">
+                        <div id="trend-direction" class="direction">--</div>
+                        <div id="trend-desc" class="desc">基于历史数据趋势</div>
+                    </div>
+                </div>
+                
+                <div class="factors-grid">
+                    <div class="factor-item">
+                        <div id="factor-heat" class="factor-value">--</div>
+                        <div class="factor-label">市场热度</div>
+                    </div>
+                    <div class="factor-item">
+                        <div id="factor-stability" class="factor-value">--</div>
+                        <div class="factor-label">价格稳定性</div>
+                    </div>
+                    <div class="factor-item">
+                        <div id="factor-volume" class="factor-value">--</div>
+                        <div class="factor-label">成交量趋势</div>
+                    </div>
+                </div>
+                
+                <!-- AI 预测摘要 -->
+                <div id="ai-summary" style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; color: white; display: none;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 1.5em;">🤖</span>
+                        <strong>AI 预测结果</strong>
+                    </div>
+                    <div id="ai-summary-content"></div>
+                </div>
+            </div>
+            
+            <!-- AI 预测 -->
+            <div class="ai-card">
+                <div class="card-header">
+                    <span class="card-icon">🤖</span>
+                    <span class="card-title">AI 深度预测分析</span>
+                </div>
+                
+                <div id="ai-content" class="ai-content">
+                    <div class="ai-loading">
+                        <div class="spinner"></div>
+                        <p>AI 正在分析数据并生成预测...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 区域排名 -->
+        <div class="stat-card" style="margin-top: 25px;">
+            <div class="card-header">
+                <span class="card-icon">🏆</span>
+                <span class="card-title">区域价格排名</span>
+            </div>
+            <div id="district-list" class="district-list">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+        
+        <!-- 预测时间线 -->
+        <div class="timeline-section">
+            <div class="card-header">
+                <span class="card-icon">📅</span>
+                <span class="card-title">逐月预测详情</span>
+            </div>
+            <div id="timeline-grid" class="timeline-grid">
+                <!-- 动态加载 -->
+            </div>
+        </div>
+        
+        <!-- 免责声明 -->
+        <div class="disclaimer">
+            ⚠️ <strong>免责声明：</strong>以上预测仅基于历史数据分析和AI模型推断，不构成任何投资建议。房地产市场受多种因素影响，实际价格可能与预测存在较大差异。投资有风险，决策需谨慎。
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
+<script>
+    let predictionChart = null;
+    let currentData = null;
+    
+    // 页面加载时获取区域列表
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDistricts();
+        
+        // 城市变化时重新加载区域
+        document.getElementById('city-select').addEventListener('change', loadDistricts);
+    });
+    
+    // 加载区域列表
+    async function loadDistricts() {
+        const city = document.getElementById('city-select').value;
+        const districtSelect = document.getElementById('district-select');
+        
+        try {
+            const response = await fetch(`/api/city/${city}/districts`);
+            const result = await response.json();
+            
+            districtSelect.innerHTML = '<option value="">全市平均</option>';
+            
+            if (result.districts) {
+                result.districts.forEach(d => {
+                    districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+            }
+        } catch (error) {
+            console.error('加载区域失败:', error);
+        }
+    }
+    
+    // 存储 AI 预测数据
+    let aiPredictionData = null;
+    
+    // 开始预测
+    async function startPrediction() {
+        const btn = document.getElementById('predict-btn');
+        const resultsArea = document.getElementById('results-area');
+        
+        const city = document.getElementById('city-select').value;
+        const months = document.getElementById('months-select').value;
+        const district = document.getElementById('district-select').value;
+        
+        // 禁用按钮
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>预测中...</span>';
+        
+        // 显示结果区域
+        resultsArea.style.display = 'block';
+        
+        // 重置 AI 内容和摘要
+        document.getElementById('ai-content').innerHTML = `
+            <div class="ai-loading">
+                <div class="spinner"></div>
+                <p>AI 正在分析数据并生成预测...</p>
+            </div>
+        `;
+        document.getElementById('ai-summary').style.display = 'none';
+        aiPredictionData = null;
+        
+        try {
+            // 1. 获取统计预测数据
+            const statsResponse = await fetch('/api/prediction/stats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ city, months: parseInt(months), district })
+            });
+            
+            const statsData = await statsResponse.json();
+            
+            if (statsData.success) {
+                currentData = statsData;
+                renderStatsPrediction(statsData);
+            }
+            
+            // 2. 获取 AI 预测数据（只调用一次，同时用于图表和详细分析）
+            await fetchAIPredictionData(city, months, district);
+            
+        } catch (error) {
+            console.error('预测失败:', error);
+            alert('预测请求失败，请重试');
+        }
+        
+        // 恢复按钮
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔮 开始预测</span>';
+    }
+    
+    // 获取 AI 预测数据（非流式，同时用于图表和详细分析）
+    async function fetchAIPredictionData(city, months, district) {
+        const contentDiv = document.getElementById('ai-content');
+        
+        try {
+            const response = await fetch('/api/prediction/ai-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ city, months: parseInt(months), district })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success && result.ai_predictions) {
+                aiPredictionData = result;
+                
+                // 显示 AI 预测摘要
+                const summaryDiv = document.getElementById('ai-summary');
+                const summaryContent = document.getElementById('ai-summary-content');
+                
+                const trendEmoji = result.trend === 'up' ? '📈' : result.trend === 'down' ? '📉' : '➡️';
+                const trendText = result.trend === 'up' ? '上涨' : result.trend === 'down' ? '下跌' : '平稳';
+                const riskColor = result.risk_level === 'high' ? '#ef4444' : result.risk_level === 'low' ? '#10b981' : '#f59e0b';
+                
+                summaryContent.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em;">${trendEmoji}</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;">趋势: ${trendText}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em;">🎯</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;">置信度: ${result.confidence}%</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em;">⚠️</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;">风险: <span style="color: ${riskColor}">${result.risk_level}</span></div>
+                        </div>
+                    </div>
+                    ${result.recommendation ? `<p style="margin: 10px 0 0 0; font-size: 0.95em; opacity: 0.95;">💡 ${result.recommendation}</p>` : ''}
+                `;
+                summaryDiv.style.display = 'block';
+                
+                // 渲染 AI 深度分析内容（使用同一份数据）
+                renderAIAnalysisContent(result);
+                
+                // 更新图表，加入 AI 预测线
+                if (currentData && result.ai_predictions) {
+                    renderPredictionChart(currentData.historical, currentData.predictions.predictions, result.ai_predictions);
+                    renderTimeline(currentData.predictions.predictions, result.ai_predictions);
+                }
+            } else {
+                contentDiv.innerHTML = `<p style="color: #fca5a5;">❌ AI 预测失败: ${result.error || '未知错误'}</p>`;
+            }
+        } catch (error) {
+            console.error('获取AI预测数据失败:', error);
+            contentDiv.innerHTML = `<p style="color: #fca5a5;">❌ AI 预测请求失败</p>`;
+        }
+    }
+    
+    // 渲染 AI 深度分析内容
+    function renderAIAnalysisContent(result) {
+        const contentDiv = document.getElementById('ai-content');
+        
+        const predictions = result.ai_predictions;
+        const trend = result.trend;
+        const confidence = result.confidence;
+        const riskLevel = result.risk_level;
+        const keyFactors = result.key_factors || [];
+        const recommendation = result.recommendation || '';
+        
+        // 趋势信息
+        const trendEmoji = trend === 'up' ? '📈' : trend === 'down' ? '📉' : '➡️';
+        const trendText = trend === 'up' ? '上涨趋势' : trend === 'down' ? '下跌趋势' : '平稳趋势';
+        const trendColor = trend === 'up' ? '#10b981' : trend === 'down' ? '#ef4444' : '#f59e0b';
+        
+        // 计算价格变化
+        const firstPrice = predictions[0]?.price || 0;
+        const lastPrice = predictions[predictions.length - 1]?.price || 0;
+        const priceChange = ((lastPrice - firstPrice) / firstPrice * 100).toFixed(1);
+        const minPrice = Math.min(...predictions.map(p => p.low || p.price));
+        const maxPrice = Math.max(...predictions.map(p => p.high || p.price));
+        
+        let html = `
+            <!-- 总体趋势 -->
+            <div style="background: linear-gradient(135deg, rgba(96,165,250,0.1), rgba(139,92,246,0.1)); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <span style="font-size: 2.5em;">${trendEmoji}</span>
+                    <div>
+                        <div style="font-size: 1.4em; font-weight: 600; color: ${trendColor};">${trendText}</div>
+                        <div style="color: #94a3b8; font-size: 0.95em;">
+                            预计${predictions.length}个月内价格变化 <strong style="color: ${trendColor}">${priceChange > 0 ? '+' : ''}${priceChange}%</strong>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.85em; color: #94a3b8;">置信度</div>
+                        <div style="font-size: 1.3em; font-weight: 600; color: #60a5fa;">${confidence}%</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.85em; color: #94a3b8;">风险等级</div>
+                        <div style="font-size: 1.3em; font-weight: 600; color: ${riskLevel === 'high' ? '#ef4444' : riskLevel === 'low' ? '#10b981' : '#f59e0b'};">
+                            ${riskLevel === 'high' ? '高' : riskLevel === 'low' ? '低' : '中'}
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
+                        <div style="font-size: 0.85em; color: #94a3b8;">价格区间</div>
+                        <div style="font-size: 1.1em; font-weight: 600; color: #a78bfa;">${minPrice.toFixed(0)}-${maxPrice.toFixed(0)}万</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 月度预测明细 -->
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span>📅</span> 月度预测明细
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+        `;
+        
+        predictions.forEach((p, i) => {
+            const prevPrice = i > 0 ? predictions[i-1].price : firstPrice;
+            const monthChange = ((p.price - prevPrice) / prevPrice * 100).toFixed(1);
+            const changeColor = monthChange > 0 ? '#10b981' : monthChange < 0 ? '#ef4444' : '#64748b';
+            
+            html += `
+                <div style="background: rgba(30,41,59,0.6); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="color: #94a3b8; font-size: 0.85em; margin-bottom: 5px;">${p.month}</div>
+                    <div style="font-size: 1.4em; font-weight: 700; color: #f1f5f9;">${p.price.toFixed(1)}<span style="font-size: 0.6em; color: #64748b;">万</span></div>
+                    <div style="font-size: 0.8em; color: #64748b; margin: 4px 0;">${(p.low || p.price).toFixed(0)} - ${(p.high || p.price).toFixed(0)}万</div>
+                    <div style="font-size: 0.85em; color: ${changeColor};">
+                        ${monthChange > 0 ? '↑' : monthChange < 0 ? '↓' : '→'} ${Math.abs(monthChange)}%
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div></div>';
+        
+        // 关键因素
+        if (keyFactors.length > 0) {
+            html += `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <span>🔑</span> 关键影响因素
+                    </h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            `;
+            keyFactors.forEach(factor => {
+                html += `<span style="background: rgba(251,191,36,0.15); color: #fbbf24; padding: 8px 14px; border-radius: 20px; font-size: 0.9em; border: 1px solid rgba(251,191,36,0.3);">${factor}</span>`;
+            });
+            html += '</div></div>';
+        }
+        
+        // 投资建议
+        if (recommendation) {
+            html += `
+                <div style="background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.1)); border-left: 4px solid #10b981; padding: 18px; border-radius: 0 12px 12px 0;">
+                    <h4 style="color: #10b981; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+                        <span>💡</span> AI 建议
+                    </h4>
+                    <p style="margin: 0; color: #e2e8f0; line-height: 1.6;">${recommendation}</p>
+                </div>
+            `;
+        }
+        
+        contentDiv.innerHTML = html;
+    }
+    
+    // 渲染统计预测结果
+    function renderStatsPrediction(data) {
+        const factors = data.factors;
+        const predictions = data.predictions;
+        const districts = data.districts;
+        
+        // 趋势指示器
+        const trendValue = document.getElementById('trend-value');
+        const trendDirection = document.getElementById('trend-direction');
+        const trendDesc = document.getElementById('trend-desc');
+        
+        const trendPct = predictions.trend_pct;
+        trendValue.textContent = (trendPct > 0 ? '+' : '') + trendPct.toFixed(1) + '%';
+        trendValue.className = 'trend-value ' + (trendPct > 1 ? 'trend-up' : trendPct < -1 ? 'trend-down' : 'trend-stable');
+        trendDirection.textContent = trendPct > 1 ? '📈 上涨趋势' : trendPct < -1 ? '📉 下跌趋势' : '➡️ 平稳运行';
+        trendDesc.textContent = `当前均价 ${predictions.base_price} 万元`;
+        
+        // 市场因素
+        document.getElementById('factor-heat').textContent = factors.market_heat + '/100';
+        document.getElementById('factor-stability').textContent = factors.stability_score + '/100';
+        document.getElementById('factor-volume').textContent = (factors.volume_trend > 0 ? '+' : '') + factors.volume_trend.toFixed(1) + '%';
+        
+        // 渲染预测图表（初始只有统计预测，AI预测数据加载后会更新）
+        renderPredictionChart(data.historical, predictions.predictions, aiPredictionData?.ai_predictions || null);
+        
+        // 渲染区域排名
+        renderDistrictList(districts);
+        
+        // 渲染时间线（结合统计和AI预测）
+        renderTimeline(predictions.predictions, aiPredictionData?.ai_predictions || null);
+    }
+    
+    // 渲染预测图表（支持 AI 预测对比）
+    function renderPredictionChart(historical, statsPredictions, aiPredictions = null) {
+        const container = document.getElementById('prediction-chart');
+        
+        if (predictionChart) {
+            predictionChart.dispose();
+        }
+        
+        predictionChart = echarts.init(container);
+        
+        // 准备历史数据
+        const historyMonths = historical.map(h => h['年月']);
+        const historyPrices = historical.map(h => h['均价']);
+        
+        // 准备统计预测数据
+        const statsPredMonths = statsPredictions.map(p => p.month);
+        const statsPredPrices = statsPredictions.map(p => p.predicted_price);
+        
+        // 合并时间轴
+        const allMonths = [...historyMonths, ...statsPredMonths];
+        
+        // 历史数据线（预测期填充 null）
+        const historyLine = [...historyPrices, ...Array(statsPredMonths.length).fill(null)];
+        
+        // 统计预测线（历史期填充 null，从最后一个历史点开始连接）
+        const statsLine = [...Array(historyMonths.length - 1).fill(null), historyPrices[historyPrices.length - 1], ...statsPredPrices];
+        
+        // 准备 AI 预测线和区间
+        let aiLine = null;
+        let aiHighLine = null;
+        let aiLowLine = null;
+        
+        if (aiPredictions && aiPredictions.length > 0) {
+            console.log('AI预测数据:', aiPredictions);
+            
+            // 创建 AI 预测数据映射（包含 price, high, low）
+            const aiDataMap = {};
+            aiPredictions.forEach(p => {
+                aiDataMap[p.month] = {
+                    price: p.price,
+                    high: p.high,
+                    low: p.low
+                };
+            });
+            
+            // 初始化三条线：主预测线、上限线、下限线
+            const histLen = historyMonths.length;
+            const lastHistPrice = historyPrices[historyPrices.length - 1];
+            
+            aiLine = new Array(histLen - 1).fill(null);
+            aiHighLine = new Array(histLen - 1).fill(null);
+            aiLowLine = new Array(histLen - 1).fill(null);
+            
+            // 从最后一个历史点开始连接
+            aiLine.push(lastHistPrice);
+            aiHighLine.push(lastHistPrice);
+            aiLowLine.push(lastHistPrice);
+            
+            // 按照统计预测的月份顺序填充 AI 预测值
+            statsPredMonths.forEach(month => {
+                const aiData = aiDataMap[month];
+                if (aiData) {
+                    aiLine.push(aiData.price);
+                    aiHighLine.push(aiData.high);
+                    aiLowLine.push(aiData.low);
+                } else {
+                    aiLine.push(null);
+                    aiHighLine.push(null);
+                    aiLowLine.push(null);
+                }
+            });
+            
+            console.log('=== AI预测线构建 ===');
+            console.log('aiLine:', aiLine);
+            console.log('aiHighLine:', aiHighLine);
+            console.log('aiLowLine:', aiLowLine);
+        }
+        
+        // 图表配置
+        const series = [
+            {
+                name: '历史价格',
+                type: 'line',
+                data: historyLine,
+                smooth: true,
+                lineStyle: { color: '#667eea', width: 3 },
+                itemStyle: { color: '#667eea' },
+                symbol: 'circle',
+                symbolSize: 6
+            },
+            {
+                name: '统计预测',
+                type: 'line',
+                data: statsLine,
+                smooth: true,
+                lineStyle: { color: '#f59e0b', width: 2, type: 'dashed' },
+                itemStyle: { color: '#f59e0b' },
+                symbol: 'diamond',
+                symbolSize: 8
+            }
+        ];
+        
+        // 如果有 AI 预测数据，添加到图表（包含预测区间）
+        if (aiLine && aiHighLine && aiLowLine) {
+            // AI 预测区间下限（用于堆叠）
+            series.push({
+                name: 'AI区间下限',
+                type: 'line',
+                data: aiLowLine,
+                smooth: true,
+                lineStyle: { opacity: 0 },
+                itemStyle: { opacity: 0 },
+                symbol: 'none',
+                stack: 'ai-confidence',
+                areaStyle: { opacity: 0 }
+            });
+            
+            // AI 预测区间（high - low 的差值，堆叠在下限之上形成区间）
+            const aiRangeData = aiHighLine.map((high, i) => {
+                if (high !== null && aiLowLine[i] !== null) {
+                    return high - aiLowLine[i];
+                }
+                return null;
+            });
+            
+            series.push({
+                name: 'AI预测区间',
+                type: 'line',
+                data: aiRangeData,
+                smooth: true,
+                lineStyle: { opacity: 0 },
+                itemStyle: { opacity: 0 },
+                symbol: 'none',
+                stack: 'ai-confidence',
+                areaStyle: {
+                    color: 'rgba(16, 185, 129, 0.15)'
+                }
+            });
+            
+            // AI 主预测线
+            series.push({
+                name: 'AI预测',
+                type: 'line',
+                data: aiLine,
+                smooth: true,
+                lineStyle: { color: '#10b981', width: 3 },
+                itemStyle: { color: '#10b981' },
+                symbol: 'triangle',
+                symbolSize: 10,
+                z: 10  // 确保在区间之上
+            });
+        }
+        
+        const legendData = ['历史价格', '统计预测'];
+        if (aiLine) {
+            legendData.push('AI预测');
+            legendData.push('AI预测区间');
+        }
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                textStyle: { color: '#fff' },
+                formatter: function(params) {
+                    if (!params || params.length === 0) return '';
+                    
+                    let result = `<strong>${params[0].axisValue}</strong><br/>`;
+                    let aiPredValue = null;
+                    let aiHighValue = null;
+                    let aiLowValue = null;
+                    
+                    params.forEach(p => {
+                        const val = p.value;
+                        const isValidNumber = typeof val === 'number' && !isNaN(val);
+                        
+                        // 跳过辅助线（区间下限和区间差值）
+                        if (p.seriesName === 'AI区间下限') {
+                            if (isValidNumber) aiLowValue = val;
+                            return;
+                        }
+                        if (p.seriesName === 'AI预测区间') {
+                            // 这是差值，需要加上下限得到上限
+                            if (isValidNumber && aiLowValue !== null) {
+                                aiHighValue = aiLowValue + val;
+                            }
+                            return;
+                        }
+                        
+                        if (p.seriesName === 'AI预测' && isValidNumber) {
+                            aiPredValue = val;
+                        }
+                        
+                        // 只显示有效数值
+                        if (isValidNumber) {
+                            result += `${p.marker} ${p.seriesName}: <strong>${val.toFixed(1)}</strong> 万元<br/>`;
+                        }
+                    });
+                    
+                    // 添加 AI 预测区间信息
+                    if (aiPredValue !== null && aiHighValue !== null && aiLowValue !== null) {
+                        result += `<span style="color: #94a3b8; font-size: 0.9em;">　　预测区间: ${aiLowValue.toFixed(1)} - ${aiHighValue.toFixed(1)} 万元</span><br/>`;
+                    }
+                    
+                    return result;
+                }
+            },
+            legend: {
+                data: legendData,
+                textStyle: { color: '#64748b' },
+                top: 10
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '15%',
+                top: '15%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: allMonths,
+                axisLabel: {
+                    rotate: 45,
+                    fontSize: 10
+                },
+                axisTick: { alignWithLabel: true }
+            },
+            yAxis: {
+                type: 'value',
+                name: '均价（万元）',
+                nameTextStyle: { color: '#64748b' },
+                axisLabel: {
+                    formatter: '{value}',
+                    color: '#64748b'
+                },
+                splitLine: {
+                    lineStyle: { color: '#e2e8f0', type: 'dashed' }
+                }
+            },
+            series: series
+        };
+        
+        // 使用 notMerge: true 确保完全重绘（特别是添加 AI 预测线时）
+        predictionChart.setOption(option, { notMerge: true });
+        
+        console.log('图表已渲染, series数量:', series.length, 'legend:', legendData);
+        
+        // 响应式
+        window.addEventListener('resize', () => predictionChart.resize());
+    }
+    
+    // 渲染区域排名
+    function renderDistrictList(districts) {
+        const container = document.getElementById('district-list');
+        
+        if (!districts || districts.length === 0) {
+            container.innerHTML = '<p style="color: #94a3b8; text-align: center;">暂无区域数据</p>';
+            return;
+        }
+        
+        container.innerHTML = districts.slice(0, 10).map((d, i) => `
+            <div class="district-item">
+                <span class="district-rank">${i + 1}</span>
+                <span class="district-name">${d.name}</span>
+                <span class="district-price">${d.latest_price}万</span>
+                <span class="district-change ${d.total_change > 0 ? 'up' : 'down'}">
+                    ${d.total_change > 0 ? '+' : ''}${d.total_change.toFixed(1)}%
+                </span>
+            </div>
+        `).join('');
+    }
+    
+    // 渲染时间线（对比统计和AI预测）
+    function renderTimeline(statsPredictions, aiPredictions = null) {
+        const container = document.getElementById('timeline-grid');
+        
+        // 创建 AI 预测映射
+        const aiPriceMap = {};
+        if (aiPredictions) {
+            aiPredictions.forEach(p => {
+                aiPriceMap[p.month] = p;
+            });
+        }
+        
+        container.innerHTML = statsPredictions.map(p => {
+            const aiP = aiPriceMap[p.month];
+            const hasAI = aiP && aiP.price;
+            
+            // 计算差异
+            let diffHtml = '';
+            if (hasAI) {
+                const diff = aiP.price - p.predicted_price;
+                const diffPct = (diff / p.predicted_price * 100).toFixed(1);
+                const diffColor = diff > 0 ? '#10b981' : diff < 0 ? '#ef4444' : '#64748b';
+                diffHtml = `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
+                        <div style="font-size: 0.8em; color: #64748b;">🤖 AI预测</div>
+                        <div style="font-size: 1.1em; font-weight: 600; color: #10b981;">${aiP.price.toFixed(1)}万</div>
+                        <div style="font-size: 0.75em; color: ${diffColor};">
+                            ${diff > 0 ? '↑' : diff < 0 ? '↓' : '='} ${Math.abs(diff).toFixed(1)}万 (${diff > 0 ? '+' : ''}${diffPct}%)
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-month">${p.month}</div>
+                    <div style="font-size: 0.8em; color: #f59e0b; margin-bottom: 3px;">📊 统计预测</div>
+                    <div class="timeline-price">${p.predicted_price}万</div>
+                    <div class="timeline-range">${p.range_low} - ${p.range_high}万</div>
+                    <div class="timeline-confidence">
+                        置信度 ${p.confidence}%
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${p.confidence}%"></div>
+                        </div>
+                    </div>
+                    ${diffHtml}
+                </div>
+            `;
+        }).join('');
+    }
+    
+</script>
+{% endblock %}
+

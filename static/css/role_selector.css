@@ -1,0 +1,57 @@
+/* AI角色选择器样式 */
+
+.role-switch-notification {
+    position: fixed;
+    top: 80px;
+    right: 30px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    font-size: 1em;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    border-left: 4px solid #10b981;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+}
+
+.ai-role-card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ai-role-card.selected {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.ai-role-card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+
+
+
+
+
+
+
+
+

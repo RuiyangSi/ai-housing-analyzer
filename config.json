@@ -1,0 +1,28 @@
+{
+  "cities": [
+    {
+      "name": "北京",
+      "name_en": "beijing",
+      "data_file": "data_beijing_2023_2025.csv",
+      "enabled": true
+    },
+    {
+      "name": "厦门",
+      "name_en": "xiamen",
+      "data_file": "data_xiamen_2023_2025.csv",
+      "enabled": true
+    },
+    {
+      "name": "武汉",
+      "name_en": "wuhan",
+      "data_file": "data_wuhan_2023_2025.csv",
+      "enabled": true
+    }
+  ],
+  "data_directory": "data/processed",
+  "year_range": {
+    "start": 2023,
+    "end": 2025
+  }
+}
+

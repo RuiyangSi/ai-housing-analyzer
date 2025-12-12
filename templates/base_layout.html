@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}房价分析系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --sidebar-width: 260px;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-bg: #1e1e2e;
+            --sidebar-hover: #2d2d3d;
+            --sidebar-active: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 15px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .sidebar-logo-icon {
+            font-size: 1.6em;
+        }
+        
+        .sidebar-logo-text h1 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .sidebar-logo-text p {
+            font-size: 0.7em;
+            opacity: 0.7;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 10px 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
+        }
+        
+        /* 自定义滚动条 */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+        }
+        
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .nav-section {
+            margin-bottom: 15px;
+        }
+        
+        .nav-section-title {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 15px;
+            margin-bottom: 6px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            font-size: 0.9em;
+        }
+        
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: white;
+            border-left-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: white;
+            border-left-color: #667eea;
+        }
+        
+        .nav-item-icon {
+            font-size: 1.1em;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-item-text {
+            flex: 1;
+        }
+        
+        .nav-item-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .nav-item-badge.hot {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        /* 用户信息 */
+        .sidebar-user {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+        
+        .user-role.investment_advisor {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            color: #667eea;
+        }
+        
+        .user-role.first_time_buyer {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #10b981;
+        }
+        
+        .user-role.upgrader {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            color: #f59e0b;
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        /* 移动端响应式 */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--sidebar-bg);
+            z-index: 999;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.4em;
+            cursor: pointer;
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding-top: 56px;
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .sidebar-overlay.open {
+                display: block;
+            }
+        }
+        
+        /* AI标识 - 更紧凑 */
+        .ai-powered {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            margin: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .ai-powered-icon {
+            font-size: 1.2em;
+        }
+        
+        .ai-powered-text {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.75em;
+        }
+        
+        .ai-powered-text strong {
+            display: block;
+            font-size: 1.05em;
+            margin-bottom: 1px;
+        }
+    </style>
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <!-- 移动端顶部栏 -->
+    <div class="mobile-header">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span style="color: white; margin-left: 12px; font-weight: 600;">🏠 房价分析系统</span>
+    </div>
+    
+    <!-- 侧边栏遮罩 -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- 侧边栏 -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <span class="sidebar-logo-icon">🏠</span>
+                <div class="sidebar-logo-text">
+                    <h1>房价分析系统</h1>
+                    <p>AI驱动 · 数据洞察</p>
+                </div>
+            </a>
+        </div>
+        
+        <!-- AI标识 -->
+        <div class="ai-powered">
+            <span class="ai-powered-icon">🤖</span>
+            <div class="ai-powered-text">
+                <strong>AI 驱动</strong>
+                DeepSeek-V3 智能分析
+            </div>
+        </div>
+        
+        <div class="sidebar-nav">
+            <!-- 主要功能 -->
+            <div class="nav-section">
+                <div class="nav-section-title">核心功能</div>
+                <a href="/" class="nav-item {% if active_page == 'home' %}active{% endif %}">
+                    <span class="nav-item-icon">📊</span>
+                    <span class="nav-item-text">数据概览</span>
+                </a>
+                <a href="/strategy-planner" class="nav-item {% if active_page == 'strategy' %}active{% endif %}">
+                    <span class="nav-item-icon">🎯</span>
+                    <span class="nav-item-text">AI购房策略</span>
+                </a>
+                <a href="/ai-image-studio" class="nav-item {% if active_page == 'ai_studio' %}active{% endif %}">
+                    <span class="nav-item-icon">🎨</span>
+                    <span class="nav-item-text">AI创意工作室</span>
+                </a>
+                <a href="/price-prediction" class="nav-item {% if active_page == 'prediction' %}active{% endif %}">
+                    <span class="nav-item-icon">🔮</span>
+                    <span class="nav-item-text">AI房价预测</span>
+                    <span class="nav-item-badge">NEW</span>
+                </a>
+                <a href="/national-comparison" class="nav-item {% if active_page == 'national' %}active{% endif %}">
+                    <span class="nav-item-icon">🌏</span>
+                    <span class="nav-item-text">全国对比</span>
+                </a>
+            </div>
+            
+            <!-- 城市分析 -->
+            <div class="nav-section">
+                <div class="nav-section-title">城市分析</div>
+                <a href="/analysis/beijing" class="nav-item {% if active_page == 'analysis_beijing' %}active{% endif %}">
+                    <span class="nav-item-icon">🏛️</span>
+                    <span class="nav-item-text">北京</span>
+                </a>
+                <a href="/analysis/xiamen" class="nav-item {% if active_page == 'analysis_xiamen' %}active{% endif %}">
+                    <span class="nav-item-icon">🌊</span>
+                    <span class="nav-item-text">厦门</span>
+                </a>
+                <a href="/analysis/wuhan" class="nav-item {% if active_page == 'analysis_wuhan' %}active{% endif %}">
+                    <span class="nav-item-icon">🌸</span>
+                    <span class="nav-item-text">武汉</span>
+                </a>
+            </div>
+            
+            <!-- 3D地图 -->
+            <div class="nav-section">
+                <div class="nav-section-title">3D地图</div>
+                <a href="/3d-map/beijing" class="nav-item {% if active_page == '3d_beijing' or active_page == '3d-map' %}active{% endif %}">
+                    <span class="nav-item-icon">🏛️</span>
+                    <span class="nav-item-text">北京</span>
+                    <span class="nav-item-badge hot">3D</span>
+                </a>
+                <a href="/3d-map/xiamen" class="nav-item {% if active_page == '3d_xiamen' %}active{% endif %}">
+                    <span class="nav-item-icon">🌊</span>
+                    <span class="nav-item-text">厦门</span>
+                    <span class="nav-item-badge hot">3D</span>
+                </a>
+                <a href="/3d-map/wuhan" class="nav-item {% if active_page == '3d_wuhan' %}active{% endif %}">
+                    <span class="nav-item-icon">🌸</span>
+                    <span class="nav-item-text">武汉</span>
+                    <span class="nav-item-badge hot">3D</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="sidebar-user">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <div class="user-details">
+                    <div class="user-name">{{ user.username if user else '游客' }}</div>
+                    {% if user %}
+                    <span class="user-role {{ user.role }}">
+                        {% if user.role == 'investment_advisor' %}💼 投资顾问
+                        {% elif user.role == 'first_time_buyer' %}🏠 首次购房
+                        {% else %}🏡 改善型{% endif %}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">🚪 退出登录</button>
+        </div>
+    </nav>
+    
+    <!-- 主内容 -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('open');
+        }
+        
+        async function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                try {
+                    const response = await fetch('/api/auth/logout', { method: 'POST' });
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = '/auth';
+                    }
+                } catch (error) {
+                    console.error('登出错误:', error);
+                    alert('登出失败，请重试');
+                }
+            }
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

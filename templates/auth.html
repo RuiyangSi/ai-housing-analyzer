@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 / 注册 - 房价分析系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #64748b;
+            font-size: 0.9em;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .form-container {
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95em;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .role-selector {
+            margin-bottom: 20px;
+        }
+        
+        .role-selector label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95em;
+        }
+        
+        .role-options {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .role-option {
+            position: relative;
+        }
+        
+        .role-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .role-option label {
+            display: block;
+            padding: 15px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .role-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .role-option label .role-name {
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .role-option label .role-desc {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9em;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <h1>🏠 房价分析系统</h1>
+            <p>AI驱动的智能购房决策平台</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">登录</button>
+            <button class="tab" onclick="switchTab('register')">注册</button>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <!-- 登录表单 -->
+        <div id="login-form" class="form-container active">
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" name="username" placeholder="请输入用户名" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="请输入密码" required>
+                </div>
+                
+                <button type="submit" class="submit-btn">登录</button>
+            </form>
+            
+            <div class="footer-text">
+                还没有账号？<span style="color: #667eea; cursor: pointer;" onclick="switchTab('register')">立即注册</span>
+            </div>
+        </div>
+        
+        <!-- 注册表单 -->
+        <div id="register-form" class="form-container">
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" name="username" placeholder="请输入用户名（3-20个字符）" required minlength="3" maxlength="20">
+                </div>
+                
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="请输入密码（至少6个字符）" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" name="password_confirm" placeholder="请再次输入密码" required minlength="6">
+                </div>
+                
+                <div class="role-selector">
+                    <label>选择您的角色</label>
+                    <div class="role-options">
+                        <div class="role-option">
+                            <input type="radio" name="role" value="investment_advisor" id="role1" required>
+                            <label for="role1">
+                                <span class="role-name">💼 投资顾问</span>
+                                <span class="role-desc">专业投资分析师视角，关注ROI和增值潜力</span>
+                            </label>
+                        </div>
+                        
+                        <div class="role-option">
+                            <input type="radio" name="role" value="first_time_buyer" id="role2">
+                            <label for="role2">
+                                <span class="role-name">🏠 首次购房者</span>
+                                <span class="role-desc">新手购房指导，通俗易懂的实用建议</span>
+                            </label>
+                        </div>
+                        
+                        <div class="role-option">
+                            <input type="radio" name="role" value="upgrader" id="role3">
+                            <label for="role3">
+                                <span class="role-name">🏡 改善型购房者</span>
+                                <span class="role-desc">换房策略专家，资金规划和置换建议</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">注册</button>
+            </form>
+            
+            <div class="footer-text">
+                已有账号？<span style="color: #667eea; cursor: pointer;" onclick="switchTab('login')">立即登录</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function switchTab(tab) {
+            // 切换标签样式
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 切换表单
+            document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
+            if (tab === 'login') {
+                document.getElementById('login-form').classList.add('active');
+            } else {
+                document.getElementById('register-form').classList.add('active');
+            }
+            
+            // 清除错误信息
+            hideError();
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+        
+        function hideError() {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.classList.remove('show');
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideError();
+            
+            const formData = new FormData(event.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 登录成功，跳转到首页
+                    window.location.href = '/';
+                } else {
+                    showError(result.error || '登录失败，请重试');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                showError('网络错误，请稍后重试');
+            }
+        }
+        
+        async function handleRegister(event) {
+            event.preventDefault();
+            hideError();
+            
+            const formData = new FormData(event.target);
+            const password = formData.get('password');
+            const passwordConfirm = formData.get('password_confirm');
+            
+            // 验证密码匹配
+            if (password !== passwordConfirm) {
+                showError('两次输入的密码不一致');
+                return;
+            }
+            
+            const data = {
+                username: formData.get('username'),
+                password: password,
+                role: formData.get('role')
+            };
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 注册成功，跳转到首页
+                    window.location.href = '/';
+                } else {
+                    showError(result.error || '注册失败，请重试');
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showError('网络错误，请稍后重试');
+            }
+        }
+    </script>
+</body>
+</html>
+

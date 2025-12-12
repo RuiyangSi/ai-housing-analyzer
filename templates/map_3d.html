@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ city_name }} - 3D房价地图</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/role_selector.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .header-3d {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .title-area h1 {
+            margin: 0;
+            font-size: 2em;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .title-area p {
+            margin: 5px 0 0 0;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: calc(100vh - 280px);
+            min-height: 600px;
+            position: relative;
+        }
+        
+        #map-3d {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 100;
+            min-width: 280px;
+        }
+        
+        .controls-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.1em;
+            color: #60a5fa;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .timeline-control {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #3b82f6 0%, #8b5cf6 100%);
+            outline: none;
+        }
+        
+        .timeline-control::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .timeline-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        
+        .current-month {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #60a5fa;
+            margin: 10px 0;
+        }
+        
+        .play-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .view-mode-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .view-mode-btn {
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-mode-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-color: #3b82f6;
+        }
+        
+        .view-mode-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 100;
+            max-width: 350px;
+        }
+        
+        .info-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            color: #60a5fa;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        
+        .legend-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        
+        .legend-title {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        .legend-gradient {
+            height: 20px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #10b981 0%, #fbbf24 50%, #ef4444 100%);
+            margin-bottom: 8px;
+        }
+        
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+        
+        .loading-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner-3d {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(96, 165, 250, 0.3);
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            border-radius: 20px;
+            font-size: 0.85em;
+            color: #10b981;
+            margin-left: 10px;
+        }
+        
+        .trend-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .trend-up {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .trend-down {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .trend-stable {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载提示 -->
+    <div id="loading-3d" class="loading-3d">
+        <div class="spinner-3d"></div>
+        <p style="font-size: 1.2em;">正在加载3D地图数据...</p>
+        <p style="opacity: 0.7; font-size: 0.9em;">首次加载可能需要几秒钟</p>
+    </div>
+    
+    <!-- 顶部导航 -->
+    <div class="header-3d">
+        <div class="header-content">
+            <a href="/" class="back-btn">← 返回首页</a>
+            <div class="title-area">
+                <h1>🗺️ {{ city_name }} 3D房价地图</h1>
+                <p>2023-2025年房价空间分布 · 动态可视化 <span id="role-badge" class="role-badge"></span></p>
+            </div>
+            <div style="opacity: 0.5; font-size: 0.9em;">
+                滚轮缩放 · 拖拽旋转
+            </div>
+        </div>
+    </div>
+    
+    <!-- 3D地图容器 -->
+    <div class="map-container">
+        <div id="map-3d"></div>
+        
+        <!-- 控制面板 -->
+        <div class="controls-panel">
+            <h3>⚙️ 控制面板</h3>
+            
+            <!-- 时间轴 -->
+            <div class="control-group">
+                <label class="control-label">📅 时间轴</label>
+                <div class="current-month" id="current-month">2023-01</div>
+                <input type="range" id="timeline" class="timeline-control" min="0" max="0" value="0">
+                <div class="timeline-label">
+                    <span id="timeline-start">2023-01</span>
+                    <span id="timeline-end">2025-12</span>
+                </div>
+                <button id="play-btn" class="play-btn">▶️ 播放动画</button>
+            </div>
+            
+            <!-- 视图模式 -->
+            <div class="control-group">
+                <label class="control-label">👁️ 视图模式</label>
+                <div class="view-mode-btns">
+                    <button class="view-mode-btn active" data-mode="price" onclick="changeViewMode('price')">
+                        💰 价格
+                    </button>
+                    <button class="view-mode-btn" data-mode="volume" onclick="changeViewMode('volume')">
+                        📊 成交量
+                    </button>
+                    <button class="view-mode-btn" data-mode="trend" onclick="changeViewMode('trend')">
+                        📈 涨跌幅
+                    </button>
+                    <button class="view-mode-btn" data-mode="unit" onclick="changeViewMode('unit')">
+                        🏢 单价
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 信息面板 -->
+        <div class="info-panel" id="info-panel">
+            <h3>📍 悬停查看区域详情</h3>
+            <p style="opacity: 0.7; font-size: 0.9em;">将鼠标移动到柱子上</p>
+        </div>
+        
+        <!-- 图例 -->
+        <div class="legend-panel">
+            <div class="legend-title">🎨 颜色图例</div>
+            <div class="legend-gradient"></div>
+            <div class="legend-labels">
+                <span>低价</span>
+                <span>中价</span>
+                <span>高价</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ECharts & ECharts GL -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js"></script>
+    
+    <script>
+        const cityNameEn = '{{ city_name_en }}';
+        const cityName = '{{ city_name }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map_3d.js') }}"></script>
+</body>
+</html>
