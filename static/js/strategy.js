@@ -124,7 +124,9 @@ async function submitForm() {
     
     // 显示加载状态
     document.querySelector('.main-card').style.display = 'none';
-    document.querySelector('.header').style.display = 'none';  // 隐藏原header
+    // 安全地隐藏header（如果存在）
+    const header = document.querySelector('.page-header');
+    if (header) header.style.display = 'none';
     document.getElementById('result-section').style.display = 'block';
     document.getElementById('loading').style.display = 'block';
     document.getElementById('result-content').style.display = 'none';
@@ -150,16 +152,109 @@ async function submitForm() {
         } else {
             alert('生成策略失败：' + (result.error || '未知错误'));
             document.querySelector('.main-card').style.display = 'block';
-            document.querySelector('.header').style.display = 'block';  // 恢复header
+            // 安全地恢复header（如果存在）
+            const header = document.querySelector('.page-header');
+            if (header) header.style.display = 'block';
             document.getElementById('result-section').style.display = 'none';
         }
     } catch (error) {
         console.error('请求失败:', error);
         alert('网络错误，请稍后重试');
         document.querySelector('.main-card').style.display = 'block';
-        document.querySelector('.header').style.display = 'block';  // 恢复header
+        // 安全地恢复header（如果存在）
+        const header = document.querySelector('.page-header');
+        if (header) header.style.display = 'block';
         document.getElementById('result-section').style.display = 'none';
     }
+}
+
+/**
+ * 增强的Markdown渲染函数（修复"吞字"问题）
+ */
+function renderMarkdown(text) {
+    if (!text) return '';
+    
+    // 1. 先转义HTML特殊字符（防止XSS）
+    text = text.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;');
+    
+    // 2. 处理行内格式（必须先处理加粗，再处理斜体，避免冲突）
+    // 加粗：**text** 或 __text__（使用非贪婪匹配）
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__(.+?)__/g, '<strong>$1</strong>');
+    
+    // 斜体：*text* 或 _text_（但不要匹配已经处理过的strong标签）
+    text = text.replace(/\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>');
+    text = text.replace(/_(?!_)(.+?)_(?!_)/g, '<em>$1</em>');
+    
+    // 3. 按行处理，智能识别块级元素
+    const lines = text.split('\n');
+    let html = '';
+    let i = 0;
+    
+    while (i < lines.length) {
+        const line = lines[i].trim();
+        
+        // 空行：跳过
+        if (!line) {
+            i++;
+            continue;
+        }
+        
+        // 标题：### ## #
+        if (line.startsWith('### ')) {
+            html += `<h4>${line.substring(4)}</h4>\n`;
+            i++;
+        } else if (line.startsWith('## ')) {
+            html += `<h3>${line.substring(3)}</h3>\n`;
+            i++;
+        } else if (line.startsWith('# ')) {
+            html += `<h2>${line.substring(2)}</h2>\n`;
+            i++;
+        }
+        // 无序列表：- 开头
+        else if (line.startsWith('- ')) {
+            html += '<ul>\n';
+            while (i < lines.length && lines[i].trim().startsWith('- ')) {
+                const item = lines[i].trim().substring(2);
+                html += `<li>${item}</li>\n`;
+                i++;
+            }
+            html += '</ul>\n';
+        }
+        // 有序列表：1. 2. 3. 开头
+        else if (/^\d+\.\s/.test(line)) {
+            html += '<ol>\n';
+            while (i < lines.length && /^\d+\.\s/.test(lines[i].trim())) {
+                const item = lines[i].trim().replace(/^\d+\.\s*/, '');
+                html += `<li>${item}</li>\n`;
+                i++;
+            }
+            html += '</ol>\n';
+        }
+        // 普通段落：收集连续的非空行
+        else {
+            let paraLines = [];
+            while (i < lines.length) {
+                const currentLine = lines[i].trim();
+                // 遇到空行、标题、列表，停止收集
+                if (!currentLine || 
+                    currentLine.startsWith('#') || 
+                    currentLine.startsWith('- ') || 
+                    /^\d+\.\s/.test(currentLine)) {
+                    break;
+                }
+                paraLines.push(currentLine);
+                i++;
+            }
+            if (paraLines.length > 0) {
+                html += `<p>${paraLines.join('<br>\n')}</p>\n`;
+            }
+        }
+    }
+    
+    return html;
 }
 
 /**
@@ -326,7 +421,7 @@ function displayResult(strategy) {
         <div class="result-card">
             <h3>🤖 AI专业建议</h3>
             <div class="ai-advice-box">
-                ${strategy.ai_advice.replace(/\n/g, '<br>')}
+                ${renderMarkdown(strategy.ai_advice)}
             </div>
         </div>
         

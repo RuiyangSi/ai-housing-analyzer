@@ -4,14 +4,25 @@
  */
 
 let isGeneratingInsight = false;
+let currentEventSource = null;  // ✅ 保存当前EventSource引用，确保只有一个连接
 
 /**
  * 生成快速洞察
  */
 function generateQuickInsight() {
+    // ✅ 防止双击：在函数最开始就检查并设置标志
     if (isGeneratingInsight) {
-        alert('AI正在分析中，请稍候...');
+        console.log('AI正在分析中，请稍候...');
         return;
+    }
+    
+    // ✅ 立即设置标志，防止双击
+    isGeneratingInsight = true;
+    
+    // ✅ 关闭之前的连接（如果存在）
+    if (currentEventSource) {
+        currentEventSource.close();
+        currentEventSource = null;
     }
     
     // 获取当前角色
@@ -19,6 +30,12 @@ function generateQuickInsight() {
     
     const button = document.getElementById('quick-insight-btn');
     const contentDiv = document.getElementById('quick-insight-content');
+    
+    // 立即禁用按钮
+    button.disabled = true;
+    button.textContent = '⏳ 正在分析...';
+    button.style.opacity = '0.6';
+    button.style.cursor = 'not-allowed';
     
     // 显示内容区域
     contentDiv.style.display = 'block';
@@ -52,23 +69,16 @@ function generateQuickInsight() {
         </div>
     `;
     
-    // 修改按钮状态
-    button.disabled = true;
-    button.textContent = '⏳ 正在分析...';
-    button.style.opacity = '0.6';
-    button.style.cursor = 'not-allowed';
-    
-    isGeneratingInsight = true;
-    
     // 创建EventSource（添加角色参数）
     const roleParam = roleInfo ? `?role=${roleInfo.id}` : '';
-    const eventSource = new EventSource(`/api/ai/quick-insight-stream/${cityNameEn}${roleParam}`);
+    currentEventSource = new EventSource(`/api/ai/quick-insight-stream/${cityNameEn}${roleParam}`);
     const insightTextDiv = document.getElementById('insight-text');
     let fullText = '';
     
-    eventSource.onmessage = function(event) {
+    currentEventSource.onmessage = function(event) {
         if (event.data === '[DONE]') {
-            eventSource.close();
+            currentEventSource.close();
+            currentEventSource = null;  // ✅ 清除引用
             isGeneratingInsight = false;
             button.disabled = false;
             button.textContent = '⚡ 重新生成洞察';
@@ -100,7 +110,8 @@ function generateQuickInsight() {
                         ❌ 分析失败: ${data.error}
                     </div>
                 `;
-                eventSource.close();
+                currentEventSource.close();
+                currentEventSource = null;  // ✅ 清除引用
                 isGeneratingInsight = false;
                 button.disabled = false;
                 button.textContent = '⚡ 重试';
@@ -117,14 +128,15 @@ function generateQuickInsight() {
         }
     };
     
-    eventSource.onerror = function(error) {
+    currentEventSource.onerror = function(error) {
         console.error('EventSource error:', error);
         insightTextDiv.innerHTML = `
             <div style="color: #ef4444; padding: 15px; background: #fee; border-radius: 8px;">
                 ❌ 连接失败，请检查网络后重试
             </div>
         `;
-        eventSource.close();
+        currentEventSource.close();
+        currentEventSource = null;  // ✅ 清除引用
         isGeneratingInsight = false;
         button.disabled = false;
         button.textContent = '⚡ 重试';

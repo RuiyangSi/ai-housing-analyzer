@@ -653,6 +653,221 @@
         gap: 24px;
     }
     
+    /* ========== 城市搜索和筛选 ========== */
+    .city-search-container {
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .city-search-box {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+    
+    .city-search-input {
+        width: 100%;
+        padding: 14px 45px 14px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .city-search-input:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+    
+    .city-search-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1.2em;
+    }
+    
+    .region-filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .region-filter-btn {
+        padding: 8px 16px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: #64748b;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .region-filter-btn:hover {
+        border-color: #6366f1;
+        color: #6366f1;
+        transform: translateY(-2px);
+    }
+    
+    .region-filter-btn.active {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border-color: #6366f1;
+    }
+    
+    .city-stats-summary {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        color: #64748b;
+        font-size: 0.9em;
+    }
+    
+    .city-stats-summary span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .city-stats-summary .highlight {
+        color: #6366f1;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+    
+    /* 城市卡片隐藏状态 */
+    .city-card.hidden {
+        display: none;
+    }
+    
+    /* 无结果提示 */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        color: #94a3b8;
+    }
+    
+    .no-results-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    .no-results-text {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+    
+    .no-results-hint {
+        font-size: 0.9em;
+        color: #cbd5e1;
+    }
+    
+    /* ========== 分页器样式 ========== */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 40px;
+        padding: 20px;
+    }
+    
+    .pagination-info {
+        color: #64748b;
+        font-size: 0.95em;
+        min-width: 100px;
+        text-align: center;
+    }
+    
+    .pagination-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    
+    .pagination-btn {
+        padding: 10px 16px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.95em;
+        color: #64748b;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+        border-color: #6366f1;
+        color: #6366f1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+    
+    .pagination-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .pagination-btn.active {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        border-color: #6366f1;
+        font-weight: 600;
+    }
+    
+    .pagination-ellipsis {
+        padding: 10px 8px;
+        color: #94a3b8;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    
+    .pagination-jump {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 15px;
+    }
+    
+    .pagination-jump input {
+        width: 60px;
+        padding: 8px 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+    
+    .pagination-jump button {
+        padding: 8px 15px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+        color: #64748b;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-jump button:hover {
+        background: #6366f1;
+        color: white;
+    }
+    
     .city-card {
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border-radius: 20px;
@@ -816,6 +1031,42 @@
         .city-grid {
             grid-template-columns: 1fr;
         }
+        
+        .city-search-container {
+            flex-direction: column;
+        }
+        
+        .region-filters {
+            justify-content: center;
+        }
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .pagination-buttons {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .pagination-jump {
+            margin-left: 0;
+        }
+        
+        .city-search-box {
+            min-width: 100%;
+        }
+        
+        .region-filter-btn {
+            font-size: 0.85em;
+            padding: 6px 12px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            font-size: 0.85em;
+        }
     }
     
     /* ========== 深色模式样式 ========== */
@@ -885,6 +1136,42 @@
     
     body.dark-mode .city-stat-label {
         color: #94a3b8;
+    }
+    
+    /* 分页器深色模式 */
+    body.dark-mode .pagination-btn {
+        background: #0f172a;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .pagination-btn:hover:not(:disabled) {
+        border-color: #818cf8;
+        color: #818cf8;
+    }
+    
+    body.dark-mode .pagination-btn.active {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border-color: #6366f1;
+    }
+    
+    body.dark-mode .pagination-info {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .pagination-jump input {
+        background: #0f172a;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .pagination-jump button {
+        background: #334155;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .pagination-jump button:hover {
+        background: #6366f1;
     }
     
     /* 城市数据分析区域 */
@@ -1222,9 +1509,44 @@
     <!-- 城市数据 -->
     <div class="cities-section">
         <h2 class="section-title">🏙️ 城市数据分析</h2>
-        <div class="city-grid">
+        
+        <!-- 搜索和筛选 -->
+        <div class="city-search-container">
+            <div class="city-search-box">
+                <input 
+                    type="text" 
+                    id="city-search-input" 
+                    class="city-search-input" 
+                    placeholder="🔍 搜索城市名称..." 
+                    oninput="searchCities()"
+                >
+                <span class="city-search-icon">⌕</span>
+            </div>
+            
+            <div class="region-filters">
+                <button class="region-filter-btn active" onclick="filterRegion('all')">全部</button>
+                <button class="region-filter-btn" onclick="filterRegion('华北')">华北</button>
+                <button class="region-filter-btn" onclick="filterRegion('华东')">华东</button>
+                <button class="region-filter-btn" onclick="filterRegion('华南')">华南</button>
+                <button class="region-filter-btn" onclick="filterRegion('华中')">华中</button>
+                <button class="region-filter-btn" onclick="filterRegion('西南')">西南</button>
+                <button class="region-filter-btn" onclick="filterRegion('西北')">西北</button>
+                <button class="region-filter-btn" onclick="filterRegion('东北')">东北</button>
+            </div>
+            
+            <div class="city-stats-summary">
+                <span>显示 <span class="highlight" id="visible-count">{{ cities|length }}</span> / {{ cities|length }} 个城市</span>
+            </div>
+        </div>
+        
+        <div class="city-grid" id="city-grid-container">
             {% for city in cities %}
-            <div class="city-card" onclick="loadCityDetail('{{ city.name_en }}', '{{ city.name }}')" id="card-{{ city.name_en }}">
+            <div class="city-card" 
+                 data-city-name="{{ city.name }}" 
+                 data-city-name-en="{{ city.name_en }}"
+                 data-region="{{ city.get('region', '') }}"
+                 onclick="loadCityDetail('{{ city.name_en }}', '{{ city.name }}')" 
+                 id="card-{{ city.name_en }}">
                 <div class="city-header">
                     <span class="city-name">{{ city.name }}</span>
                     <span class="city-icon">{{ city.icon }}</span>
@@ -1245,6 +1567,30 @@
                 </div>
             </div>
             {% endfor %}
+            
+            <!-- 无结果提示 -->
+            <div class="no-results" id="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <div class="no-results-text">未找到匹配的城市</div>
+                <div class="no-results-hint">试试其他关键词或清空搜索框</div>
+            </div>
+        </div>
+        
+        <!-- 分页器 -->
+        <div class="pagination-container" id="pagination-container" style="display: none;">
+            <div class="pagination-info">
+                第 <span id="current-page">1</span> 页 / 共 <span id="total-pages">1</span> 页
+            </div>
+            
+            <div class="pagination-buttons" id="pagination-buttons">
+                <!-- 分页按钮将由 JavaScript 动态生成 -->
+            </div>
+            
+            <div class="pagination-jump">
+                <span style="color: #64748b; font-size: 0.9em;">跳转至</span>
+                <input type="number" id="page-jump-input" min="1" placeholder="页码">
+                <button onclick="jumpToPage()">GO</button>
+            </div>
         </div>
     </div>
     
@@ -1506,6 +1852,252 @@
         await Promise.all(loadPromises);
         console.log('所有省份数据加载完成');
     }
+    
+    // ========== 城市搜索、筛选和分页功能 ==========
+    
+    let currentRegionFilter = 'all';  // 当前区域筛选
+    let currentPage = 1;              // 当前页码
+    const itemsPerPage = 6;           // 每页显示6个（2行 × 3列）
+    
+    /**
+     * 搜索城市
+     */
+    function searchCities() {
+        const searchTerm = document.getElementById('city-search-input').value.toLowerCase();
+        currentPage = 1;  // 重置到第一页
+        filterAndPaginateCities(searchTerm, currentRegionFilter);
+    }
+    
+    /**
+     * 按区域筛选
+     */
+    function filterRegion(region) {
+        currentRegionFilter = region;
+        currentPage = 1;  // 重置到第一页
+        
+        // 更新按钮状态
+        document.querySelectorAll('.region-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // 获取搜索词
+        const searchTerm = document.getElementById('city-search-input').value.toLowerCase();
+        filterAndPaginateCities(searchTerm, region);
+    }
+    
+    /**
+     * 综合筛选和分页
+     */
+    function filterAndPaginateCities(searchTerm, region) {
+        const cards = document.querySelectorAll('.city-card');
+        const noResults = document.getElementById('no-results');
+        
+        // 第一步：筛选匹配的卡片
+        let matchedCards = [];
+        cards.forEach(card => {
+            const cityName = card.dataset.cityName.toLowerCase();
+            const cityNameEn = card.dataset.cityNameEn.toLowerCase();
+            const cityRegion = card.dataset.region || '';
+            
+            // 检查是否匹配搜索词
+            const matchesSearch = !searchTerm || 
+                                cityName.includes(searchTerm) || 
+                                cityNameEn.includes(searchTerm);
+            
+            // 检查是否匹配区域
+            const matchesRegion = region === 'all' || cityRegion === region;
+            
+            if (matchesSearch && matchesRegion) {
+                matchedCards.push(card);
+            }
+        });
+        
+        const totalMatched = matchedCards.length;
+        
+        // 更新统计
+        document.getElementById('visible-count').textContent = totalMatched;
+        
+        // 第二步：处理无结果情况
+        if (totalMatched === 0) {
+            cards.forEach(card => card.classList.add('hidden'));
+            noResults.style.display = 'block';
+            document.getElementById('pagination-container').style.display = 'none';
+            return;
+        } else {
+            noResults.style.display = 'none';
+        }
+        
+        // 第三步：计算总页数
+        const totalPages = Math.ceil(totalMatched / itemsPerPage);
+        
+        // 确保当前页码在有效范围内
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+        
+        // 第四步：显示当前页的卡片
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        
+        cards.forEach(card => card.classList.add('hidden'));  // 先隐藏所有
+        
+        matchedCards.forEach((card, index) => {
+            if (index >= startIndex && index < endIndex) {
+                card.classList.remove('hidden');
+            }
+        });
+        
+        // 第五步：更新分页器
+        updatePagination(totalPages, totalMatched);
+    }
+    
+    /**
+     * 更新分页器
+     */
+    function updatePagination(totalPages, totalItems) {
+        const paginationContainer = document.getElementById('pagination-container');
+        const paginationButtons = document.getElementById('pagination-buttons');
+        
+        // 如果只有一页或没有结果，隐藏分页器
+        if (totalPages <= 1) {
+            paginationContainer.style.display = 'none';
+            return;
+        }
+        
+        paginationContainer.style.display = 'flex';
+        
+        // 更新页码信息
+        document.getElementById('current-page').textContent = currentPage;
+        document.getElementById('total-pages').textContent = totalPages;
+        
+        // 更新跳转输入框的最大值
+        const jumpInput = document.getElementById('page-jump-input');
+        jumpInput.max = totalPages;
+        jumpInput.placeholder = `1-${totalPages}`;
+        
+        // 生成分页按钮
+        paginationButtons.innerHTML = '';
+        
+        // 上一页按钮
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.textContent = '← 上一页';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => goToPage(currentPage - 1);
+        paginationButtons.appendChild(prevBtn);
+        
+        // 页码按钮（智能显示）
+        const pageButtons = generatePageButtons(totalPages);
+        pageButtons.forEach(item => {
+            if (item === '...') {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '···';
+                paginationButtons.appendChild(ellipsis);
+            } else {
+                const btn = document.createElement('button');
+                btn.className = 'pagination-btn' + (item === currentPage ? ' active' : '');
+                btn.textContent = item;
+                btn.onclick = () => goToPage(item);
+                paginationButtons.appendChild(btn);
+            }
+        });
+        
+        // 下一页按钮
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.textContent = '下一页 →';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => goToPage(currentPage + 1);
+        paginationButtons.appendChild(nextBtn);
+    }
+    
+    /**
+     * 生成页码按钮（智能显示，避免按钮过多）
+     */
+    function generatePageButtons(totalPages) {
+        const pages = [];
+        
+        if (totalPages <= 7) {
+            // 总页数 <= 7，显示所有页码
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            // 总页数 > 7，智能显示
+            pages.push(1);  // 始终显示第一页
+            
+            if (currentPage <= 3) {
+                // 当前页在前部
+                for (let i = 2; i <= 5; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                // 当前页在后部
+                pages.push('...');
+                for (let i = totalPages - 4; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                // 当前页在中间
+                pages.push('...');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        
+        return pages;
+    }
+    
+    /**
+     * 跳转到指定页
+     */
+    function goToPage(page) {
+        const totalPages = parseInt(document.getElementById('total-pages').textContent);
+        
+        if (page < 1 || page > totalPages) return;
+        
+        currentPage = page;
+        
+        // 重新筛选和分页
+        const searchTerm = document.getElementById('city-search-input').value.toLowerCase();
+        filterAndPaginateCities(searchTerm, currentRegionFilter);
+        
+        // 滚动到城市网格顶部
+        document.querySelector('.city-grid').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+    
+    /**
+     * 快速跳转
+     */
+    function jumpToPage() {
+        const input = document.getElementById('page-jump-input');
+        const page = parseInt(input.value);
+        const totalPages = parseInt(document.getElementById('total-pages').textContent);
+        
+        if (isNaN(page) || page < 1 || page > totalPages) {
+            alert(`请输入1-${totalPages}之间的页码`);
+            return;
+        }
+        
+        goToPage(page);
+        input.value = '';  // 清空输入框
+    }
+    
+    // 页面加载后初始化分页
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化时应用分页
+        filterAndPaginateCities('', 'all');
+    });
     
     // 加载城市详情
     async function loadCityDetail(cityEn, cityName) {

@@ -6,7 +6,8 @@
       "data_file": "data_北京_2023_2025.csv",
       "enabled": true,
       "icon": "🏛️",
-      "type": "municipality"
+      "type": "municipality",
+      "region": "华北"
     },
     {
       "name": "上海",
@@ -14,7 +15,8 @@
       "data_file": "data_上海_2023_2025.csv",
       "enabled": true,
       "icon": "🌃",
-      "type": "municipality"
+      "type": "municipality",
+      "region": "华东"
     },
     {
       "name": "天津",
@@ -22,7 +24,8 @@
       "data_file": "data_天津_2023_2025.csv",
       "enabled": true,
       "icon": "🌉",
-      "type": "municipality"
+      "type": "municipality",
+      "region": "华北"
     },
     {
       "name": "福建",
@@ -30,7 +33,8 @@
       "data_file": "data_福建_2023_2025.csv",
       "enabled": true,
       "icon": "🌊",
-      "cities": ["厦门市", "漳州市", "福州市"]
+      "cities": ["厦门市", "漳州市", "福州市"],
+      "region": "华东"
     },
     {
       "name": "山东",
@@ -38,7 +42,8 @@
       "data_file": "data_山东_2023_2025.csv",
       "enabled": true,
       "icon": "⛰️",
-      "cities": ["济南市", "淄博市", "青岛市"]
+      "cities": ["济南市", "淄博市", "青岛市"],
+      "region": "华东"
     },
     {
       "name": "河南",
@@ -46,7 +51,8 @@
       "data_file": "data_河南_2023_2025.csv",
       "enabled": true,
       "icon": "🏯",
-      "cities": ["新乡市", "洛阳市", "郑州市"]
+      "cities": ["新乡市", "洛阳市", "郑州市"],
+      "region": "华中"
     },
     {
       "name": "江西",
@@ -54,7 +60,8 @@
       "data_file": "data_江西_2023_2025.csv",
       "enabled": true,
       "icon": "🏞️",
-      "cities": ["九江", "南昌市", "赣州市"]
+      "cities": ["九江", "南昌市", "赣州市"],
+      "region": "华东"
     },
     {
       "name": "湖南",
@@ -62,7 +69,8 @@
       "data_file": "data_湖南_2023_2025.csv",
       "enabled": true,
       "icon": "🌸",
-      "cities": ["岳阳市", "株洲市", "长沙市"]
+      "cities": ["岳阳市", "株洲市", "长沙市"],
+      "region": "华中"
     },
     {
       "name": "湖北",
@@ -70,7 +78,8 @@
       "data_file": "data_湖北_2023_2025.csv",
       "enabled": true,
       "icon": "🏔️",
-      "cities": ["襄阳市"]
+      "cities": ["襄阳市"],
+      "region": "华中"
     },
     {
       "name": "广西",
@@ -78,7 +87,8 @@
       "data_file": "data_广西_2023_2025.csv",
       "enabled": true,
       "icon": "🌴",
-      "cities": ["南宁市", "柳州市", "桂林市"]
+      "cities": ["南宁市", "柳州市", "桂林市"],
+      "region": "华南"
     },
     {
       "name": "宁夏",
@@ -86,7 +96,8 @@
       "data_file": "data_宁夏_2023_2025.csv",
       "enabled": true,
       "icon": "🏜️",
-      "cities": ["银川市"]
+      "cities": ["银川市"],
+      "region": "西北"
     },
     {
       "name": "内蒙古",
@@ -94,7 +105,8 @@
       "data_file": "data_内蒙古_2023_2025.csv",
       "enabled": true,
       "icon": "🐎",
-      "cities": ["包头市", "呼和浩特市"]
+      "cities": ["包头市", "呼和浩特市"],
+      "region": "华北"
     },
     {
       "name": "新疆",
@@ -102,7 +114,8 @@
       "data_file": "data_新疆_2023_2025.csv",
       "enabled": true,
       "icon": "🏔️",
-      "cities": ["乌鲁木齐市"]
+      "cities": ["乌鲁木齐市"],
+      "region": "西北"
     }
   ],
   "data_directory": "data/processed",

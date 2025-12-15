@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 渲染测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+        
+        .ai-advice-box {
+            padding: 25px;
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+            border-radius: 15px;
+            border-left: 4px solid #f59e0b;
+            line-height: 1.8;
+            font-size: 1.05em;
+            color: #78350f;
+            min-height: 400px;
+        }
+        
+        .ai-advice-box p {
+            margin: 0 0 15px 0;
+        }
+        
+        .ai-advice-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ai-advice-box strong {
+            color: #92400e;
+            font-weight: 700;
+        }
+        
+        .ai-advice-box em {
+            font-style: italic;
+            color: #a16207;
+        }
+        
+        .ai-advice-box h2,
+        .ai-advice-box h3,
+        .ai-advice-box h4 {
+            color: #92400e;
+            margin: 20px 0 10px 0;
+            font-weight: 700;
+        }
+        
+        .ai-advice-box h2 {
+            font-size: 1.3em;
+            border-bottom: 2px solid #fbbf24;
+            padding-bottom: 8px;
+        }
+        
+        .ai-advice-box h3 {
+            font-size: 1.2em;
+        }
+        
+        .ai-advice-box h4 {
+            font-size: 1.1em;
+        }
+        
+        .ai-advice-box ul,
+        .ai-advice-box ol {
+            margin: 10px 0 15px 20px;
+            padding-left: 10px;
+        }
+        
+        .ai-advice-box li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .ai-advice-box ul li {
+            list-style-type: disc;
+        }
+        
+        .ai-advice-box ol li {
+            list-style-type: decimal;
+        }
+        
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Markdown 渲染测试</h1>
+    <p class="subtitle">实时预览 AI 建议的 Markdown 渲染效果</p>
+    
+    <div class="container">
+        <!-- 左侧：Markdown 输入 -->
+        <div class="panel">
+            <h2>📝 Markdown 输入</h2>
+            <textarea id="markdown-input">**综合购房建议**
+
+基于您300万的预算在北京购房，目前处于**标准型（中低端）**市场定位。建议重点关注以下几点：
+
+## 区域选择
+
+1. **朝阳-定福庄**：性价比较高，可购买约78㎡的房产
+2. **大兴-黄村**：总价相对较低，适合首次购房者
+3. **通州-次渠**：发展潜力大，但通勤时间较长
+
+## 户型建议
+
+3人家庭建议选择**两室一厅**（65-75㎡）或**小三室**（80-90㎡）。重点关注：
+
+- 户型方正，避免走廊过长
+- 采光充足，至少两个朝南房间
+- 厨卫功能完善，避免暗厨暗卫
+
+## 入市时机
+
+当前市场时机评分**65.5分**，属于*较好时机*。价格趋势显示近期下跌2.3%，成交量下降5.8%，议价空间较大。
+
+### 风险提示
+
+- 注意核实房屋产权和抵押情况
+- 关注周边配套和交通便利性  
+- 预留足够的装修和家具预算（总价的15-20%）</textarea>
+            <button onclick="renderPreview()">🔄 渲染预览</button>
+        </div>
+        
+        <!-- 右侧：渲染结果 -->
+        <div class="panel">
+            <h2>👁️ 渲染效果</h2>
+            <div class="ai-advice-box" id="preview-output">
+                <p><em>在左侧输入 Markdown 文本，点击"渲染预览"查看效果</em></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/strategy.js"></script>
+    <script>
+        // 页面加载时自动渲染一次
+        window.onload = function() {
+            renderPreview();
+        };
+        
+        function renderPreview() {
+            const input = document.getElementById('markdown-input').value;
+            const output = document.getElementById('preview-output');
+            
+            // 调用 strategy.js 中的 renderMarkdown 函数
+            if (typeof renderMarkdown === 'function') {
+                output.innerHTML = renderMarkdown(input);
+            } else {
+                output.innerHTML = '<p style="color: red;">错误：renderMarkdown 函数未找到</p>';
+            }
+        }
+        
+        // 支持实时预览（输入时自动渲染）
+        document.getElementById('markdown-input').addEventListener('input', function() {
+            // 防抖：500ms 后自动渲染
+            clearTimeout(window.renderTimeout);
+            window.renderTimeout = setTimeout(renderPreview, 500);
+        });
+    </script>
+</body>
+</html>
+
