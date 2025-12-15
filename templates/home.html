@@ -258,7 +258,39 @@
     .legend-color.color-12 {
         background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
     }
-    
+
+    .legend-color.color-13 {
+        background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    }
+
+    .legend-color.color-14 {
+        background: linear-gradient(135deg, #06b6d4 0%, #67e8f9 100%);
+    }
+
+    .legend-color.color-15 {
+        background: linear-gradient(135deg, #d946ef 0%, #f0abfc 100%);
+    }
+
+    .legend-color.color-16 {
+        background: linear-gradient(135deg, #14b8a6 0%, #5eead4 100%);
+    }
+
+    .legend-color.color-17 {
+        background: linear-gradient(135deg, #eab308 0%, #fde047 100%);
+    }
+
+    .legend-color.color-18 {
+        background: linear-gradient(135deg, #8b5cf6 0%, #d8b4fe 100%);
+    }
+
+    .legend-color.color-19 {
+        background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+    }
+
+    .legend-color.color-20 {
+        background: linear-gradient(135deg, #0ea5e9 0%, #7dd3fc 100%);
+    }
+
     .legend-item:hover .legend-color {
         transform: scale(1.1) rotate(5deg);
     }
@@ -2444,21 +2476,29 @@
             return grd;
         });
         
-        // 使用纯色作为后备（13种颜色对应13个省份）
+        // 使用纯色作为后备（21种颜色对应21个省份）
         const solidColors = [
-            '#667eea',  // 紫色
-            '#f5576c',  // 粉红
-            '#00f2fe',  // 蓝色
-            '#38f9d7',  // 青色
-            '#fee140',  // 黄色
-            '#8b5cf6',  // 紫罗兰
-            '#10b981',  // 绿色
-            '#f59e0b',  // 橙色
-            '#ec4899',  // 粉色
-            '#06b6d4',  // 天蓝
-            '#84cc16',  // 青柠
-            '#f97316',  // 深橙
-            '#a78bfa'   // 淡紫
+            '#667eea',  // 0: 紫色
+            '#f5576c',  // 1: 粉红
+            '#00f2fe',  // 2: 蓝色
+            '#38f9d7',  // 3: 青色
+            '#fee140',  // 4: 黄色
+            '#8b5cf6',  // 5: 紫罗兰
+            '#10b981',  // 6: 绿色
+            '#f59e0b',  // 7: 橙色
+            '#ec4899',  // 8: 粉色
+            '#06b6d4',  // 9: 天蓝
+            '#84cc16',  // 10: 青柠
+            '#f97316',  // 11: 深橙
+            '#a78bfa',  // 12: 淡紫
+            '#ef4444',  // 13: 红色
+            '#67e8f9',  // 14: 浅蓝
+            '#f0abfc',  // 15: 亮粉
+            '#5eead4',  // 16: 青绿
+            '#fde047',  // 17: 亮黄
+            '#d8b4fe',  // 18: 淡紫色
+            '#fb7185',  // 19: 玫瑰红
+            '#7dd3fc'   // 20: 天空蓝
         ];
         
         cityDataChart = new Chart(ctx.getContext('2d'), {
