@@ -52,8 +52,12 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
         'jiangsu_deals': ('江苏', '无锡市'),         # wuxi.esf.fang.com
         'jilin_deals': ('吉林', '长春市'),           # changchun
         'liaoning_deals': ('辽宁', '沈阳市'),        # sy
-        'shanxi_deals': ('山西', '太原市'),          # taiyuan.esf.fang.com
+        'shanxi_deals': ('山西', '太原市'),          # taiyuan.esf.fang.com (旧数据)
+        'shanxi_taiyuan_deals': ('山西', '太原市'),  # 新增太原数据
+        'shanxi_datong_deals': ('山西', '大同市'),   # 新增大同数据
         'zhejiang_deals': ('浙江', '宁波市'),        # nb.esf.fang.com
+        '厦门': ('福建', '厦门市'),                  # xm.esf.fang.com (新增大数据集)
+        '重庆': ('重庆', '重庆市'),                  # cq.esf.fang.com (直辖市)
     }
     
     # 扫描所有CSV文件
