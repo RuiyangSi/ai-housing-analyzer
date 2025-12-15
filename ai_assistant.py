@@ -24,56 +24,77 @@ class AIAssistant:
         self.model = model
         self.conversation_history = []
         
-    def build_system_prompt(self, city_data: Optional[Dict[str, Any]] = None) -> str:
+    def build_system_prompt(self, context_data: Optional[Dict[str, Any]] = None, role: str = 'investment_advisor') -> str:
         """
         构建系统提示词
         
         参数:
-            city_data: 当前城市的数据统计
+            context_data: 包含全局数据和/或城市数据的字典
+            role: 用户角色
         """
-        base_prompt = """你是一个专业的房价数据分析助手。你的任务是帮助用户理解和分析2023-2025年的房价数据。
+        # 根据角色选择基础提示词
+        role_prompts = {
+            'investment_advisor': """你是一位拥有15年经验的资深房地产投资顾问。擅长使用专业术语（ROI、流动性、增值空间、市场波动率等）分析投资价值和风险控制。""",
+            'first_time_buyer': """你是一位耐心、友善的购房顾问，正在帮助首次购房的新手。用通俗易懂的语言解释房价数据，避免专业术语，关注安全性和可负担性。""",
+            'upgrader': """你是一位改善型购房咨询专家，专门为有换房需求的家庭提供建议。关注置换策略、资金规划和改善型需求匹配。"""
+        }
+        
+        base_prompt = f"""{role_prompts.get(role, role_prompts['investment_advisor'])}
 
-你的能力：
-1. 解答关于房价数据的问题
-2. 分析房价趋势
-3. 提供购房建议
-4. 解释数据统计结果
+你的任务是帮助用户理解和分析2023-2025年的房价数据。回答要简洁明了，一般控制在200字以内。"""
 
-请用专业但易懂的语言回答问题，必要时可以引用数据来支持你的观点。回答要简洁明了，一般控制在200字以内。"""
+        if context_data:
+            # 添加全局数据上下文
+            global_data = context_data.get('global_data', {})
+            if global_data:
+                provinces = global_data.get('provinces', [])
+                total_records = global_data.get('total_records', 0)
+                
+                data_context = f"""
 
-        if city_data:
-            overall = city_data.get('overall', {})
-            yearly = city_data.get('yearly', [])
+【系统数据概览】
+- 覆盖省份数：{len(provinces)} 个
+- 总数据量：{total_records:,} 条真实成交数据
+- 数据年份：2023-2025年
+
+省份分布："""
+                
+                for prov in provinces:
+                    data_context += f"""
+- {prov['name']}：{prov['count']:,}套（{prov['cities_count']}个城市）"""
+                
+                base_prompt += data_context
             
-            data_context = f"""
+            # 添加城市数据上下文
+            city_data = context_data.get('city_data', {})
+            if city_data:
+                overall = city_data.get('overall', {})
+                yearly = city_data.get('yearly', [])
+                
+                city_context = f"""
 
-当前查看的数据：
+【当前查看的城市数据】
 - 城市：{city_data.get('city_name', '未知')}
 - 总成交量：{overall.get('total_count', 0):,} 套
 - 平均成交价：{overall.get('avg_price', 0):.2f} 万元
 - 平均单价：{overall.get('avg_unit_price', 0):.2f} 元/m²
-- 平均面积：{overall.get('avg_area', 0):.2f} m²
-
-年度数据："""
-            
-            for year_data in yearly:
-                data_context += f"""
-- {year_data['year']}年：成交 {year_data['count']:,} 套，均价 {year_data['avg_price']:.2f} 万元，单价 {year_data['avg_unit_price']:.2f} 元/m²"""
-            
-            base_prompt += data_context
+- 平均面积：{overall.get('avg_area', 0):.2f} m²"""
+                
+                base_prompt += city_context
         
         return base_prompt
     
-    def chat(self, user_message: str, city_data: Optional[Dict[str, Any]] = None, 
-             temperature: float = 0.7, max_tokens: int = 500) -> Dict[str, Any]:
+    def chat(self, user_message: str, context_data: Optional[Dict[str, Any]] = None, 
+             temperature: float = 0.7, max_tokens: int = 500, role: str = 'investment_advisor') -> Dict[str, Any]:
         """
         与 AI 对话
         
         参数:
             user_message: 用户消息
-            city_data: 当前城市数据（可选）
+            context_data: 上下文数据（包含全局数据和/或城市数据）
             temperature: 温度参数（0-1，越高越随机）
             max_tokens: 最大token数
+            role: 角色ID
             
         返回:
             包含回复内容和状态的字典
@@ -81,7 +102,7 @@ class AIAssistant:
         try:
             # 构建消息列表
             messages = [
-                {"role": "system", "content": self.build_system_prompt(city_data)}
+                {"role": "system", "content": self.build_system_prompt(context_data, role)}
             ]
             
             # 添加历史对话（最近5轮）
@@ -212,14 +233,14 @@ class AIAssistant:
         
         return role_prompts.get(role, role_prompts['investment_advisor'])
     
-    def chat_stream(self, user_message: str, city_data: Optional[Dict[str, Any]] = None, 
+    def chat_stream(self, user_message: str, context_data: Optional[Dict[str, Any]] = None, 
              temperature: float = 0.7, max_tokens: int = 500, role: str = 'investment_advisor'):
         """
         与 AI 对话（流式输出）
         
         参数:
             user_message: 用户消息
-            city_data: 当前城市数据（可选）
+            context_data: 上下文数据（包含全局数据和/或城市数据）
             temperature: 温度参数（0-1，越高越随机）
             max_tokens: 最大token数
             role: 角色ID（investment_advisor / first_time_buyer / upgrader）
@@ -228,8 +249,8 @@ class AIAssistant:
             生成器，逐步yield AI回复的文本片段
         """
         try:
-            # 根据角色构建系统提示词
-            system_prompt = self.build_role_system_prompt(role)
+            # 构建系统提示词（包含角色和数据上下文）
+            system_prompt = self.build_system_prompt(context_data, role)
             
             # 构建消息列表
             messages = [

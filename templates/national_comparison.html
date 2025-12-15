@@ -337,6 +337,31 @@
             <div class="stats-grid" id="price-stats"></div>
         </div>
 
+        <!-- 平均面积对比 -->
+        <div class="analysis-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">📏 城市平均面积对比</h2>
+                <button onclick="analyzeChart('area_comparison', 'area-comparison-chart', '城市平均面积对比')" style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    border: none;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    cursor: pointer;
+                    font-size: 0.9em;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    🤖 AI分析此图表
+                </button>
+            </div>
+            <div class="chart-container comparison-chart">
+                <canvas id="area-comparison-chart"></canvas>
+            </div>
+            <div id="ai-insight-area-comparison-chart" style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #10b981; border-radius: 8px; display: none;"></div>
+            <div class="stats-grid" id="area-stats"></div>
+        </div>
+
         <!-- 市场规模对比 -->
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">

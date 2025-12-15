@@ -31,16 +31,6 @@ else
     exit 1
 fi
 
-# 检查数据文件是否存在
-if [ ! -f "data/processed/data_beijing_2023_2025.csv" ] || [ ! -f "data/processed/data_xiamen_2023_2025.csv" ] || [ ! -f "data/processed/data_wuhan_2023_2025.csv" ]; then
-    echo "⚠️  警告：数据文件不完整"
-    echo "正在处理数据..."
-    python process_data.py
-    if [ $? -ne 0 ]; then
-        echo "❌ 数据处理失败"
-        exit 1
-    fi
-fi
 
 # 关闭之前占用 5001 端口的进程
 echo "✓ 检查端口 5001..."

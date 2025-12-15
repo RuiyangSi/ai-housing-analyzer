@@ -879,6 +879,7 @@
     body.dark-mode .city-stat-value {
         background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
     
@@ -1018,6 +1019,118 @@
         --md-text: #e2e8f0;
         --md-list-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
+    
+    /* AI侧边栏 Markdown 样式 */
+    #chat-messages h1,
+    #chat-messages h2,
+    #chat-messages h3,
+    #chat-messages h4 {
+        color: #1e293b;
+        margin: 16px 0 8px 0;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+    
+    #chat-messages h1 { font-size: 1.5em; }
+    #chat-messages h2 { font-size: 1.3em; }
+    #chat-messages h3 { font-size: 1.1em; }
+    #chat-messages h4 { font-size: 1em; }
+    
+    #chat-messages p {
+        margin: 8px 0;
+        line-height: 1.7;
+        color: #334155;
+    }
+    
+    #chat-messages strong {
+        font-weight: 700;
+        color: #0f172a;
+    }
+    
+    #chat-messages em {
+        font-style: italic;
+        color: #475569;
+    }
+    
+    #chat-messages ul,
+    #chat-messages ol {
+        margin: 12px 0;
+        padding-left: 24px;
+        color: #334155;
+    }
+    
+    #chat-messages li {
+        margin: 6px 0;
+        line-height: 1.6;
+    }
+    
+    #chat-messages code {
+        background: #f1f5f9;
+        color: #dc2626;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+    
+    #chat-messages pre {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 12px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 12px 0;
+    }
+    
+    #chat-messages pre code {
+        background: transparent;
+        color: #e2e8f0;
+        padding: 0;
+    }
+    
+    #chat-messages blockquote {
+        border-left: 4px solid #667eea;
+        padding-left: 16px;
+        margin: 12px 0;
+        color: #475569;
+        font-style: italic;
+    }
+    
+    #chat-messages a {
+        color: #667eea;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    #chat-messages a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    #chat-messages hr {
+        border: none;
+        border-top: 2px solid #e2e8f0;
+        margin: 16px 0;
+    }
+    
+    #chat-messages table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+    }
+    
+    #chat-messages th,
+    #chat-messages td {
+        border: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        text-align: left;
+    }
+    
+    #chat-messages th {
+        background: #f8fafc;
+        font-weight: 700;
+        color: #1e293b;
+    }
 </style>
 {% endblock %}
 
@@ -1075,7 +1188,7 @@
             <div class="distribution-title">
                 <h2>📊 全国数据分布全景</h2>
                 <p>覆盖全国13个省级行政区，{{ total_records }}真实成交数据</p>
-            </div>
+        </div>
         </div>
         <div class="distribution-content">
             <div class="chart-container">
@@ -1083,7 +1196,7 @@
                 <div class="chart-center-text">
                     <div class="center-value">{{ total_records }}</div>
                     <div class="center-label">总数据量</div>
-                </div>
+        </div>
             </div>
             <div class="city-legend">
                 {% for city_stat in city_data_stats %}
@@ -1344,6 +1457,7 @@
 
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script type="application/json" id="cityDataStats">
 {{ city_data_stats | tojson }}
 </script>
@@ -1551,11 +1665,30 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
         try {
+            // 收集全局数据统计
+            const cityDataElement = document.getElementById('cityDataStats');
+            const cityData = cityDataElement ? JSON.parse(cityDataElement.textContent) : [];
+            
+            const globalData = {
+                total_records: parseInt('{{ total_records }}'),
+                total_provinces: parseInt('{{ total_provinces }}'),
+                provinces: cityData.map(function(city) {
+                    return {
+                        name: city.name,
+                        count: city.count,
+                        cities_count: city.cities_count || 1
+                    };
+                })
+            };
+            
             // 使用流式 API
             const response = await fetch('/api/ai/chat-stream', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ 
+                    message: message,
+                    global_data: globalData
+                })
             });
             
             const reader = response.body.getReader();
@@ -1579,8 +1712,10 @@
                             const json = JSON.parse(data);
                             if (json.content) {
                                 fullText += json.content;
+                                // 使用marked渲染markdown
+                                const renderedHtml = marked.parse(fullText);
                                 responseDiv.innerHTML = `
-                                    <p style="margin: 0; color: #1e293b; white-space: pre-wrap;">${fullText}</p>
+                                    <div style="margin: 0; color: #1e293b; line-height: 1.6;">${renderedHtml}</div>
                                 `;
                                 chatMessages.scrollTop = chatMessages.scrollHeight;
                             }

@@ -88,6 +88,7 @@ function renderComparison() {
     renderOverview();
     renderInvestmentComparison();
     renderPriceComparison();
+    renderAreaComparison();  // 新增平均面积对比
     renderMarketScale();
     renderGrowthRates();
     renderVolatility();
@@ -253,6 +254,130 @@ function renderPriceComparison() {
         unitPrice: unitPriceData.map(c => ({ city: c.city, price: c.mean })),
         priceGap: comparisonData.price_comparison.price_gap,
         priceRatio: comparisonData.price_comparison.price_ratio
+    });
+}
+
+function renderAreaComparison() {
+    const areaData = comparisonData.overview.cities;
+    
+    // 排序：按平均面积降序
+    const sortedData = [...areaData].sort((a, b) => b.avg_area - a.avg_area);
+    
+    // 计算统计信息
+    const areas = areaData.map(c => c.avg_area);
+    const maxArea = Math.max(...areas);
+    const minArea = Math.min(...areas);
+    const avgArea = areas.reduce((sum, val) => sum + val, 0) / areas.length;
+    
+    // 面积统计卡片
+    const container = document.getElementById('area-stats');
+    container.innerHTML = `
+        <div class="stat-box">
+            <div class="stat-label">最大面积</div>
+            <div class="stat-value">${maxArea.toFixed(1)}<span class="stat-unit">m²</span></div>
+            <div class="stat-label" style="font-size: 0.85em; margin-top: 5px;">${sortedData[0].city}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">最小面积</div>
+            <div class="stat-value">${minArea.toFixed(1)}<span class="stat-unit">m²</span></div>
+            <div class="stat-label" style="font-size: 0.85em; margin-top: 5px;">${sortedData[sortedData.length - 1].city}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">全国平均</div>
+            <div class="stat-value">${avgArea.toFixed(1)}<span class="stat-unit">m²</span></div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">面积差距</div>
+            <div class="stat-value">${(maxArea - minArea).toFixed(1)}<span class="stat-unit">m²</span></div>
+        </div>
+    `;
+    
+    // 绘制平均面积对比图
+    const ctx = document.getElementById('area-comparison-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sortedData.map(c => c.city),
+            datasets: [{
+                label: '平均面积（m²）',
+                data: sortedData.map(c => c.avg_area),
+                backgroundColor: [
+                    'rgba(102, 126, 234, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(236, 72, 153, 0.8)',
+                    'rgba(6, 182, 212, 0.8)',
+                    'rgba(132, 204, 22, 0.8)',
+                    'rgba(249, 115, 22, 0.8)',
+                    'rgba(168, 85, 247, 0.8)',
+                    'rgba(14, 165, 233, 0.8)',
+                    'rgba(234, 179, 8, 0.8)',
+                    'rgba(217, 70, 239, 0.8)'
+                ].slice(0, sortedData.length),
+                borderColor: [
+                    'rgba(102, 126, 234, 1)',
+                    'rgba(139, 92, 246, 1)',
+                    'rgba(16, 185, 129, 1)',
+                    'rgba(245, 158, 11, 1)',
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(236, 72, 153, 1)',
+                    'rgba(6, 182, 212, 1)',
+                    'rgba(132, 204, 22, 1)',
+                    'rgba(249, 115, 22, 1)',
+                    'rgba(168, 85, 247, 1)',
+                    'rgba(14, 165, 233, 1)',
+                    'rgba(234, 179, 8, 1)',
+                    'rgba(217, 70, 239, 1)'
+                ].slice(0, sortedData.length),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: '各城市平均成交面积对比（m²）',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y.toFixed(1)} m²`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '平均面积（m²）'
+                    }
+                }
+            }
+        }
+    });
+    
+    // 保存数据供AI分析
+    saveChartData('area-comparison-chart', {
+        cities: sortedData.map(c => c.city),
+        areas: sortedData.map(c => ({ city: c.city, area: c.avg_area })),
+        maxArea: maxArea,
+        minArea: minArea,
+        avgArea: avgArea,
+        areaGap: maxArea - minArea
     });
 }
 

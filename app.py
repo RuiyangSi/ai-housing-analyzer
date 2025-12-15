@@ -512,6 +512,13 @@ def ai_chat_stream():
     user_message = data['message']
     city_name_en = data.get('city')
     
+    # 获取用户角色
+    user = session.get('user', {})
+    role = user.get('role', 'investment_advisor')
+    
+    # 获取全局数据概览
+    global_data = data.get('global_data')
+    
     # 获取城市数据（如果指定了城市）
     city_data = None
     if city_name_en:
@@ -529,10 +536,17 @@ def ai_chat_stream():
                 **stats
             }
     
+    # 合并全局数据和城市数据
+    context_data = {}
+    if global_data:
+        context_data['global_data'] = global_data
+    if city_data:
+        context_data['city_data'] = city_data
+    
     def generate():
         try:
-            # 调用 AI 助手的流式方法
-            for chunk in ai_assistant.chat_stream(user_message, city_data):
+            # 调用 AI 助手的流式方法（传递用户角色）
+            for chunk in ai_assistant.chat_stream(user_message, context_data if context_data else None, role=role):
                 yield f"data: {json.dumps({'content': chunk}, ensure_ascii=False)}\n\n"
             yield "data: [DONE]\n\n"
         except Exception as e:
