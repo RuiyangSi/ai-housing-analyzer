@@ -42,7 +42,7 @@
       "data_file": "data_河北_2023_2025.csv",
       "enabled": true,
       "icon": "🌾",
-      "cities": ["河北省"],
+      "cities": ["保定市"],
       "region": "华北"
     },
     {
@@ -51,7 +51,7 @@
       "data_file": "data_黑龙江_2023_2025.csv",
       "enabled": true,
       "icon": "❄️",
-      "cities": ["黑龙江省"],
+      "cities": ["哈尔滨市"],
       "region": "东北"
     },
     {
@@ -60,7 +60,7 @@
       "data_file": "data_江苏_2023_2025.csv",
       "enabled": true,
       "icon": "🌊",
-      "cities": ["江苏省"],
+      "cities": ["无锡市"],
       "region": "华东"
     },
     {
@@ -69,7 +69,7 @@
       "data_file": "data_吉林_2023_2025.csv",
       "enabled": true,
       "icon": "🌲",
-      "cities": ["吉林省"],
+      "cities": ["长春市"],
       "region": "东北"
     },
     {
@@ -78,7 +78,7 @@
       "data_file": "data_辽宁_2023_2025.csv",
       "enabled": true,
       "icon": "🏙️",
-      "cities": ["辽宁省"],
+      "cities": ["沈阳市"],
       "region": "东北"
     },
     {
@@ -87,7 +87,7 @@
       "data_file": "data_山西_2023_2025.csv",
       "enabled": true,
       "icon": "⛰️",
-      "cities": ["山西省"],
+      "cities": ["太原市"],
       "region": "华北"
     },
     {
@@ -96,7 +96,7 @@
       "data_file": "data_浙江_2023_2025.csv",
       "enabled": true,
       "icon": "🎋",
-      "cities": ["浙江省"],
+      "cities": ["宁波市"],
       "region": "华东"
     },
     {

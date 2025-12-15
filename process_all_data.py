@@ -44,15 +44,16 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
     print("="*80)
     
     # 特殊文件名映射（文件名 -> (省份, 城市)）
+    # 根据原始数据URL中的城市代码确定实际城市
     special_mappings = {
-        'anhui_deals': ('安徽', '合肥市'),
-        'hebei_all_deals_merged': ('河北', '河北省'),
-        'heilongjiang_deals': ('黑龙江', '黑龙江省'),
-        'jiangsu_deals': ('江苏', '江苏省'),
-        'jilin_deals': ('吉林', '吉林省'),
-        'liaoning_deals': ('辽宁', '辽宁省'),
-        'shanxi_deals': ('山西', '山西省'),
-        'zhejiang_deals': ('浙江', '浙江省'),
+        'anhui_deals': ('安徽', '合肥市'),           # hf.esf.fang.com
+        'hebei_all_deals_merged': ('河北', '保定市'), # bd.esf.fang.com
+        'heilongjiang_deals': ('黑龙江', '哈尔滨市'), # hrb.esf.fang.com
+        'jiangsu_deals': ('江苏', '无锡市'),         # wuxi.esf.fang.com
+        'jilin_deals': ('吉林', '长春市'),           # changchun
+        'liaoning_deals': ('辽宁', '沈阳市'),        # sy
+        'shanxi_deals': ('山西', '太原市'),          # taiyuan.esf.fang.com
+        'zhejiang_deals': ('浙江', '宁波市'),        # nb.esf.fang.com
     }
     
     # 扫描所有CSV文件

@@ -15,7 +15,7 @@
   "河北": {
     "province": "河北",
     "cities": [
-      "河北省"
+      "保定市"
     ],
     "total_count": 34435,
     "avg_price": 103.23,
@@ -28,7 +28,7 @@
   "黑龙江": {
     "province": "黑龙江",
     "cities": [
-      "黑龙江省"
+      "哈尔滨市"
     ],
     "total_count": 19184,
     "avg_price": 59.58,
@@ -41,7 +41,7 @@
   "江苏": {
     "province": "江苏",
     "cities": [
-      "江苏省"
+      "无锡市"
     ],
     "total_count": 18359,
     "avg_price": 110.27,
@@ -54,7 +54,7 @@
   "吉林": {
     "province": "吉林",
     "cities": [
-      "吉林省"
+      "长春市"
     ],
     "total_count": 33503,
     "avg_price": 48.85,
@@ -67,7 +67,7 @@
   "辽宁": {
     "province": "辽宁",
     "cities": [
-      "辽宁省"
+      "沈阳市"
     ],
     "total_count": 26897,
     "avg_price": 82.0,
@@ -80,7 +80,7 @@
   "山西": {
     "province": "山西",
     "cities": [
-      "山西省"
+      "太原市"
     ],
     "total_count": 37364,
     "avg_price": 106.6,
@@ -93,7 +93,7 @@
   "浙江": {
     "province": "浙江",
     "cities": [
-      "浙江省"
+      "宁波市"
     ],
     "total_count": 23693,
     "avg_price": 218.71,
