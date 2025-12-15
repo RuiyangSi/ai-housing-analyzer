@@ -27,6 +27,8 @@ cookies.txt
 
 # Data files (too large for git)
 data/raw/*.xlsx
+data/raw/*.csv
+data/raw/*.xls
 
 # Database
 *.db
