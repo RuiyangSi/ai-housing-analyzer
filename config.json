@@ -28,11 +28,83 @@
       "region": "华北"
     },
     {
+      "name": "安徽",
+      "name_en": "anhui",
+      "data_file": "data_安徽_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏔️",
+      "cities": ["合肥市"],
+      "region": "华东"
+    },
+    {
+      "name": "河北",
+      "name_en": "hebei",
+      "data_file": "data_河北_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌾",
+      "cities": ["河北省"],
+      "region": "华北"
+    },
+    {
+      "name": "黑龙江",
+      "name_en": "heilongjiang",
+      "data_file": "data_黑龙江_2023_2025.csv",
+      "enabled": true,
+      "icon": "❄️",
+      "cities": ["黑龙江省"],
+      "region": "东北"
+    },
+    {
+      "name": "江苏",
+      "name_en": "jiangsu",
+      "data_file": "data_江苏_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌊",
+      "cities": ["江苏省"],
+      "region": "华东"
+    },
+    {
+      "name": "吉林",
+      "name_en": "jilin",
+      "data_file": "data_吉林_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌲",
+      "cities": ["吉林省"],
+      "region": "东北"
+    },
+    {
+      "name": "辽宁",
+      "name_en": "liaoning",
+      "data_file": "data_辽宁_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏙️",
+      "cities": ["辽宁省"],
+      "region": "东北"
+    },
+    {
+      "name": "山西",
+      "name_en": "shanxi",
+      "data_file": "data_山西_2023_2025.csv",
+      "enabled": true,
+      "icon": "⛰️",
+      "cities": ["山西省"],
+      "region": "华北"
+    },
+    {
+      "name": "浙江",
+      "name_en": "zhejiang",
+      "data_file": "data_浙江_2023_2025.csv",
+      "enabled": true,
+      "icon": "🎋",
+      "cities": ["浙江省"],
+      "region": "华东"
+    },
+    {
       "name": "福建",
       "name_en": "fujian",
       "data_file": "data_福建_2023_2025.csv",
       "enabled": true,
-      "icon": "🌊",
+      "icon": "🏝️",
       "cities": ["厦门市", "漳州市", "福州市"],
       "region": "华东"
     },

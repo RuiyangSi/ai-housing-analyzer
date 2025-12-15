@@ -43,6 +43,18 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
     print("全国房价数据统一处理工具")
     print("="*80)
     
+    # 特殊文件名映射（文件名 -> (省份, 城市)）
+    special_mappings = {
+        'anhui_deals': ('安徽', '合肥市'),
+        'hebei_all_deals_merged': ('河北', '河北省'),
+        'heilongjiang_deals': ('黑龙江', '黑龙江省'),
+        'jiangsu_deals': ('江苏', '江苏省'),
+        'jilin_deals': ('吉林', '吉林省'),
+        'liaoning_deals': ('辽宁', '辽宁省'),
+        'shanxi_deals': ('山西', '山西省'),
+        'zhejiang_deals': ('浙江', '浙江省'),
+    }
+    
     # 扫描所有CSV文件
     csv_files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
     print(f"\n📁 发现 {len(csv_files)} 个数据文件")
@@ -50,7 +62,12 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
     # 按省份组织文件
     province_cities = {}
     for filename in sorted(csv_files):
-        if '-' in filename:
+        file_key = filename.replace('.csv', '')
+        
+        # 检查是否是特殊文件名
+        if file_key in special_mappings:
+            province, city = special_mappings[file_key]
+        elif '-' in filename:
             # 格式: "省份-城市.csv"
             parts = filename.replace('.csv', '').split('-')
             province = parts[0]
@@ -98,14 +115,14 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
                 
                 # 转换日期
                 df['成交日期'] = pd.to_datetime(df['deal_date'], format='mixed', errors='coerce')
-        
+                
                 # 筛选年份
-        start_date = f'{start_year}-01-01'
-        end_date = f'{end_year}-12-31'
+                start_date = f'{start_year}-01-01'
+                end_date = f'{end_year}-12-31'
                 df_filtered = df[(df['成交日期'] >= start_date) & (df['成交日期'] <= end_date)]
                 print(f"     {start_year}-{end_year}年数据: {len(df_filtered):,} 条")
-        
-        if len(df_filtered) == 0:
+                
+                if len(df_filtered) == 0:
                     print(f"     ⚠️  警告：没有 {start_year}-{end_year} 年的数据")
                     continue
                 
@@ -148,17 +165,17 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
         # 合并省份数据
         if province_data:
             province_df = pd.concat(province_data, ignore_index=True)
-        
+            
             # 保存省份数据
             output_file = os.path.join(output_dir, f'data_{province}_2023_2025.csv')
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
             
             province_df.to_csv(output_file, index=False, encoding='utf-8-sig')
-        
+            
             # 统计信息
             stats = {
-            'province': province,
+                'province': province,
                 'cities': [c['city'] for c in cities],
                 'total_count': int(len(province_df)),
                 'avg_price': round(float(province_df['成交价（万元）'].mean()), 2),

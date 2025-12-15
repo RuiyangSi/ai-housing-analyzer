@@ -1,4 +1,108 @@
 {
+  "安徽": {
+    "province": "安徽",
+    "cities": [
+      "合肥市"
+    ],
+    "total_count": 14569,
+    "avg_price": 149.04,
+    "median_price": 110.0,
+    "avg_unit_price": 15655.12,
+    "avg_area": 92.89,
+    "min_price": 4.0,
+    "max_price": 1448.0
+  },
+  "河北": {
+    "province": "河北",
+    "cities": [
+      "河北省"
+    ],
+    "total_count": 34435,
+    "avg_price": 103.23,
+    "median_price": 91.0,
+    "avg_unit_price": 10551.47,
+    "avg_area": 96.75,
+    "min_price": 1.0,
+    "max_price": 1608.0
+  },
+  "黑龙江": {
+    "province": "黑龙江",
+    "cities": [
+      "黑龙江省"
+    ],
+    "total_count": 19184,
+    "avg_price": 59.58,
+    "median_price": 52.0,
+    "avg_unit_price": 7104.25,
+    "avg_area": 81.94,
+    "min_price": 4.0,
+    "max_price": 470.0
+  },
+  "江苏": {
+    "province": "江苏",
+    "cities": [
+      "江苏省"
+    ],
+    "total_count": 18359,
+    "avg_price": 110.27,
+    "median_price": 100.0,
+    "avg_unit_price": 10160.59,
+    "avg_area": 107.38,
+    "min_price": 1.0,
+    "max_price": 1178.0
+  },
+  "吉林": {
+    "province": "吉林",
+    "cities": [
+      "吉林省"
+    ],
+    "total_count": 33503,
+    "avg_price": 48.85,
+    "median_price": 47.0,
+    "avg_unit_price": 5524.79,
+    "avg_area": 87.37,
+    "min_price": 3.0,
+    "max_price": 324.0
+  },
+  "辽宁": {
+    "province": "辽宁",
+    "cities": [
+      "辽宁省"
+    ],
+    "total_count": 26897,
+    "avg_price": 82.0,
+    "median_price": 69.0,
+    "avg_unit_price": 8742.06,
+    "avg_area": 91.73,
+    "min_price": 1.0,
+    "max_price": 1470.0
+  },
+  "山西": {
+    "province": "山西",
+    "cities": [
+      "山西省"
+    ],
+    "total_count": 37364,
+    "avg_price": 106.6,
+    "median_price": 87.0,
+    "avg_unit_price": 8986.1,
+    "avg_area": 114.15,
+    "min_price": 1.0,
+    "max_price": 2500.0
+  },
+  "浙江": {
+    "province": "浙江",
+    "cities": [
+      "浙江省"
+    ],
+    "total_count": 23693,
+    "avg_price": 218.71,
+    "median_price": 170.0,
+    "avg_unit_price": 21014.81,
+    "avg_area": 105.39,
+    "min_price": 5.0,
+    "max_price": 2320.0
+  },
   "上海": {
     "province": "上海",
     "cities": [
