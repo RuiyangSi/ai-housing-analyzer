@@ -1,22 +1,108 @@
 {
-  "cities": [
+  "provinces": [
     {
       "name": "北京",
       "name_en": "beijing",
-      "data_file": "data_beijing_2023_2025.csv",
-      "enabled": true
+      "data_file": "data_北京_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏛️",
+      "type": "municipality"
     },
     {
-      "name": "厦门",
-      "name_en": "xiamen",
-      "data_file": "data_xiamen_2023_2025.csv",
-      "enabled": true
+      "name": "上海",
+      "name_en": "shanghai",
+      "data_file": "data_上海_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌃",
+      "type": "municipality"
     },
     {
-      "name": "武汉",
-      "name_en": "wuhan",
-      "data_file": "data_wuhan_2023_2025.csv",
-      "enabled": true
+      "name": "天津",
+      "name_en": "tianjin",
+      "data_file": "data_天津_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌉",
+      "type": "municipality"
+    },
+    {
+      "name": "福建",
+      "name_en": "fujian",
+      "data_file": "data_福建_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌊",
+      "cities": ["厦门市", "漳州市", "福州市"]
+    },
+    {
+      "name": "山东",
+      "name_en": "shandong",
+      "data_file": "data_山东_2023_2025.csv",
+      "enabled": true,
+      "icon": "⛰️",
+      "cities": ["济南市", "淄博市", "青岛市"]
+    },
+    {
+      "name": "河南",
+      "name_en": "henan",
+      "data_file": "data_河南_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏯",
+      "cities": ["新乡市", "洛阳市", "郑州市"]
+    },
+    {
+      "name": "江西",
+      "name_en": "jiangxi",
+      "data_file": "data_江西_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏞️",
+      "cities": ["九江", "南昌市", "赣州市"]
+    },
+    {
+      "name": "湖南",
+      "name_en": "hunan",
+      "data_file": "data_湖南_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌸",
+      "cities": ["岳阳市", "株洲市", "长沙市"]
+    },
+    {
+      "name": "湖北",
+      "name_en": "hubei",
+      "data_file": "data_湖北_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏔️",
+      "cities": ["襄阳市"]
+    },
+    {
+      "name": "广西",
+      "name_en": "guangxi",
+      "data_file": "data_广西_2023_2025.csv",
+      "enabled": true,
+      "icon": "🌴",
+      "cities": ["南宁市", "柳州市", "桂林市"]
+    },
+    {
+      "name": "宁夏",
+      "name_en": "ningxia",
+      "data_file": "data_宁夏_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏜️",
+      "cities": ["银川市"]
+    },
+    {
+      "name": "内蒙古",
+      "name_en": "neimenggu",
+      "data_file": "data_内蒙古_2023_2025.csv",
+      "enabled": true,
+      "icon": "🐎",
+      "cities": ["包头市", "呼和浩特市"]
+    },
+    {
+      "name": "新疆",
+      "name_en": "xinjiang",
+      "data_file": "data_新疆_2023_2025.csv",
+      "enabled": true,
+      "icon": "🏔️",
+      "cities": ["乌鲁木齐市"]
     }
   ],
   "data_directory": "data/processed",
@@ -25,4 +111,3 @@
     "end": 2025
   }
 }
-

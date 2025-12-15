@@ -143,28 +143,38 @@ class DataManager:
         self.config = self.load_config()
         self.data_cache = {}  # 清空缓存
     
-    def get_enabled_cities(self):
-        """获取启用的城市列表"""
-        return [city for city in self.config['cities'] if city['enabled']]
+    def get_enabled_provinces(self):
+        """获取启用的省份列表"""
+        return [province for province in self.config.get('provinces', []) if province['enabled']]
     
-    def load_city_data(self, city_name_en):
-        """加载指定城市的数据"""
+    def get_enabled_cities(self):
+        """获取启用的城市列表（兼容旧版本）"""
+        # 如果配置中有provinces，返回provinces
+        if 'provinces' in self.config:
+            return self.get_enabled_provinces()
+        # 否则返回cities（兼容旧版本）
+        return [city for city in self.config.get('cities', []) if city['enabled']]
+    
+    def load_city_data(self, province_name_en):
+        """加载指定省份/城市的数据"""
         # 检查缓存
-        if city_name_en in self.data_cache:
-            return self.data_cache[city_name_en]
+        if province_name_en in self.data_cache:
+            return self.data_cache[province_name_en]
         
-        # 查找城市配置
-        city_config = None
-        for city in self.config['cities']:
-            if city['name_en'] == city_name_en and city['enabled']:
-                city_config = city
+        # 查找省份配置（兼容新旧版本）
+        province_config = None
+        config_list = self.config.get('provinces', self.config.get('cities', []))
+        
+        for item in config_list:
+            if item['name_en'] == province_name_en and item['enabled']:
+                province_config = item
                 break
         
-        if not city_config:
+        if not province_config:
             return None
         
         # 加载数据
-        data_path = os.path.join(self.config['data_directory'], city_config['data_file'])
+        data_path = os.path.join(self.config['data_directory'], province_config['data_file'])
         if not os.path.exists(data_path):
             return None
         
@@ -172,12 +182,12 @@ class DataManager:
         df['成交日期'] = pd.to_datetime(df['成交日期'])
         
         # 缓存数据
-        self.data_cache[city_name_en] = df
+        self.data_cache[province_name_en] = df
         return df
     
-    def get_city_statistics(self, city_name_en):
-        """获取城市统计数据"""
-        df = self.load_city_data(city_name_en)
+    def get_city_statistics(self, province_name_en):
+        """获取省份/城市统计数据"""
+        df = self.load_city_data(province_name_en)
         if df is None or len(df) == 0:
             return None
         
@@ -213,21 +223,46 @@ class DataManager:
                 'count': int(row['面积（m²）'])
             })
         
-        # 区域统计
-        district_stats = df.groupby('区域').agg({
-            '成交价（万元）': 'mean',
-            '成交单价（元）': 'mean',
-            '面积（m²）': 'count'
-        }).reset_index().sort_values('成交单价（元）', ascending=False).head(10)
-        
-        district_data = []
-        for _, row in district_stats.iterrows():
-            district_data.append({
-                'district': row['区域'],
-                'avg_price': round(float(row['成交价（万元）']), 2),
-                'avg_unit_price': round(float(row['成交单价（元）']), 2),
-                'count': int(row['面积（m²）'])
-            })
+        # 区域统计（包含城市信息）
+        # 先检查是否有城市字段
+        if '城市' in df.columns:
+            # 按城市和区域分组
+            district_stats = df.groupby(['城市', '区域']).agg({
+                '成交价（万元）': 'mean',
+                '成交单价（元）': 'mean',
+                '面积（m²）': 'count'
+            }).reset_index().sort_values('成交单价（元）', ascending=False).head(10)
+            
+            district_data = []
+            for _, row in district_stats.iterrows():
+                # 格式化显示：城市 - 区域
+                district_label = f"{row['城市']} - {row['区域']}" if pd.notna(row['城市']) else row['区域']
+                district_data.append({
+                    'district': district_label,
+                    'city': row['城市'] if pd.notna(row['城市']) else '',
+                    'area': row['区域'],
+                    'avg_price': round(float(row['成交价（万元）']), 2),
+                    'avg_unit_price': round(float(row['成交单价（元）']), 2),
+                    'count': int(row['面积（m²）'])
+                })
+        else:
+            # 兼容旧数据格式（没有城市字段）
+            district_stats = df.groupby('区域').agg({
+                '成交价（万元）': 'mean',
+                '成交单价（元）': 'mean',
+                '面积（m²）': 'count'
+            }).reset_index().sort_values('成交单价（元）', ascending=False).head(10)
+            
+            district_data = []
+            for _, row in district_stats.iterrows():
+                district_data.append({
+                    'district': row['区域'],
+                    'city': '',
+                    'area': row['区域'],
+                    'avg_price': round(float(row['成交价（万元）']), 2),
+                    'avg_unit_price': round(float(row['成交单价（元）']), 2),
+                    'count': int(row['面积（m²）'])
+                })
         
         # 总体统计
         overall_stats = {
@@ -364,9 +399,54 @@ def get_current_user():
 @login_required
 def index():
     """主页"""
-    cities = data_manager.get_enabled_cities()
+    provinces = data_manager.get_enabled_provinces()
     user = session.get('user', {})
-    return render_template('home.html', cities=cities, user=user, active_page='home')
+    
+    # 计算总数据量和每个省份的数据量
+    total_records = 0
+    province_data_stats = []
+    
+    for province in provinces:
+        try:
+            df = data_manager.load_city_data(province['name_en'])
+            if df is not None:
+                province_count = len(df)
+                total_records += province_count
+                province_data_stats.append({
+                    'name': province['name'],
+                    'name_en': province['name_en'],
+                    'count': province_count,
+                    'icon': province.get('icon', '🏙️')
+                })
+            else:
+                province_data_stats.append({
+                    'name': province['name'],
+                    'name_en': province['name_en'],
+                    'count': 0,
+                    'icon': province.get('icon', '🏙️')
+                })
+        except Exception as e:
+            logger.warning(f"加载 {province['name']} 数据失败: {e}")
+            province_data_stats.append({
+                'name': province['name'],
+                'name_en': province['name_en'],
+                'count': 0,
+                'icon': province.get('icon', '🏙️')
+            })
+    
+    # 计算占比
+    for province_stat in province_data_stats:
+        if total_records > 0:
+            province_stat['percentage'] = round((province_stat['count'] / total_records) * 100, 1)
+        else:
+            province_stat['percentage'] = 0
+    
+    # 格式化数据量（以万为单位）
+    total_records_display = f"{int(total_records / 10000)}万+" if total_records >= 10000 else str(total_records)
+    
+    return render_template('home.html', cities=provinces, user=user, active_page='home', 
+                         total_records=total_records_display, city_count=len(provinces),
+                         city_data_stats=province_data_stats)
 
 @app.route('/api/cities')
 def get_cities():

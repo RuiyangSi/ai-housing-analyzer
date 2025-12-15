@@ -63,6 +63,344 @@
         to { opacity: 1; transform: translateY(0); }
     }
     
+    /* 数据分布可视化区域 */
+    .data-distribution-section {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        animation: slideUp 0.6s ease-out 0.15s backwards;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .data-distribution-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .distribution-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .distribution-title h2 {
+        font-size: 1.8em;
+        font-weight: 800;
+        margin: 0 0 8px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .distribution-title p {
+        color: #64748b;
+        font-size: 1em;
+        margin: 0;
+    }
+    
+    .distribution-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 380px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .chart-center-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+    }
+    
+    .center-value {
+        font-size: 3em;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+    
+    .center-label {
+        font-size: 0.9em;
+        color: #64748b;
+        font-weight: 600;
+    }
+    
+    .city-legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        max-height: 450px;
+        overflow-y: auto;
+        padding-right: 8px;
+    }
+    
+    /* 滚动条美化 */
+    .city-legend::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .city-legend::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+    }
+    
+    .city-legend::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 3px;
+    }
+    
+    .city-legend::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+    
+    .legend-item:hover {
+        transform: translateX(8px);
+        border-color: #667eea;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+    }
+    
+    .legend-color {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    .legend-color.color-0 {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .legend-color.color-1 {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .legend-color.color-2 {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .legend-color.color-3 {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    .legend-color.color-4 {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    .legend-color.color-5 {
+        background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+    }
+    
+    .legend-color.color-6 {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+    
+    .legend-color.color-7 {
+        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    }
+    
+    .legend-color.color-8 {
+        background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+    }
+    
+    .legend-color.color-9 {
+        background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
+    }
+    
+    .legend-color.color-10 {
+        background: linear-gradient(135deg, #84cc16 0%, #a3e635 100%);
+    }
+    
+    .legend-color.color-11 {
+        background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+    }
+    
+    .legend-color.color-12 {
+        background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+    }
+    
+    .legend-item:hover .legend-color {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .legend-info {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .legend-city {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .city-icon {
+        font-size: 1.2em;
+    }
+    
+    .legend-city .city-name {
+        font-size: 0.95em;
+        font-weight: 700;
+        color: #1e293b;
+        white-space: nowrap;
+    }
+    
+    .legend-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+        margin-left: auto;
+    }
+    
+    .legend-stats .count {
+        font-size: 0.9em;
+        font-weight: 700;
+        color: #667eea;
+        white-space: nowrap;
+    }
+    
+    .legend-stats .percentage {
+        font-size: 0.75em;
+        color: #64748b;
+        font-weight: 600;
+        background: white;
+        padding: 1px 8px;
+        border-radius: 10px;
+    }
+    
+    @media (max-width: 1200px) {
+        .city-legend {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 1024px) {
+        .distribution-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        
+        .chart-container {
+            height: 320px;
+        }
+        
+        .city-legend {
+            grid-template-columns: 1fr 1fr;
+            max-height: none;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .city-legend {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    /* 深色模式 */
+    body.dark-mode .data-distribution-section {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border: 1px solid #475569;
+    }
+    
+    body.dark-mode .distribution-title h2 {
+        background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    body.dark-mode .distribution-title p {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .legend-item {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: 1px solid #334155;
+    }
+    
+    body.dark-mode .legend-item:hover {
+        border-color: #818cf8;
+    }
+    
+    body.dark-mode .legend-city .city-name {
+        color: #f1f5f9;
+    }
+    
+    body.dark-mode .legend-stats .count {
+        color: #818cf8;
+    }
+    
+    body.dark-mode .legend-stats .percentage {
+        background: #0f172a;
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .center-value {
+        background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    body.dark-mode .center-label {
+        color: #94a3b8;
+    }
+    
+    body.dark-mode .city-legend::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .city-legend::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    }
+    
+    body.dark-mode .city-legend::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+    }
+    
     /* AI 亮点展示区域 */
     .ai-highlights {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -688,7 +1026,7 @@
     <!-- 欢迎区域 -->
     <div class="welcome-section">
         <h1>👋 欢迎，{{ user.username if user else '用户' }}！</h1>
-        <p>这是一个 <strong>AI驱动</strong> 的智能购房决策平台，基于 32万+ 条真实成交数据，为您提供专业的房价分析和个性化购房建议。</p>
+        <p>这是一个 <strong>AI驱动</strong> 的智能购房决策平台，基于 {{ total_records }} 条真实成交数据，为您提供专业的房价分析和个性化购房建议。</p>
     </div>
     
     <!-- AI 亮点展示 -->
@@ -731,29 +1069,42 @@
         </div>
     </div>
     
-    <!-- 数据统计 -->
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
-            <div class="stat-value">32万+</div>
-            <div class="stat-label">真实成交数据</div>
+    <!-- 数据分布可视化 -->
+    <div class="data-distribution-section">
+        <div class="distribution-header">
+            <div class="distribution-title">
+                <h2>📊 全国数据分布全景</h2>
+                <p>覆盖全国13个省级行政区，{{ total_records }}真实成交数据</p>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon">🏙️</div>
-            <div class="stat-value">3</div>
-            <div class="stat-label">覆盖城市</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🤖</div>
-            <div class="stat-value">AI</div>
-            <div class="stat-label">智能分析</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📈</div>
-            <div class="stat-value">2023-2025</div>
-            <div class="stat-label">数据时间跨度</div>
+        <div class="distribution-content">
+            <div class="chart-container">
+                <canvas id="cityDataChart"></canvas>
+                <div class="chart-center-text">
+                    <div class="center-value">{{ total_records }}</div>
+                    <div class="center-label">总数据量</div>
+                </div>
+            </div>
+            <div class="city-legend">
+                {% for city_stat in city_data_stats %}
+                <div class="legend-item" data-city="{{ city_stat.name_en }}">
+                    <div class="legend-color color-{{ loop.index0 }}"></div>
+                    <div class="legend-info">
+                        <div class="legend-city">
+                            <span class="city-icon">{{ city_stat.icon }}</span>
+                            <span class="city-name">{{ city_stat.name }}</span>
+                        </div>
+                        <div class="legend-stats">
+                            <span class="count">{{ "{:,}".format(city_stat.count) }}套</span>
+                            <span class="percentage">{{ city_stat.percentage }}%</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+    
     
     <!-- 城市数据 -->
     <div class="cities-section">
@@ -763,9 +1114,7 @@
             <div class="city-card" onclick="loadCityDetail('{{ city.name_en }}', '{{ city.name }}')" id="card-{{ city.name_en }}">
                 <div class="city-header">
                     <span class="city-name">{{ city.name }}</span>
-                    <span class="city-icon">
-                        {% if city.name_en == 'beijing' %}🏛️{% elif city.name_en == 'xiamen' %}🌊{% else %}🌸{% endif %}
-                    </span>
+                    <span class="city-icon">{{ city.icon }}</span>
                 </div>
                 <div class="city-stats">
                     <div class="city-stat">
@@ -995,29 +1344,53 @@
 
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="application/json" id="cityDataStats">
+{{ city_data_stats | tojson }}
+</script>
 <script>
     let monthlyChart = null;
     let districtChart = null;
     let currentCityData = null;
+    let cityDataChart = null;
     
-    // 加载城市数据
+    // 加载省份数据
     async function loadCityStats() {
-        const cities = ['beijing', 'xiamen', 'wuhan'];
-        for (const city of cities) {
+        // 从页面获取所有省份
+        const cityCards = document.querySelectorAll('.city-card');
+        const provinces = Array.from(cityCards).map(card => card.id.replace('card-', ''));
+        
+        console.log('开始加载省份数据:', provinces);
+        
+        // 并行加载所有省份数据
+        const loadPromises = provinces.map(async (province) => {
             try {
-                const response = await fetch(`/api/city/${city}/statistics`);
+                console.log(`请求 ${province} 数据...`);
+                const response = await fetch(`/api/city/${province}/statistics`);
                 const stats = await response.json();
                 
+                console.log(`${province} 数据:`, stats);
+                
                 if (stats && stats.overall) {
-                    document.getElementById(`count-${city}`).textContent = 
-                        (stats.overall.total_count / 10000).toFixed(1) + '万';
-                    document.getElementById(`price-${city}`).textContent = 
-                        (stats.overall.avg_price).toFixed(0) + '万';
+                    const countEl = document.getElementById(`count-${province}`);
+                    const priceEl = document.getElementById(`price-${province}`);
+                    
+                    if (countEl) {
+                        const count = stats.overall.total_count;
+                        countEl.textContent = count >= 10000 ? (count / 10000).toFixed(1) + '万' : count.toLocaleString();
+                    }
+                    if (priceEl) {
+                        priceEl.textContent = (stats.overall.avg_price).toFixed(0) + '万';
+                    }
+                } else {
+                    console.warn(`${province} 没有统计数据`);
                 }
             } catch (error) {
-                console.error(`加载${city}数据失败:`, error);
+                console.error(`加载${province}数据失败:`, error);
             }
-        }
+        });
+        
+        await Promise.all(loadPromises);
+        console.log('所有省份数据加载完成');
     }
     
     // 加载城市详情
@@ -1034,7 +1407,7 @@
             if (stats && stats.overall) {
                 currentCityData = stats;
                 
-                const icons = { beijing: '🏛️', xiamen: '🌊', wuhan: '🌸' };
+                const icons = { beijing: '🏛️', shanghai: '🌃', tianjin: '🌉', xiamen: '🌊', wuhan: '🌸' };
                 document.getElementById('detail-city-icon').textContent = icons[cityEn] || '🏙️';
                 document.getElementById('detail-city-name').textContent = cityName;
                 
@@ -1315,7 +1688,135 @@
         }
     }
     
-    document.addEventListener('DOMContentLoaded', loadCityStats);
+    // 初始化城市数据分布图表
+    function initCityDataChart() {
+        const ctx = document.getElementById('cityDataChart');
+        if (!ctx) return;
+        
+        const cityDataElement = document.getElementById('cityDataStats');
+        const cityData = cityDataElement ? JSON.parse(cityDataElement.textContent) : [];
+        
+        // 定义渐变色
+        const gradients = [
+            { start: '#667eea', end: '#764ba2' },  // 紫色
+            { start: '#f093fb', end: '#f5576c' },  // 粉红
+            { start: '#4facfe', end: '#00f2fe' },  // 蓝色
+            { start: '#43e97b', end: '#38f9d7' },  // 绿色
+            { start: '#fa709a', end: '#fee140' }   // 橙色
+        ];
+        
+        // 创建渐变色
+        const colors = gradients.map((gradient, index) => {
+            const canvas = document.createElement('canvas');
+            const tempCtx = canvas.getContext('2d');
+            const grd = tempCtx.createLinearGradient(0, 0, 0, 400);
+            grd.addColorStop(0, gradient.start);
+            grd.addColorStop(1, gradient.end);
+            return grd;
+        });
+        
+        // 使用纯色作为后备（13种颜色对应13个省份）
+        const solidColors = [
+            '#667eea',  // 紫色
+            '#f5576c',  // 粉红
+            '#00f2fe',  // 蓝色
+            '#38f9d7',  // 青色
+            '#fee140',  // 黄色
+            '#8b5cf6',  // 紫罗兰
+            '#10b981',  // 绿色
+            '#f59e0b',  // 橙色
+            '#ec4899',  // 粉色
+            '#06b6d4',  // 天蓝
+            '#84cc16',  // 青柠
+            '#f97316',  // 深橙
+            '#a78bfa'   // 淡紫
+        ];
+        
+        cityDataChart = new Chart(ctx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: cityData.map(city => city.name),
+                datasets: [{
+                    data: cityData.map(city => city.count),
+                    backgroundColor: solidColors,
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    spacing: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 16,
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return [
+                                    `数据量: ${value.toLocaleString()} 套`,
+                                    `占比: ${percentage}%`
+                                ];
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                onHover: (event, activeElements) => {
+                    event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                }
+            }
+        });
+        
+        // 添加图例项hover效果
+        const legendItems = document.querySelectorAll('.legend-item');
+        legendItems.forEach((item, index) => {
+            item.addEventListener('mouseenter', () => {
+                // 高亮对应的扇形
+                cityDataChart.setActiveElements([{
+                    datasetIndex: 0,
+                    index: index
+                }]);
+                cityDataChart.update();
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                cityDataChart.setActiveElements([]);
+                cityDataChart.update();
+            });
+            
+            item.addEventListener('click', () => {
+                const cityEn = item.getAttribute('data-city');
+                loadCityDetail(cityEn, cityData[index].name);
+            });
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCityStats();
+        initCityDataChart();
+    });
 </script>
 <style>
     @keyframes loading {
