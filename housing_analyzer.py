@@ -44,7 +44,8 @@ class HousingAnalyzer:
             'investment_index': self.calculate_investment_index(),
             'violin_data': self.analyze_price_violin_data(),
             'heatmap_data': self.analyze_district_heatmap_data(),
-            'waterfall_data': self.analyze_price_waterfall_data()
+            'waterfall_data': self.analyze_price_waterfall_data(),
+            'house_type_analysis': self.analyze_house_type()  # 新增：户型分析
         }
     
     def analyze_basic_statistics(self) -> Dict[str, Any]:
@@ -554,4 +555,135 @@ class HousingAnalyzer:
             return '市场表现欠佳，存在一定风险，不建议短期投资。'
         else:
             return '市场表现较差，风险较高，建议观望或考虑其他城市。'
+    
+    def analyze_house_type(self) -> Dict[str, Any]:
+        """
+        户型分析（几室几厅）
+        
+        分析内容：
+        1. 户型分布（各种户型的占比）
+        2. 不同户型的价格统计
+        3. 户型与面积的关系
+        4. 户型的价格趋势
+        5. 主流户型分析
+        """
+        if '户型' not in self.df.columns or self.df['户型'].isna().all():
+            return {
+                'available': False,
+                'message': '该城市数据中没有户型信息'
+            }
+        
+        # 清洗户型数据（去除空值）
+        df_with_type = self.df[self.df['户型'].notna()].copy()
+        
+        if len(df_with_type) == 0:
+            return {
+                'available': False,
+                'message': '该城市数据中没有有效的户型信息'
+            }
+        
+        # 1. 户型分布统计
+        type_distribution = df_with_type['户型'].value_counts()
+        distribution_data = []
+        
+        for house_type, count in type_distribution.head(15).items():  # 取前15种户型
+            percentage = (count / len(df_with_type)) * 100
+            avg_price = df_with_type[df_with_type['户型'] == house_type]['成交价（万元）'].mean()
+            avg_unit_price = df_with_type[df_with_type['户型'] == house_type]['成交单价（元）'].mean()
+            avg_area = df_with_type[df_with_type['户型'] == house_type]['面积（m²）'].mean()
+            
+            distribution_data.append({
+                'house_type': house_type,
+                'count': int(count),
+                'percentage': round(float(percentage), 2),
+                'avg_price': round(float(avg_price), 2),
+                'avg_unit_price': round(float(avg_unit_price), 2),
+                'avg_area': round(float(avg_area), 2)
+            })
+        
+        # 2. 主流户型分析
+        main_type = type_distribution.index[0] if len(type_distribution) > 0 else '未知'
+        main_percentage = (type_distribution.values[0] / len(df_with_type)) * 100 if len(type_distribution) > 0 else 0
+        
+        # 3. 按室数统计（提取"X室"）
+        df_with_type['室数'] = df_with_type['户型'].str.extract(r'(\d+)室')[0]
+        df_with_type['室数'] = pd.to_numeric(df_with_type['室数'], errors='coerce')
+        
+        room_stats = []
+        for room_num in sorted(df_with_type['室数'].dropna().unique()):
+            room_data = df_with_type[df_with_type['室数'] == room_num]
+            room_stats.append({
+                'room_count': int(room_num),
+                'label': f'{int(room_num)}室',
+                'count': int(len(room_data)),
+                'percentage': round(float((len(room_data) / len(df_with_type)) * 100), 2),
+                'avg_price': round(float(room_data['成交价（万元）'].mean()), 2),
+                'avg_unit_price': round(float(room_data['成交单价（元）'].mean()), 2),
+                'avg_area': round(float(room_data['面积（m²）'].mean()), 2),
+                'price_range': [
+                    round(float(room_data['成交价（万元）'].quantile(0.25)), 2),
+                    round(float(room_data['成交价（万元）'].quantile(0.75)), 2)
+                ]
+            })
+        
+        # 4. 户型价格趋势（按月）
+        type_trend_data = []
+        top_types = type_distribution.head(5).index.tolist()  # 分析前5种户型
+        
+        for house_type in top_types:
+            monthly_trend = df_with_type[df_with_type['户型'] == house_type].groupby('年月').agg({
+                '成交价（万元）': 'mean',
+                '成交单价（元）': 'mean'
+            }).reset_index()
+            
+            monthly_trend['年月'] = monthly_trend['年月'].astype(str)
+            
+            type_trend_data.append({
+                'house_type': house_type,
+                'trend': [
+                    {
+                        'month': row['年月'],
+                        'avg_price': round(float(row['成交价（万元）']), 2),
+                        'avg_unit_price': round(float(row['成交单价（元）']), 2)
+                    }
+                    for _, row in monthly_trend.iterrows()
+                ]
+            })
+        
+        # 5. 户型与面积的关系分析
+        type_area_relation = []
+        for house_type in type_distribution.head(10).index:
+            type_data = df_with_type[df_with_type['户型'] == house_type]
+            type_area_relation.append({
+                'house_type': house_type,
+                'min_area': round(float(type_data['面积（m²）'].min()), 2),
+                'avg_area': round(float(type_data['面积（m²）'].mean()), 2),
+                'max_area': round(float(type_data['面积（m²）'].max()), 2),
+                'area_std': round(float(type_data['面积（m²）'].std()), 2)
+            })
+        
+        # 6. 总结分析
+        summary = {
+            'total_types': int(len(type_distribution)),
+            'main_type': main_type,
+            'main_percentage': round(float(main_percentage), 2),
+            'data_coverage': round(float((len(df_with_type) / len(self.df)) * 100), 2),
+            'most_expensive_type': distribution_data[0]['house_type'] if distribution_data else '未知',
+            'most_expensive_avg_price': distribution_data[0]['avg_price'] if distribution_data else 0
+        }
+        
+        # 找出最贵的户型（按平均单价）
+        sorted_by_price = sorted(distribution_data, key=lambda x: x['avg_unit_price'], reverse=True)
+        if sorted_by_price:
+            summary['most_expensive_type'] = sorted_by_price[0]['house_type']
+            summary['most_expensive_unit_price'] = sorted_by_price[0]['avg_unit_price']
+        
+        return {
+            'available': True,
+            'distribution': distribution_data,
+            'room_statistics': room_stats,
+            'type_trends': type_trend_data,
+            'type_area_relation': type_area_relation,
+            'summary': summary
+        }
 

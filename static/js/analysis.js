@@ -104,6 +104,11 @@ function renderAnalysis() {
     renderPriceRangeECharts(analysisData.price_range, 'price-range-chart');
     renderAreaDistributionECharts(analysisData.area_analysis, 'area-chart');
     
+    // 渲染户型分析
+    if (analysisData.house_type_analysis && analysisData.house_type_analysis.available) {
+        renderHouseTypeAnalysis();
+    }
+    
     renderDistrictAnalysis();
     renderSeasonality();
 }
@@ -525,4 +530,400 @@ function renderMarkdownAnalysis(text) {
         .replace(/class="md-p"/g, 'style="margin: 12px 0; line-height: 1.85; color: var(--md-text, #374151);"');
     
     return html;
+}
+
+// ==================== 户型分析渲染函数 ====================
+
+function renderHouseTypeAnalysis() {
+    const houseTypeData = analysisData.house_type_analysis;
+    
+    if (!houseTypeData || !houseTypeData.available) {
+        console.log('[HouseType] 该城市没有户型数据');
+        return;
+    }
+    
+    console.log('[HouseType] 开始渲染户型分析');
+    
+    // 显示户型分析区块
+    const section = document.getElementById('house-type-section');
+    if (section) {
+        section.style.display = 'block';
+    }
+    
+    // 渲染统计卡片
+    renderHouseTypeSummary(houseTypeData.summary);
+    
+    // 渲染各个图表
+    renderHouseTypeDistribution(houseTypeData.distribution);
+    renderHouseTypePriceChart(houseTypeData.distribution);
+    renderRoomStatisticsChart(houseTypeData.room_statistics);
+    renderHouseTypeTrendChart(houseTypeData.type_trends);
+}
+
+function renderHouseTypeSummary(summary) {
+    const container = document.getElementById('house-type-summary');
+    if (!container || !summary) return;
+    
+    const cards = [
+        {
+            icon: '🏠',
+            title: '主流户型',
+            value: summary.main_type || '未知',
+            desc: `占比 ${summary.main_percentage}%`
+        },
+        {
+            icon: '📊',
+            title: '户型种类',
+            value: `${summary.total_types}种`,
+            desc: `数据覆盖 ${summary.data_coverage}%`
+        },
+        {
+            icon: '💰',
+            title: '最贵户型',
+            value: summary.most_expensive_type || '未知',
+            desc: `均价 ${summary.most_expensive_unit_price || 0}元/㎡`
+        }
+    ];
+    
+    container.innerHTML = cards.map(card => `
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 20px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 2em; margin-bottom: 10px;">${card.icon}</div>
+            <div style="color: #64748b; font-size: 0.85em; margin-bottom: 5px;">${card.title}</div>
+            <div style="font-size: 1.4em; font-weight: 700; color: #1e293b; margin-bottom: 5px;">${card.value}</div>
+            <div style="color: #94a3b8; font-size: 0.8em;">${card.desc}</div>
+        </div>
+    `).join('');
+}
+
+function renderHouseTypeDistribution(distribution) {
+    if (!distribution || distribution.length === 0) return;
+    
+    const chartDom = document.getElementById('house-type-distribution-chart');
+    if (!chartDom) return;
+    
+    const myChart = echarts.init(chartDom);
+    
+    // 取前10个户型
+    const top10 = distribution.slice(0, 10);
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} 套 ({d}%)'
+        },
+        legend: {
+            orient: 'vertical',
+            right: 10,
+            top: 'center',
+            textStyle: {
+                fontSize: 12
+            }
+        },
+        series: [
+            {
+                name: '户型分布',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 10,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 20,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: top10.map(item => ({
+                    name: item.house_type,
+                    value: item.count
+                }))
+            }
+        ],
+        color: ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e', '#fb923c', '#fbbf24', '#34d399', '#22d3ee']
+    };
+    
+    myChart.setOption(option);
+    
+    // 响应式
+    window.addEventListener('resize', () => myChart.resize());
+}
+
+function renderHouseTypePriceChart(distribution) {
+    if (!distribution || distribution.length === 0) return;
+    
+    const chartDom = document.getElementById('house-type-price-chart');
+    if (!chartDom) return;
+    
+    const myChart = echarts.init(chartDom);
+    
+    // 取前10个户型
+    const top10 = distribution.slice(0, 10);
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+            formatter: function(params) {
+                const data = params[0];
+                const item = top10[data.dataIndex];
+                return `<strong>${item.house_type}</strong><br/>
+                        平均总价：${item.avg_price} 万元<br/>
+                        平均单价：${item.avg_unit_price} 元/㎡<br/>
+                        平均面积：${item.avg_area} ㎡`;
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: top10.map(item => item.house_type),
+            axisLabel: {
+                rotate: 30,
+                fontSize: 11
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '平均价格（万元）'
+        },
+        series: [
+            {
+                name: '平均价格',
+                type: 'bar',
+                data: top10.map(item => item.avg_price),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#667eea' },
+                        { offset: 1, color: '#764ba2' }
+                    ]),
+                    borderRadius: [8, 8, 0, 0]
+                },
+                label: {
+                    show: true,
+                    position: 'top',
+                    fontSize: 10,
+                    formatter: '{c}万'
+                }
+            }
+        ],
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%',
+            top: '10%',
+            containLabel: true
+        }
+    };
+    
+    myChart.setOption(option);
+    window.addEventListener('resize', () => myChart.resize());
+}
+
+function renderRoomStatisticsChart(roomStats) {
+    if (!roomStats || roomStats.length === 0) return;
+    
+    const chartDom = document.getElementById('room-statistics-chart');
+    if (!chartDom) return;
+    
+    const myChart = echarts.init(chartDom);
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross'
+            }
+        },
+        legend: {
+            data: ['成交量', '平均总价', '平均单价', '平均面积'],
+            top: 10
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: roomStats.map(item => item.label),
+            axisLabel: {
+                fontSize: 12
+            }
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '成交量（套）',
+                position: 'left',
+                axisLabel: {
+                    formatter: '{value} 套'
+                }
+            },
+            {
+                type: 'value',
+                name: '价格/面积',
+                position: 'right'
+            }
+        ],
+        series: [
+            {
+                name: '成交量',
+                type: 'bar',
+                yAxisIndex: 0,
+                data: roomStats.map(item => item.count),
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#6366f1' },
+                        { offset: 1, color: '#8b5cf6' }
+                    ])
+                }
+            },
+            {
+                name: '平均总价',
+                type: 'line',
+                yAxisIndex: 1,
+                data: roomStats.map(item => item.avg_price),
+                smooth: true,
+                lineStyle: {
+                    width: 3,
+                    color: '#f59e0b'
+                },
+                itemStyle: {
+                    color: '#f59e0b'
+                }
+            },
+            {
+                name: '平均单价',
+                type: 'line',
+                yAxisIndex: 1,
+                data: roomStats.map(item => (item.avg_unit_price / 1000).toFixed(2)),  // 转换为千元
+                smooth: true,
+                lineStyle: {
+                    width: 3,
+                    color: '#ef4444'
+                },
+                itemStyle: {
+                    color: '#ef4444'
+                }
+            },
+            {
+                name: '平均面积',
+                type: 'line',
+                yAxisIndex: 1,
+                data: roomStats.map(item => item.avg_area),
+                smooth: true,
+                lineStyle: {
+                    width: 3,
+                    color: '#10b981'
+                },
+                itemStyle: {
+                    color: '#10b981'
+                }
+            }
+        ]
+    };
+    
+    myChart.setOption(option);
+    window.addEventListener('resize', () => myChart.resize());
+}
+
+function renderHouseTypeTrendChart(typeTrends) {
+    if (!typeTrends || typeTrends.length === 0) return;
+    
+    const chartDom = document.getElementById('house-type-trend-chart');
+    if (!chartDom) return;
+    
+    const myChart = echarts.init(chartDom);
+    
+    // 获取所有月份（取并集）
+    const allMonths = new Set();
+    typeTrends.forEach(typeData => {
+        typeData.trend.forEach(item => allMonths.add(item.month));
+    });
+    const months = Array.from(allMonths).sort();
+    
+    // 准备系列数据
+    const series = typeTrends.map((typeData, index) => {
+        const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+        return {
+            name: typeData.house_type,
+            type: 'line',
+            data: months.map(month => {
+                const found = typeData.trend.find(item => item.month === month);
+                return found ? found.avg_price : null;
+            }),
+            smooth: true,
+            lineStyle: {
+                width: 2,
+                color: colors[index % colors.length]
+            },
+            itemStyle: {
+                color: colors[index % colors.length]
+            }
+        };
+    });
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: typeTrends.map(item => item.house_type),
+            top: 10,
+            type: 'scroll'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: months,
+            axisLabel: {
+                rotate: 30,
+                fontSize: 10
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '平均价格（万元）'
+        },
+        series: series
+    };
+    
+    myChart.setOption(option);
+    window.addEventListener('resize', () => myChart.resize());
+}
+
+// AI分析户型图表
+function analyzeHouseTypeChart() {
+    const houseTypeData = analysisData.house_type_analysis;
+    if (!houseTypeData || !houseTypeData.available) return;
+    
+    // 保存图表数据供AI分析
+    saveChartData('house-type', {
+        summary: houseTypeData.summary,
+        distribution: houseTypeData.distribution.slice(0, 10),
+        room_statistics: houseTypeData.room_statistics
+    });
+    
+    // 调用AI分析（会自动触发，因为按钮的onclick已经设置）
+    analyzeChart('house-type', 'house-type-ai-insight', '户型分析');
 }

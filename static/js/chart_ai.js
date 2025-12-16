@@ -159,7 +159,17 @@ function generateChartContext(chartType, data, chartTitle) {
     
     // 全国对比页面的图表
     if (chartTitle) {
-        return `这是${chartTitle}，展示了北京、厦门、武汉三个城市的对比数据。`;
+        // 特殊处理户型对比
+        if (chartTitle.includes('户型') && data.summary) {
+            const citiesCount = data.summary.cities_with_data;
+            const totalTypes = data.summary.total_house_types;
+            const commonTypes = data.summary.common_types || [];
+            const commonTypesText = commonTypes.slice(0, 3).map((item, i) => 
+                `${i+1}. ${item.type}（${item.cities_count}个城市主流）`
+            ).join('；');
+            return `这是全国户型分布对比，共${citiesCount}个城市有户型数据，包含${totalTypes}种户型。最常见户型：${commonTypesText}。`;
+        }
+        return `这是${chartTitle}，展示了多个城市的对比数据。`;
     }
     
     // 单城市页面的图表
@@ -203,6 +213,19 @@ function generateChartContext(chartType, data, chartTitle) {
         
         case 'waterfall':
             return `这是${city}的价格变化瀑布图，将总价格变化拆解为市场趋势、区域发展、政策影响等因素，清晰展示各因素的贡献度。`;
+        
+        case 'house-type':
+            if (data.summary && data.distribution) {
+                const mainType = data.summary.main_type;
+                const mainPercentage = data.summary.main_percentage;
+                const totalTypes = data.summary.total_types;
+                const top5 = data.distribution.slice(0, 5);
+                const top5Text = top5.map((item, i) => 
+                    `${i+1}. ${item.house_type}：${item.count}套（${item.percentage}%），均价${item.avg_price}万元`
+                ).join('；');
+                return `这是${city}的户型分析图表。主流户型是${mainType}（占比${mainPercentage}%），共有${totalTypes}种户型。Top 5户型分布：${top5Text}。`;
+            }
+            return `这是${city}的户型分析图表，展示了各种户型（几室几厅）的分布和价格对比。`;
         
         default:
             break;

@@ -163,6 +163,7 @@ function renderComparison() {
     renderInvestmentComparison();
     renderPriceComparison();
     renderAreaComparison();  // 新增平均面积对比
+    renderHouseTypeComparison();  // 新增户型对比
     renderMarketScale();
     renderGrowthRates();
     renderVolatility();
@@ -879,4 +880,274 @@ function renderMarkdown(text) {
     }).filter(line => line).join('');
     
     return html;
+}
+
+// ==================== 户型对比分析渲染函数 ====================
+
+function renderHouseTypeComparison() {
+    const houseTypeData = comparisonData.house_type_comparison;
+    
+    if (!houseTypeData || !houseTypeData.available) {
+        console.log('[HouseType] 全国对比中没有户型数据');
+        return;
+    }
+    
+    console.log('[HouseType] 开始渲染户型对比');
+    
+    // 显示户型对比区块
+    const section = document.getElementById('house-type-comparison-section');
+    if (section) {
+        section.style.display = 'block';
+    }
+    
+    // 渲染统计摘要
+    renderHouseTypeSummary(houseTypeData.summary);
+    
+    // 渲染各城市主流户型对比
+    renderMainHouseTypeComparison(houseTypeData.cities_data);
+    
+    // 渲染按室数价格对比
+    if (houseTypeData.room_national_avg) {
+        renderRoomPriceComparison(houseTypeData.room_comparison, houseTypeData.room_national_avg);
+    }
+    
+    // 渲染各城市Top5户型卡片
+    renderCityHouseTypesGrid(houseTypeData.cities_data);
+    
+    // 保存数据供AI分析
+    saveChartData('house_type_comparison', houseTypeData);
+}
+
+function renderHouseTypeSummary(summary) {
+    const container = document.getElementById('house-type-summary');
+    if (!container) return;
+    
+    const cards = [
+        {
+            icon: '🏙️',
+            title: '有户型数据城市',
+            value: `${summary.cities_with_data}个`,
+            desc: `共${summary.total_house_types}种户型`
+        },
+        {
+            icon: '🏠',
+            title: '最常见户型',
+            value: summary.common_types[0]?.type || '未知',
+            desc: `${summary.common_types[0]?.cities_count || 0}个城市主流`
+        },
+        {
+            icon: '💎',
+            title: '第二常见户型',
+            value: summary.common_types[1]?.type || '未知',
+            desc: `${summary.common_types[1]?.cities_count || 0}个城市主流`
+        }
+    ];
+    
+    // 添加价格差距最大的户型信息
+    if (summary.price_leaders && Object.keys(summary.price_leaders).length > 0) {
+        const firstType = Object.keys(summary.price_leaders)[0];
+        const leader = summary.price_leaders[firstType];
+        cards.push({
+            icon: '📊',
+            title: `${firstType}价格差`,
+            value: `${(leader.price_gap / 10000).toFixed(1)}万`,
+            desc: `${leader.highest.city} vs ${leader.lowest.city}`
+        });
+    }
+    
+    container.innerHTML = cards.map(card => `
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 24px; border-radius: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+            <div style="font-size: 2.5em; margin-bottom: 12px;">${card.icon}</div>
+            <div style="color: #64748b; font-size: 0.85em; margin-bottom: 8px;">${card.title}</div>
+            <div style="font-size: 1.5em; font-weight: 700; color: #1e293b; margin-bottom: 6px;">${card.value}</div>
+            <div style="color: #94a3b8; font-size: 0.8em;">${card.desc}</div>
+        </div>
+    `).join('');
+}
+
+function renderMainHouseTypeComparison(citiesData) {
+    const canvas = document.getElementById('house-type-comparison-chart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // 准备数据
+    const cities = citiesData.map(city => city.city);
+    const mainTypes = citiesData.map(city => city.main_type);
+    const percentages = citiesData.map(city => city.main_percentage);
+    
+    // 为每个城市的主流户型创建数据
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: cities,
+            datasets: [{
+                label: '主流户型占比 (%)',
+                data: percentages,
+                backgroundColor: cities.map((_, idx) => getColor(idx, 0.7)),
+                borderColor: cities.map((_, idx) => getColor(idx, 1)),
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const idx = context[0].dataIndex;
+                            return `${cities[idx]} - ${mainTypes[idx]}`;
+                        },
+                        label: function(context) {
+                            return `占比: ${context.parsed.y.toFixed(1)}%`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: '占比 (%)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderRoomPriceComparison(roomComparison, roomNationalAvg) {
+    const canvas = document.getElementById('room-price-comparison-chart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // 获取所有室数类型
+    const roomLabels = Object.keys(roomNationalAvg).sort((a, b) => {
+        const numA = parseInt(a.match(/\d+/)[0]);
+        const numB = parseInt(b.match(/\d+/)[0]);
+        return numA - numB;
+    });
+    
+    // 获取所有城市
+    const allCities = new Set();
+    Object.values(roomComparison).forEach(cities => {
+        cities.forEach(city => allCities.add(city.city));
+    });
+    const cities = Array.from(allCities);
+    
+    // 为每个城市创建数据集
+    const datasets = cities.map((city, cityIdx) => {
+        const data = roomLabels.map(roomLabel => {
+            const roomData = roomComparison[roomLabel];
+            if (!roomData) return null;
+            
+            const cityData = roomData.find(d => d.city === city);
+            return cityData ? cityData.avg_price : null;
+        });
+        
+        return {
+            label: city,
+            data: data,
+            backgroundColor: getColor(cityIdx, 0.5),
+            borderColor: getColor(cityIdx, 1),
+            borderWidth: 2,
+            borderRadius: 6
+        };
+    });
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: roomLabels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2.2,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y.toFixed(1)} 万元`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '平均价格（万元）'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '户型（按室数）'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderCityHouseTypesGrid(citiesData) {
+    const container = document.getElementById('city-house-types-grid');
+    if (!container) return;
+    
+    container.innerHTML = citiesData.map(cityData => {
+        const top5 = cityData.distribution.slice(0, 5);
+        
+        return `
+            <div style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+                <h3 style="margin: 0 0 20px 0; color: #1e293b; font-size: 1.3em; font-weight: 700; border-bottom: 3px solid #6366f1; padding-bottom: 12px;">
+                    ${cityData.city}
+                </h3>
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); border-radius: 10px;">
+                    <div style="font-size: 0.85em; color: #64748b; margin-bottom: 5px;">主流户型</div>
+                    <div style="font-size: 1.4em; font-weight: 700; color: #6366f1;">${cityData.main_type}</div>
+                    <div style="font-size: 0.9em; color: #94a3b8; margin-top: 3px;">占比 ${cityData.main_percentage}%</div>
+                </div>
+                <div style="font-size: 0.9em; font-weight: 600; color: #475569; margin-bottom: 12px;">Top 5 户型分布：</div>
+                ${top5.map((item, idx) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="
+                                display: inline-block;
+                                width: 28px;
+                                height: 28px;
+                                line-height: 28px;
+                                text-align: center;
+                                background: ${idx === 0 ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'};
+                                color: white;
+                                border-radius: 50%;
+                                font-size: 0.8em;
+                                font-weight: 700;
+                            ">${idx + 1}</span>
+                            <span style="font-weight: 600; color: #1e293b;">${item.house_type}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.95em; font-weight: 600; color: #059669;">${item.avg_price} 万</div>
+                            <div style="font-size: 0.75em; color: #94a3b8;">${item.percentage}%</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }).join('');
 }

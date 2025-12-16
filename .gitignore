@@ -4,51 +4,58 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-.venv/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-.DS_Store
-
-# Logs
-*.log
-logs/
-
-# Temp files
-*.tmp
-*.temp
-cookies.txt
-
-# Data files (too large for git)
-data/raw/*.xlsx
-data/raw/*.csv
-data/raw/*.xls
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Distribution
+*.egg-info/
 dist/
 build/
-*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 数据库
+*.db
+users.db
+
+# 日志
+*.log
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+.pytest_cache/
+
+# LaTeX
+*.aux
+*.out
+*.toc
+*.synctex.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 环境变量（敏感信息）
+.env
 
 # Jupyter
 .ipynb_checkpoints/
+*.ipynb
 
-# Environment variables
-.env
-.env.local
-.env.production
-
-# Test
-.pytest_cache/
-.coverage
+# 测试文件
 htmlcov/
+.coverage
+.tox/
+
+# 临时文档
+prompt.txt
+test_*.html
+markdown-test.html

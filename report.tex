@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{ctex} % Enables Chinese character support
+\usepackage{xcolor} % Required for listings colors
+\usepackage{listings} % Required for inserting code listings
+\usepackage{amsmath} % For \text command if needed, though \texttt should suffice
+\usepackage{hyperref} % For clickable cross-references
+\usepackage{tikz} % Required for TikZ diagrams
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, automata}
+\usepackage{subcaption} % 用于创建子图和子标题
+\usepackage{float} % 用于精确控制浮动体位置
+
+
+
+\lstdefinestyle{custombash}{
+  language=Bash,
+  basicstyle=\ttfamily\footnotesize, % 设置字体和大小
+  keywordstyle=\color{blue},          % 关键字颜色
+  commentstyle=\color{green!50!black}, % 注释颜色
+  stringstyle=\color{purple},        % 字符串颜色
+  showstringspaces=false,            % 不显示字符串中的空格
+  breaklines=true,                   % 自动断行
+  numbers=left,                      % 显示行号在左侧
+  numberstyle=\tiny\color{gray},     % 行号样式
+  frame=tb,                          % 添加上下边框
+  backgroundcolor=\color{gray!10},   % 设置背景色
+  tabsize=2,                         % tab 宽度
+  captionpos=b,                      % 标题位置 (底部)
+  escapeinside={\%*}{*)},            % 允许在代码中插入 LaTeX 命令
+  morekeywords={mkdir, cd, cmake, make}, % 添加自定义关键字
+  literate={~}{{{\raisebox{-0.1ex}{\textasciitilde}}}}1, % 处理波浪号
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=green,
+    pdftitle={report},
+    pdfpagemode=FullScreen,
+    }
+
+
+% Configure listings for Java
+\lstset{
+  language=Java,                       % Set language to Java
+  basicstyle=\ttfamily\footnotesize,   % Use monospace font, small size
+  keywordstyle=\color{blue},           % Keywords in blue
+  commentstyle=\color{green!70!black}, % Comments in dark green
+  stringstyle=\color{red},             % Strings in red
+  numbers=left,                        % Line numbers on the left
+  numberstyle=\tiny\color{gray},       % Line numbers in tiny gray font
+  breaklines=true,                     % Automatically break long lines
+  captionpos=b,                        % Caption position at the bottom
+  frame=tb,                            % Add top and bottom frame lines
+  framerule=0.5pt,                     % Thickness of the frame rule
+  columns=fullflexible,                % Better handling of long lines
+  showstringspaces=false,              % Don't mark spaces in strings
+  tabsize=4                            % Set tab size to 4 spaces (Java convention)
+}
+
+\title{
+}
+\author{司睿洋}
+
+\begin{document}
+\maketitle
+
+\vspace{2cm}
+\begin{abstract}
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\end{document}

@@ -35,6 +35,7 @@ class NationalComparator:
             'affordability': self.compare_affordability(),
             'investment_scores': self.compare_investment_scores(),
             'regional_characteristics': self.analyze_regional_characteristics(),
+            'house_type_comparison': self.compare_house_types(),  # 新增：户型对比
             'recommendations': self.generate_recommendations()
         }
     
@@ -445,4 +446,127 @@ class NationalComparator:
         ]
         
         return recommendations
+    
+    def compare_house_types(self) -> Dict[str, Any]:
+        """
+        全国户型对比分析
+        
+        对比各城市的户型分布、主流户型和户型价格差异
+        """
+        house_type_comparison = {
+            'cities_data': [],
+            'summary': {
+                'cities_with_data': 0,
+                'total_house_types': set(),
+                'common_types': [],
+                'price_leaders': {}
+            }
+        }
+        
+        all_house_types = set()
+        cities_with_data = 0
+        
+        # 收集各城市户型数据
+        for city, analyzer in self.analyzers.items():
+            house_type_data = analyzer.analyze_house_type()
+            
+            if house_type_data and house_type_data.get('available', False):
+                cities_with_data += 1
+                
+                # 提取主要信息
+                city_info = {
+                    'city': city,
+                    'main_type': house_type_data['summary']['main_type'],
+                    'main_percentage': house_type_data['summary']['main_percentage'],
+                    'total_types': house_type_data['summary']['total_types'],
+                    'data_coverage': house_type_data['summary']['data_coverage'],
+                    'most_expensive_type': house_type_data['summary'].get('most_expensive_type', ''),
+                    'most_expensive_unit_price': house_type_data['summary'].get('most_expensive_unit_price', 0),
+                    'distribution': house_type_data['distribution'][:5],  # 只取前5种
+                    'room_statistics': house_type_data['room_statistics']
+                }
+                
+                house_type_comparison['cities_data'].append(city_info)
+                
+                # 收集所有户型
+                for item in house_type_data['distribution']:
+                    all_house_types.add(item['house_type'])
+        
+        # 统计信息
+        house_type_comparison['summary']['cities_with_data'] = cities_with_data
+        house_type_comparison['summary']['total_house_types'] = len(all_house_types)
+        
+        if cities_with_data == 0:
+            house_type_comparison['available'] = False
+            house_type_comparison['message'] = '所有城市均无户型数据'
+            return house_type_comparison
+        
+        house_type_comparison['available'] = True
+        
+        # 找出最常见的户型（在各城市中出现频率最高）
+        type_frequency = {}
+        for city_data in house_type_comparison['cities_data']:
+            main_type = city_data['main_type']
+            type_frequency[main_type] = type_frequency.get(main_type, 0) + 1
+        
+        common_types = sorted(type_frequency.items(), key=lambda x: x[1], reverse=True)[:3]
+        house_type_comparison['summary']['common_types'] = [
+            {'type': t, 'cities_count': count} for t, count in common_types
+        ]
+        
+        # 分析各户型的价格领先城市
+        common_house_types = ['2室1厅', '2室2厅', '3室1厅', '3室2厅']
+        for house_type in common_house_types:
+            city_prices = []
+            for city_data in house_type_comparison['cities_data']:
+                for dist_item in city_data['distribution']:
+                    if dist_item['house_type'] == house_type:
+                        city_prices.append({
+                            'city': city_data['city'],
+                            'avg_price': dist_item['avg_price'],
+                            'avg_unit_price': dist_item['avg_unit_price']
+                        })
+                        break
+            
+            if city_prices:
+                highest = max(city_prices, key=lambda x: x['avg_unit_price'])
+                lowest = min(city_prices, key=lambda x: x['avg_unit_price'])
+                house_type_comparison['summary']['price_leaders'][house_type] = {
+                    'highest': highest,
+                    'lowest': lowest,
+                    'price_gap': highest['avg_unit_price'] - lowest['avg_unit_price'],
+                    'cities_count': len(city_prices)
+                }
+        
+        # 按室数对比分析
+        room_comparison = {}
+        for city_data in house_type_comparison['cities_data']:
+            for room_stat in city_data['room_statistics']:
+                room_label = room_stat['label']
+                if room_label not in room_comparison:
+                    room_comparison[room_label] = []
+                
+                room_comparison[room_label].append({
+                    'city': city_data['city'],
+                    'count': room_stat['count'],
+                    'percentage': room_stat['percentage'],
+                    'avg_price': room_stat['avg_price'],
+                    'avg_unit_price': room_stat['avg_unit_price']
+                })
+        
+        # 计算每种室数的全国平均价格
+        room_national_avg = {}
+        for room_label, cities in room_comparison.items():
+            avg_price = sum(c['avg_price'] for c in cities) / len(cities)
+            avg_unit_price = sum(c['avg_unit_price'] for c in cities) / len(cities)
+            room_national_avg[room_label] = {
+                'avg_price': round(float(avg_price), 2),
+                'avg_unit_price': round(float(avg_unit_price), 2),
+                'cities_count': len(cities)
+            }
+        
+        house_type_comparison['room_comparison'] = room_comparison
+        house_type_comparison['room_national_avg'] = room_national_avg
+        
+        return house_type_comparison
 

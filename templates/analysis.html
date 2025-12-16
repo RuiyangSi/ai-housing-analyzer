@@ -394,6 +394,57 @@
             <div id="waterfall-ai-insight" style="display: none; margin-top: 20px;"></div>
         </div>
         
+        <!-- 户型分析 - 所有角色可见 -->
+        <div class="analysis-section" id="house-type-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">🏠 户型分析（几室几厅）</h2>
+                <button class="ai-analyze-btn" onclick="analyzeHouseTypeChart()" style="
+                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    cursor: pointer;
+                    font-size: 0.85em;
+                    transition: all 0.3s ease;
+                ">
+                    🤖 AI分析此图表
+                </button>
+            </div>
+            
+            <!-- 户型统计卡片 -->
+            <div id="house-type-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <!-- 动态填充 -->
+            </div>
+            
+            <!-- 户型分布图表 -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                <div class="chart-container">
+                    <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">📊 户型分布占比</h3>
+                    <div id="house-type-distribution-chart" style="width: 100%; height: 350px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">💰 户型平均价格对比</h3>
+                    <div id="house-type-price-chart" style="width: 100%; height: 350px;"></div>
+                </div>
+            </div>
+            
+            <!-- 按室数统计 -->
+            <div class="chart-container" style="margin-bottom: 25px;">
+                <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">🔢 按室数统计分析</h3>
+                <div id="room-statistics-chart" style="width: 100%; height: 400px;"></div>
+            </div>
+            
+            <!-- 户型价格趋势 -->
+            <div class="chart-container">
+                <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">📈 主流户型价格趋势</h3>
+                <div id="house-type-trend-chart" style="width: 100%; height: 450px;"></div>
+            </div>
+            
+            <!-- AI分析结果 -->
+            <div id="house-type-ai-insight" style="display: none; margin-top: 20px;"></div>
+        </div>
+        
         <!-- 区域深度分析 - 所有角色可见 -->
         <div class="analysis-section">
             <h2>🗺️ 区域深度分析（Top 15）</h2>
