@@ -2,6 +2,80 @@
 
 let comparisonData = null;
 
+// 完整的颜色方案（支持最多25个省份）
+const colorScheme = {
+    borderColors: [
+        '#667eea', // 紫色 - 北京
+        '#10b981', // 绿色 - 上海
+        '#f59e0b', // 橙色 - 天津
+        '#ef4444', // 红色 - 重庆
+        '#8b5cf6', // 紫罗兰 - 安徽
+        '#ec4899', // 粉色 - 河北
+        '#06b6d4', // 青色 - 黑龙江
+        '#84cc16', // 青柠 - 江苏
+        '#f97316', // 深橙 - 山东
+        '#a855f7', // 亮紫 - 山西
+        '#14b8a6', // 青绿 - 河南
+        '#f43f5e', // 玫瑰红 - 江西
+        '#3b82f6', // 蓝色 - 浙江
+        '#eab308', // 黄色 - 福建
+        '#6366f1', // 靛蓝 - 辽宁
+        '#d946ef', // 品红 - 新疆
+        '#22c55e', // 翠绿 - 湖北
+        '#fb923c', // 浅橙 - 湖南
+        '#a78bfa', // 淡紫 - 广西
+        '#fbbf24', // 金黄 - 宁夏
+        '#0ea5e9', // 天蓝 - 吉林
+        '#f472b6', // 亮粉 - 内蒙古
+        '#34d399', // 浅绿 - 上海
+        '#facc15', // 柠檬黄
+        '#818cf8'  // 灰紫
+    ],
+    backgroundColors: [
+        'rgba(102, 126, 234, 0.15)',
+        'rgba(16, 185, 129, 0.15)',
+        'rgba(245, 158, 11, 0.15)',
+        'rgba(239, 68, 68, 0.15)',
+        'rgba(139, 92, 246, 0.15)',
+        'rgba(236, 72, 153, 0.15)',
+        'rgba(6, 182, 212, 0.15)',
+        'rgba(132, 204, 22, 0.15)',
+        'rgba(249, 115, 22, 0.15)',
+        'rgba(168, 85, 247, 0.15)',
+        'rgba(20, 184, 166, 0.15)',
+        'rgba(244, 63, 94, 0.15)',
+        'rgba(59, 130, 246, 0.15)',
+        'rgba(234, 179, 8, 0.15)',
+        'rgba(99, 102, 241, 0.15)',
+        'rgba(217, 70, 239, 0.15)',
+        'rgba(34, 197, 94, 0.15)',
+        'rgba(251, 146, 60, 0.15)',
+        'rgba(167, 139, 250, 0.15)',
+        'rgba(251, 191, 36, 0.15)',
+        'rgba(14, 165, 233, 0.15)',
+        'rgba(244, 114, 182, 0.15)',
+        'rgba(52, 211, 153, 0.15)',
+        'rgba(250, 204, 21, 0.15)',
+        'rgba(129, 140, 248, 0.15)'
+    ]
+};
+
+// 动态获取颜色（支持无限省份）
+function getColor(index, opacity = 1) {
+    const colors = [
+        [102, 126, 234], [16, 185, 129], [245, 158, 11], [239, 68, 68],
+        [139, 92, 246], [236, 72, 153], [6, 182, 212], [132, 204, 22],
+        [249, 115, 22], [168, 85, 247], [20, 184, 166], [244, 63, 94],
+        [59, 130, 246], [234, 179, 8], [99, 102, 241], [217, 70, 239],
+        [34, 197, 94], [251, 146, 60], [167, 139, 250], [251, 191, 36],
+        [14, 165, 233], [244, 114, 182], [52, 211, 153], [250, 204, 21],
+        [129, 140, 248]
+    ];
+    const colorIndex = index % colors.length;
+    const [r, g, b] = colors[colorIndex];
+    return opacity === 1 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
 // 页面加载完成后获取数据
 document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -154,17 +228,36 @@ function renderInvestmentComparison() {
                     50 + city.volume_trend,
                     city.stability
                 ],
-                borderColor: ['#667eea', '#10b981', '#f59e0b'][index],
-                backgroundColor: ['rgba(102, 126, 234, 0.2)', 'rgba(16, 185, 129, 0.2)', 'rgba(245, 158, 11, 0.2)'][index]
+                borderColor: getColor(index, 1),
+                backgroundColor: getColor(index, 0.2),
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
             }))
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    }
+                }
+            },
             scales: {
                 r: {
                     beginAtZero: true,
-                    max: 100
+                    max: 100,
+                    ticks: {
+                        stepSize: 20
+                    }
                 }
             }
         }
@@ -457,9 +550,15 @@ function renderGrowthRates() {
             datasets: data.map((city, index) => ({
                 label: city.city,
                 data: city.yearly_details.map(y => y.avg_price),
-                borderColor: ['#667eea', '#10b981', '#f59e0b'][index],
-                backgroundColor: ['rgba(102, 126, 234, 0.1)', 'rgba(16, 185, 129, 0.1)', 'rgba(245, 158, 11, 0.1)'][index],
-                tension: 0.4
+                borderColor: getColor(index, 1),
+                backgroundColor: getColor(index, 0.1),
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: getColor(index, 1),
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
             }))
         },
         options: {
@@ -468,8 +567,64 @@ function renderGrowthRates() {
             plugins: {
                 title: {
                     display: true,
-                    text: '年度价格走势对比'
+                    text: '年度价格走势对比',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' 万元';
+                        }
+                    }
                 }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: '平均成交价（万元）',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '年份',
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
             }
         }
     });
