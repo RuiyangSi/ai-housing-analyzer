@@ -291,6 +291,26 @@
         background: linear-gradient(135deg, #0ea5e9 0%, #7dd3fc 100%);
     }
 
+    .legend-color.color-21 {
+        background: linear-gradient(135deg, #16a34a 0%, #4ade80 100%);
+    }
+
+    .legend-color.color-22 {
+        background: linear-gradient(135deg, #dc2626 0%, #fca5a5 100%);
+    }
+
+    .legend-color.color-23 {
+        background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+    }
+
+    .legend-color.color-24 {
+        background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%);
+    }
+
+    .legend-color.color-25 {
+        background: linear-gradient(135deg, #ca8a04 0%, #facc15 100%);
+    }
+
     .legend-item:hover .legend-color {
         transform: scale(1.1) rotate(5deg);
     }
@@ -1508,7 +1528,7 @@
         <div class="distribution-header">
             <div class="distribution-title">
                 <h2>📊 全国数据分布全景</h2>
-                <p>覆盖全国13个省级行政区，{{ total_records }}真实成交数据</p>
+                <p>覆盖全国26个省级行政区，{{ total_records }}万+真实成交数据</p>
         </div>
         </div>
         <div class="distribution-content">
@@ -2476,7 +2496,7 @@
             return grd;
         });
         
-        // 使用纯色作为后备（21种颜色对应21个省份）
+        // 使用纯色作为后备（26种颜色对应26个省份）
         const solidColors = [
             '#667eea',  // 0: 紫色
             '#f5576c',  // 1: 粉红
@@ -2498,7 +2518,12 @@
             '#fde047',  // 17: 亮黄
             '#d8b4fe',  // 18: 淡紫色
             '#fb7185',  // 19: 玫瑰红
-            '#7dd3fc'   // 20: 天空蓝
+            '#7dd3fc',  // 20: 天空蓝
+            '#4ade80',  // 21: 翠绿
+            '#fca5a5',  // 22: 浅红
+            '#c084fc',  // 23: 亮紫
+            '#22d3ee',  // 24: 青蓝
+            '#facc15'   // 25: 金黄
         ];
         
         cityDataChart = new Chart(ctx.getContext('2d'), {
