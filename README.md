@@ -247,6 +247,29 @@ python_house1/
 
 ---
 
+## 📖 引用
+
+如果您在研究中使用了本项目，请引用：
+
+**BibTeX格式：**
+```bibtex
+@software{ai_housing_analyzer,
+  title = {AI驱动的智能房价分析系统：基于227万+真实成交数据的智能房地产市场分析平台},
+  author = {Si, Ruiyang and Jiang, Baojin and Pan, Xiaoyu and Peng, Quanyu and Xie, Jiajun},
+  year = {2025},
+  url = {https://github.com/RuiyangSi/ai-housing-analyzer},
+  version = {1.0.0},
+  note = {Python程序设计期末项目}
+}
+```
+
+**APA格式：**
+```
+Si, R., Jiang, B., Pan, X., Peng, Q., & Xie, J. (2025). AI驱动的智能房价分析系统：基于227万+真实成交数据的智能房地产市场分析平台 [Computer software]. GitHub. https://github.com/RuiyangSi/ai-housing-analyzer
+```
+
+---
+
 ## 📈 数据发现
 
 基于**227万+条数据**的分析发现：
