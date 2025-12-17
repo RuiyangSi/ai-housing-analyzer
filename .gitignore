@@ -59,3 +59,8 @@ htmlcov/
 prompt.txt
 test_*.html
 markdown-test.html
+
+# 数据文件（不公开，仅用于本地学术研究）
+data/processed/*.csv
+data/raw/*.csv
+data/processed/data_*.csv
