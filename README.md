@@ -255,7 +255,7 @@ python_house1/
 ```bibtex
 @software{ai_housing_analyzer,
   title = {AI驱动的智能房价分析系统：基于227万+真实成交数据的智能房地产市场分析平台},
-  author = {Ruiyang Si and Baojin Jiang and Xiaoyu Pan and Quanyu Peng and Jiajun Xie},
+  author = {Si, Ruiyang and Jiang, Baojin and Pan, Xiaoyu and Peng, Quanyu and Xie, Jiajun},
   year = {2025},
   url = {https://github.com/RuiyangSi/ai-housing-analyzer},
   version = {1.0.0},
