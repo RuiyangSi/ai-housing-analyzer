@@ -38,6 +38,10 @@ users.db
 *.out
 *.toc
 *.synctex.gz
+reports/*.aux
+reports/*.log
+reports/*.out
+reports/*.toc
 
 # OS
 .DS_Store

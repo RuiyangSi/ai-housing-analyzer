@@ -4,133 +4,119 @@
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.1.2-green.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![AI](https://img.shields.io/badge/AI-DeepSeek--V3-purple.svg)
 
-**基于2023-2025年真实成交数据的智能房地产市场分析平台**
+**基于227万+真实成交数据的智能房地产市场分析平台**
 
-[功能特性](#-功能特性) • [快速开始](#-快速开始) • [文档](#-文档) • [项目结构](#-项目结构)
+[项目亮点](#-核心创新点) • [快速开始](#-快速开始) • [技术架构](#-技术架构)
 
 </div>
 
 ---
 
-## 📖 项目简介
+## ✨ 核心创新点
 
-这是一个基于Flask和AI技术的房价分析系统，集成了数据可视化、AI对话、投资分析、价格预测等多种功能。系统覆盖全国25个省份的真实房价数据（2023-2025年），总数据量达200万+条。
+### 🎯 四大突破性创新
 
-### 核心亮点
+#### 1. 📊 **海量真实数据：227万+条成交记录**
+- **数据规模**：2,277,464条二手房真实成交数据
+- **覆盖范围**：26个省级行政区、40余座城市
+- **时间跨度**：2023年1月 - 2025年11月
+- **数据质量**：国内同类研究中的领先水平
 
-- 🤖 **AI智能分析**：DeepSeek-V3驱动，提供专业的市场洞察
-- 📊 **多维度可视化**：ECharts/Chart.js高级图表，3D地图展示
-- 🎯 **角色定制**：支持首次购房者、改善型购房者、投资顾问三种角色
-- 🏘️ **户型分析**：全国首创的户型（几室几厅）深度分析
-- 🗺️ **全国对比**：横向对比多个城市的房价、投资价值
-- 📈 **价格预测**：基于历史数据的AI价格预测功能
+#### 2. 🔌 **可插拔式AI架构：随模型进化而成长**
+- **设计理念**：通过配置即可切换AI模型（DeepSeek/GPT-4/Claude）
+- **技术优势**：无需重构代码，AI能力持续进化
+- **实际效果**：从DeepSeek-V2升级到V3，分析质量显著提升
 
----
+#### 3. 🎭 **三角色个性化服务：千人千面的智能咨询**
+- **投资顾问**：专业术语、量化风险、ROI分析
+- **首次购房者**：通俗表达、生活化比喻、风险提醒
+- **改善型购房者**：置换策略、税费计算、时机判断
+- **技术实现**：差异化的System Prompt设计，同一数据不同解读
 
-## ✨ 功能特性
-
-### 1. 数据分析与可视化
-- ✅ 25个省份、200万+条真实成交数据
-- ✅ 价格趋势分析（月度、季度、年度）
-- ✅ 区域深度分析（Top 15热门区域）
-- ✅ 户型分析（几室几厅分布与价格）
-- ✅ 投资指数计算（多维度评分）
-- ✅ 市场活跃度与波动性分析
-
-### 2. AI智能助手
-- 🤖 实时AI对话（流式响应）
-- 🎨 角色扮演（首购者/改善型/投资顾问）
-- 📊 图表智能解读
-- 💡 一键AI洞察（深度报告生成）
-
-### 3. 高级可视化
-- 📈 价格趋势折线图
-- 📊 户型分布饼图与柱状图
-- 🗺️ 3D房价地图（区域热力图）
-- 📉 价格箱线图与小提琴图
-- 🌊 价格变化瀑布图
-- 🔥 区域-时间热力图
-
-### 4. 投资决策工具
-- 💰 购房策略规划器
-- 📈 AI价格预测
-- 🏆 投资价值评分
-- 🌐 全国城市对比
-- 📊 风险评估
-
-### 5. 用户系统
-- 👤 用户注册/登录
-- 🎭 角色选择与切换
-- 🔐 Session管理
-- 📱 响应式设计（支持移动端）
+#### 4. 🧠 **数据锚定+AI推理：可解释的房价预测引擎**
+- **核心机制**：将真实数据作为"锚点"注入AI，消除幻觉
+- **预测维度**：历史趋势、季节性模式、区域分化、市场热度、价格稳定性
+- **三大优势**：可解释性、个性化、可迭代性
 
 ---
 
 ## 🚀 快速开始
 
 ### 环境要求
-
 - Python 3.9+
-- pip
-- （可选）虚拟环境工具
+- DeepSeek API Key（[获取地址](https://platform.deepseek.com)）
 
-### 1. 克隆项目
+### 安装步骤
 
 ```bash
-git clone <repository-url>
+# 1. 克隆项目
+git clone https://github.com/RuiyangSi/ai-housing-analyzer.git
 cd python_house1
-```
 
-### 2. 安装依赖
-
-```bash
-# 创建虚拟环境（推荐）
+# 2. 创建虚拟环境并安装依赖
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 安装依赖
 pip install -r requirements.txt
-```
 
-### 3. 配置环境变量
-
-复制环境变量模板：
-```bash
+# 3. 配置环境变量
 cp env.example .env
+# 编辑 .env 文件，填入 DEEPSEEK_API_KEY
+
+# 4. 启动服务
+python run.py
+# 或使用启动脚本: ./scripts/start.sh
 ```
 
-编辑 `.env` 文件，配置API密钥：
-```env
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
-SECRET_KEY=your_secret_key_here
+访问 `http://localhost:5001`，默认账号：`admin` / `admin123`
+
+---
+
+## 🏗️ 技术架构
+
+### 核心设计理念：数据锚定（Data Anchoring）
+
+```
+数据采集 → 数据清洗 → JSON上下文锚定 → Prompt注入 → AI推理 → 多维分析输出
 ```
 
-> 💡 获取DeepSeek API密钥：访问 [https://platform.deepseek.com](https://platform.deepseek.com)
+### 四层架构体系
 
-### 4. 运行项目
+1. **数据层**：227万+条CSV数据 + SQLite用户库 + JSON配置
+2. **业务逻辑层**：15+种分析维度 + 投资指数计算 + 跨城市对比
+3. **AI增强层**：可插拔大模型 + 三角色对话 + 智能预测 + 策略规划
+4. **表现层**：Flask API + ECharts可视化 + 流式响应
 
-**方式1：使用启动脚本（推荐）**
-```bash
-chmod +x start.sh
-./start.sh
-```
+### 技术栈
 
-**方式2：直接运行**
-```bash
-python app.py
-```
+**后端**：Flask 3.1.2 | Pandas 2.3.3 | SQLite  
+**前端**：ECharts 5.4.3 | Chart.js 4.4.0 | 现代CSS3  
+**AI**：DeepSeek-V3 | 流式响应 | Prompt工程
 
-### 5. 访问系统
+---
 
-打开浏览器访问：`http://localhost:5001`
+## 📊 核心功能
 
-默认账号：
-- 用户名：`admin`
-- 密码：`admin123`
-- 角色：可自由选择
+### 数据分析
+- ✅ 价格趋势分析（月度/季度/年度）
+- ✅ 区域深度分析（Top 15热门区域）
+- ✅ 户型分析（几室几厅分布与价格）
+- ✅ 投资指数计算（多维度量化评分）
+- ✅ 市场活跃度与波动性分析
+
+### AI智能助手
+- 🤖 实时AI对话（流式响应，打字机效果）
+- 📊 图表智能解读（一键AI洞察）
+- 📈 AI价格预测（数据锚定的可解释预测）
+- 💡 购房策略规划（个性化建议）
+
+### 可视化展示
+- 📈 价格趋势折线图
+- 🗺️ 3D房价地图（区域热力图）
+- 📊 户型分布饼图与柱状图
+- 📉 价格箱线图与小提琴图
+- 🔥 区域-时间热力图
 
 ---
 
@@ -138,183 +124,55 @@ python app.py
 
 ```
 python_house1/
-├── 📱 app.py                      # Flask主应用
-├── 🤖 AI模块
-│   ├── ai_assistant.py            # AI对话助手
-│   ├── ai_image_generator.py     # AI图像生成
-│   ├── intelligent_analyzer.py   # 智能分析器
-│   └── strategy_analyzer.py      # 策略分析器
-├── 📊 分析模块
-│   ├── housing_analyzer.py        # 房价深度分析
-│   ├── national_comparator.py    # 全国对比分析
-│   └── price_predictor.py        # 价格预测
-├── 🗂️ 数据处理
-│   ├── process_all_data.py       # 批量数据处理
-│   ├── process_csv_data.py       # CSV数据处理
-│   └── chengjiao_combined_crawler.py  # 数据爬虫
-├── 📂 data/                       # 数据目录
-│   ├── processed/                 # 处理后的数据
-│   │   ├── data_summary.json     # 数据摘要
-│   │   └── data_*.csv            # 各省份数据
-│   └── raw/                      # 原始数据
-├── 🎨 static/                     # 静态资源
-│   ├── css/                      # 样式文件
-│   │   ├── modern-theme.css      # 现代主题
-│   │   ├── analysis.css          # 分析页样式
-│   │   └── style.css             # 通用样式
-│   └── js/                       # JavaScript文件
-│       ├── analysis.js           # 分析页逻辑
-│       ├── chart_ai.js           # 图表AI分析
-│       ├── national_comparison.js # 全国对比
-│       ├── user_role.js          # 用户角色管理
-│       └── ...
-├── 🖼️ templates/                  # HTML模板
-│   ├── base_layout.html          # 基础布局
-│   ├── home.html                 # 首页
-│   ├── analysis.html             # 分析页
-│   ├── national_comparison.html  # 全国对比
-│   ├── price_prediction.html     # 价格预测
-│   └── ...
-├── 📚 docs/                       # 文档目录
-│   ├── README.md                 # 文档索引
-│   ├── guides/                   # 使用指南
-│   │   ├── 快速启动.md
-│   │   ├── 使用指南.md
-│   │   └── AUTH_GUIDE.md
-│   ├── features/                 # 功能说明
-│   │   ├── 户型分析功能说明.md
-│   │   ├── 户型分析完整实现.md
-│   │   └── 城市搜索筛选.md
-│   └── bugfix/                   # Bug修复记录
-├── 🧪 tests/                      # 测试文件
-│   ├── test_api.py
-│   └── test_data_manager.py
-├── ⚙️ 配置文件
-│   ├── config.json               # 城市配置
-│   ├── requirements.txt          # Python依赖
-│   ├── .gitignore               # Git忽略规则
-│   ├── env.example              # 环境变量模板
-│   └── start.sh                 # 启动脚本
-├── 📄 README.md                  # 本文件
-├── 📋 CHANGELOG.md               # 更新日志
-└── 📜 CONTRIBUTION.md            # 贡献指南
+├── run.py                    # 项目启动入口
+├── src/                      # 源代码目录
+│   ├── core/                # 核心应用（app.py, config.json）
+│   ├── ai/                   # AI模块（对话、分析、预测、策略）
+│   ├── analysis/            # 分析模块（房价分析、全国对比）
+│   └── data/                # 数据处理（爬虫、清洗、转换）
+├── data/                     # 数据目录
+│   └── processed/           # 处理后的数据（data_summary.json可公开）
+├── reports/                  # 报告文件
+│   ├── report.tex/pdf        # 学术报告
+│   └── figures/             # 报告图片
+├── static/                   # 静态资源（CSS, JS）
+├── templates/               # HTML模板
+└── docs/                    # 详细文档
 ```
 
 ---
 
 ## 📚 文档
 
-详细文档请查看 `docs/` 目录：
-
-### 使用指南
 - [快速启动指南](docs/guides/快速启动.md) - 5分钟快速上手
-- [完整使用指南](docs/guides/使用指南.md) - 详细功能说明
-- [用户认证指南](docs/guides/AUTH_GUIDE.md) - 登录注册说明
-
-### 功能文档
-- [户型分析功能](docs/features/户型分析功能说明.md) - 几室几厅分析
-- [AI助手使用](docs/AI助手使用指南.md) - AI对话功能
-- [3D地图使用](docs/3D房价地图使用指南.md) - 3D可视化
+- [完整使用指南](docs/使用指南.md) - 详细功能说明
 - [API文档](docs/API_DOCUMENTATION.md) - 接口说明
-
-### 技术文档
-- [项目说明](docs/项目说明.md) - 技术架构
-- [开发指南](CONTRIBUTION.md) - 贡献代码
+- [技术架构说明](docs/项目说明.md) - 系统设计细节
 
 ---
 
-## 🎯 核心技术栈
+## 🎓 学术贡献
 
-### 后端
-- **Flask 3.1.2** - Web框架
-- **Pandas 2.3.3** - 数据分析
-- **NumPy** - 数值计算
-- **SQLite** - 用户数据存储
+本项目构建了一套**端到端的智能房价分析系统**，在以下方面做出贡献：
 
-### 前端
-- **ECharts 5.4.3** - 高级数据可视化
-- **Chart.js 4.4.0** - 图表库
-- **原生JavaScript** - 交互逻辑
-- **现代CSS3** - 响应式设计
+1. **数据规模**：227万+条真实成交数据，覆盖26个省级行政区
+2. **架构创新**：可插拔式AI架构，数据锚定机制消除AI幻觉
+3. **个性化服务**：三角色体系实现"千人千面"的智能咨询
+4. **预测范式**：数据锚定+AI推理的混合预测方法
 
-### AI技术
-- **DeepSeek-V3** - 大语言模型
-- **流式响应** - 实时AI对话
-- **Prompt工程** - 角色定制
+**项目代码已开源**：[GitHub仓库](https://github.com/RuiyangSi/ai-housing-analyzer)
+
+> ⚠️ **数据说明**：原始成交数据涉及隐私和网站使用协议，未在仓库中公开，仅保留汇总统计结果（`data_summary.json`）用于复现研究结论。
 
 ---
 
-## 📊 数据说明
+## 📈 数据发现
 
-### 数据来源
-- 房天下（Fang.com）公开数据
-- 时间跨度：2023年1月 - 2025年11月
-- 覆盖范围：全国25个省份
+基于227万+条数据的分析发现：
 
-### 数据规模
-- 总数据量：**200万+** 条
-- 城市数量：**25个** 省份/直辖市
-- 数据字段：成交日期、价格、面积、户型、区域等
-
-### 数据处理
-- 数据清洗与标准化
-- 异常值过滤
-- 多源数据合并
-- 增量更新支持
-
----
-
-## 🎨 特色功能展示
-
-### 1. 户型分析（全国首创）
-- 📊 几室几厅分布统计
-- 💰 不同户型价格对比
-- 📈 主流户型价格趋势
-- 🌐 全国户型横向对比
-
-### 2. AI智能角色
-**首次购房者**：通俗易懂的分析，关注性价比
-**改善型购房者**：换房策略，资金规划
-**投资顾问**：专业投资建议，ROI分析
-
-### 3. 3D房价地图
-- 区域价格立体展示
-- 时间轴动态播放
-- 交互式缩放旋转
-
----
-
-## 🔧 开发指南
-
-### 添加新城市数据
-
-1. 准备CSV数据文件（包含必需字段）
-2. 放入 `data/processed/` 目录
-3. 编辑 `config.json` 添加城市配置
-4. 重启服务器
-
-### 扩展AI功能
-
-参考 `ai_assistant.py` 中的实现，可以：
-- 添加新的prompt模板
-- 扩展角色定制逻辑
-- 集成新的AI模型
-
-### 贡献代码
-
-请查看 [CONTRIBUTION.md](CONTRIBUTION.md) 了解代码规范和提交流程。
-
----
-
-## 📝 更新日志
-
-查看 [CHANGELOG.md](CHANGELOG.md) 了解版本更新历史。
-
-### 最新版本 v2.0.0 (2024-12)
-- ✨ 新增户型分析功能
-- 🤖 优化AI分析质量
-- 🎨 改进UI/UX设计
-- 🐛 修复已知问题
+- **空间分异**：北京（52,173元/m²）与上海（47,642元/m²）稳居价格顶端，与西部省份形成近8倍落差
+- **时间演变**：市场整体经历"调整—筑底—企稳"演变，多数城市房价于2024年触底后逐步企稳
+- **区域分化**：一线城市与新一线城市间存在3倍以上的价格鸿沟
 
 ---
 
@@ -322,29 +180,13 @@ python_house1/
 
 欢迎提交Issue和Pull Request！
 
-### 贡献者
-- 课程大作业团队
+查看 [CONTRIBUTION.md](CONTRIBUTION.md) 了解代码规范和提交流程。
 
 ---
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 详见 LICENSE 文件
-
----
-
-## 📮 联系方式
-
-- 项目Issues：[GitHub Issues](issues链接)
-- 邮箱：your-email@example.com
-
----
-
-## 🙏 致谢
-
-- 感谢房天下（Fang.com）提供的公开数据
-- 感谢DeepSeek提供的AI服务
-- 感谢所有开源社区的贡献者
+本项目采用 MIT 许可证
 
 ---
 
