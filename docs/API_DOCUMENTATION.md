@@ -601,7 +601,7 @@ function streamChat(message, city) {
 ## 🔗 相关链接
 
 - [项目 README](../README.md)
-- [团队分工](../CONTRIBUTION.md)
+- [项目任务分工](../reports/report.pdf)（见附录B）
 - [GitHub 仓库](https://github.com/RuiyangSi/ai-housing-analyzer)
 
 ---

@@ -560,7 +560,9 @@ INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong61.t
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong20.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong79.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong71.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong70.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong8c.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong74.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei89.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei82.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei60.tfm
@@ -570,14 +572,12 @@ INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei76.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei66.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei54.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong99.tfm
-INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong74.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong6e.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei7c.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei8d.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei98.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei99.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei6b.tfm
-INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong70.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unihei/unihei55.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong58.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/zhmetrics/unisong/unisong8e.tfm

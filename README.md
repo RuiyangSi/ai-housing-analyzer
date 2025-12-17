@@ -14,6 +14,37 @@
 
 ---
 
+## 🏗️ 技术架构
+
+<div align="center">
+
+![系统架构图](reports/figures/Real%20Estate%20Intelligent%20Analysis%20System%20Architecture.png)
+
+**房地产智能分析系统总体架构图**
+
+</div>
+
+### 核心设计理念：数据锚定（Data Anchoring）
+
+```
+数据采集 → 数据清洗 → JSON上下文锚定 → Prompt注入 → AI推理 → 多维分析输出
+```
+
+### 四层架构体系
+
+1. **数据层**：227万+条CSV数据 + SQLite用户库 + JSON配置
+2. **业务逻辑层**：15+种分析维度 + 投资指数计算 + 跨城市对比
+3. **AI增强层**：可插拔大模型 + 三角色对话 + 智能预测 + 策略规划
+4. **表现层**：Flask API + ECharts可视化 + 流式响应
+
+### 技术栈
+
+**后端**：Flask 3.1.2 | Pandas 2.3.3 | SQLite  
+**前端**：ECharts 5.4.3 | Chart.js 4.4.0 | 现代CSS3  
+**AI**：DeepSeek-V3 | 流式响应 | Prompt工程
+
+---
+
 ## ✨ 核心创新点
 
 ### 🎯 四大突破性创新
@@ -70,29 +101,6 @@ python run.py
 ```
 
 访问 `http://localhost:5001`，默认账号：`admin` / `admin123`
-
----
-
-## 🏗️ 技术架构
-
-### 核心设计理念：数据锚定（Data Anchoring）
-
-```
-数据采集 → 数据清洗 → JSON上下文锚定 → Prompt注入 → AI推理 → 多维分析输出
-```
-
-### 四层架构体系
-
-1. **数据层**：227万+条CSV数据 + SQLite用户库 + JSON配置
-2. **业务逻辑层**：15+种分析维度 + 投资指数计算 + 跨城市对比
-3. **AI增强层**：可插拔大模型 + 三角色对话 + 智能预测 + 策略规划
-4. **表现层**：Flask API + ECharts可视化 + 流式响应
-
-### 技术栈
-
-**后端**：Flask 3.1.2 | Pandas 2.3.3 | SQLite  
-**前端**：ECharts 5.4.3 | Chart.js 4.4.0 | 现代CSS3  
-**AI**：DeepSeek-V3 | 流式响应 | Prompt工程
 
 ---
 
@@ -180,7 +188,7 @@ python_house1/
 
 欢迎提交Issue和Pull Request！
 
-查看 [CONTRIBUTION.md](CONTRIBUTION.md) 了解代码规范和提交流程。
+项目任务分工详见报告[附录B：项目任务分工](reports/report.pdf#page=xx)。
 
 ---
 
