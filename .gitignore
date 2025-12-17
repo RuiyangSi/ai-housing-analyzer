@@ -38,10 +38,14 @@ users.db
 *.out
 *.toc
 *.synctex.gz
+*.fdb_latexmk
+*.fls
 reports/*.aux
 reports/*.log
 reports/*.out
 reports/*.toc
+reports/*.fdb_latexmk
+reports/*.fls
 
 # OS
 .DS_Store
