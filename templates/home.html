@@ -1481,6 +1481,29 @@
     <div class="welcome-section">
         <h1>👋 欢迎，{{ user.username if user else '用户' }}！</h1>
         <p>这是一个 <strong>AI驱动</strong> 的智能购房决策平台，基于 {{ total_records }} 条真实成交数据，为您提供专业的房价分析和个性化购房建议。</p>
+        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="/report" target="_blank" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 12px;
+                color: white;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.95em;
+                transition: all 0.3s ease;
+                position: relative;
+                z-index: 1;
+            " onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                <span>📄</span>
+                <span>查看报告</span>
+                <span style="font-size: 0.85em; opacity: 0.9;">→</span>
+            </a>
+        </div>
     </div>
     
     <!-- AI 亮点展示 -->

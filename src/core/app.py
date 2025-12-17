@@ -25,7 +25,7 @@ AI 驱动的智能房价分析系统 - Flask 主应用
 日期: 2024-2025
 """
 
-from flask import Flask, render_template, jsonify, request, Response, stream_with_context, session, redirect, url_for
+from flask import Flask, render_template, jsonify, request, Response, stream_with_context, session, redirect, url_for, send_file
 import pandas as pd
 import json
 import os
@@ -1461,7 +1461,7 @@ def get_ai_prediction_stream():
 @login_required
 def get_ai_prediction_data():
     """获取 AI 预测的结构化数据（非流式，用于图表）"""
-    from price_predictor import AIResponseExtractor
+    from src.analysis.price_predictor import AIResponseExtractor
     
     data = request.get_json()
     city = data.get('city', 'beijing')
@@ -1507,7 +1507,22 @@ def get_ai_prediction_data():
             timeout=60
         )
         
-        result = response.json()
+        # 检查HTTP状态码
+        if response.status_code != 200:
+            logger.error(f"AI API请求失败: {response.status_code}, {response.text}")
+            return jsonify({
+                'success': False, 
+                'error': f'AI服务请求失败: HTTP {response.status_code}'
+            })
+        
+        try:
+            result = response.json()
+        except json.JSONDecodeError as e:
+            logger.error(f"AI API返回非JSON格式: {response.text[:200]}")
+            return jsonify({
+                'success': False,
+                'error': 'AI服务返回格式错误'
+            })
         
         if 'choices' in result and len(result['choices']) > 0:
             ai_response = result['choices'][0]['message']['content']
@@ -1711,6 +1726,16 @@ def clean_data(obj):
     elif hasattr(obj, 'item'):  # numpy类型
         return clean_data(obj.item())
     return obj
+
+@app.route('/report')
+@login_required
+def view_report():
+    """查看实验报告PDF"""
+    report_path = PROJECT_ROOT / 'reports' / 'report.pdf'
+    if report_path.exists():
+        return send_file(str(report_path), mimetype='application/pdf', as_attachment=False)
+    else:
+        return jsonify({'error': '报告文件未找到'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
