@@ -38,6 +38,7 @@ users.db
 *.out
 *.toc
 *.synctex.gz
+*.synctex(busy)
 *.fdb_latexmk
 *.fls
 reports/*.aux
@@ -46,6 +47,7 @@ reports/*.out
 reports/*.toc
 reports/*.fdb_latexmk
 reports/*.fls
+reports/report.tex
 
 # OS
 .DS_Store

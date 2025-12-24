@@ -1539,6 +1539,7 @@ def get_ai_prediction_data():
                     'risk_level': extracted['risk_level'],
                     'key_factors': extracted.get('key_factors', []),
                     'recommendation': extracted.get('recommendation', ''),
+                    'data_insights': extracted.get('data_insights', {}),
                     'raw_response': ai_response
                 })
             else:

@@ -798,6 +798,7 @@
         const riskLevel = result.risk_level;
         const keyFactors = result.key_factors || [];
         const recommendation = result.recommendation || '';
+        const dataInsights = result.data_insights || {};
         
         // 趋势信息
         const trendEmoji = trend === 'up' ? '📈' : trend === 'down' ? '📉' : '➡️';
@@ -868,6 +869,46 @@
         
         html += '</div></div>';
         
+        // 数据洞察（新增）
+        if (dataInsights && Object.keys(dataInsights).length > 0) {
+            html += `
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <span>📊</span> 数据深度洞察
+                    </h4>
+                    <div style="display: grid; gap: 12px;">
+            `;
+            
+            if (dataInsights.price_pattern) {
+                html += `
+                    <div style="background: rgba(96,165,250,0.1); border-left: 3px solid #60a5fa; padding: 14px; border-radius: 0 10px 10px 0;">
+                        <div style="font-weight: 600; color: #60a5fa; margin-bottom: 6px; font-size: 0.9em;">📈 价格规律</div>
+                        <div style="color: #e2e8f0; line-height: 1.5;">${dataInsights.price_pattern}</div>
+                    </div>
+                `;
+            }
+            
+            if (dataInsights.volume_analysis) {
+                html += `
+                    <div style="background: rgba(139,92,246,0.1); border-left: 3px solid #8b5cf6; padding: 14px; border-radius: 0 10px 10px 0;">
+                        <div style="font-weight: 600; color: #8b5cf6; margin-bottom: 6px; font-size: 0.9em;">📉 成交量分析</div>
+                        <div style="color: #e2e8f0; line-height: 1.5;">${dataInsights.volume_analysis}</div>
+                    </div>
+                `;
+            }
+            
+            if (dataInsights.seasonal_effect) {
+                html += `
+                    <div style="background: rgba(251,191,36,0.1); border-left: 3px solid #fbbf24; padding: 14px; border-radius: 0 10px 10px 0;">
+                        <div style="font-weight: 600; color: #fbbf24; margin-bottom: 6px; font-size: 0.9em;">🌡️ 季节性影响</div>
+                        <div style="color: #e2e8f0; line-height: 1.5;">${dataInsights.seasonal_effect}</div>
+                    </div>
+                `;
+            }
+            
+            html += '</div></div>';
+        }
+        
         // 关键因素
         if (keyFactors.length > 0) {
             html += `
@@ -875,10 +916,18 @@
                     <h4 style="color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                         <span>🔑</span> 关键影响因素
                     </h4>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: grid; gap: 8px;">
             `;
-            keyFactors.forEach(factor => {
-                html += `<span style="background: rgba(251,191,36,0.15); color: #fbbf24; padding: 8px 14px; border-radius: 20px; font-size: 0.9em; border: 1px solid rgba(251,191,36,0.3);">${factor}</span>`;
+            keyFactors.forEach((factor, index) => {
+                const colors = ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4'];
+                const bgColors = ['rgba(16,185,129,0.1)', 'rgba(139,92,246,0.1)', 'rgba(245,158,11,0.1)', 'rgba(239,68,68,0.1)', 'rgba(6,182,212,0.1)'];
+                const color = colors[index % colors.length];
+                const bgColor = bgColors[index % bgColors.length];
+                html += `
+                    <div style="background: ${bgColor}; border-left: 3px solid ${color}; padding: 12px 14px; border-radius: 0 8px 8px 0;">
+                        <span style="color: ${color}; font-weight: 500;">${factor}</span>
+                    </div>
+                `;
             });
             html += '</div></div>';
         }

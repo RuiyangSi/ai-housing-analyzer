@@ -32,7 +32,8 @@ class AIResponseExtractor:
             'confidence': 60,
             'key_factors': [],
             'recommendation': '',
-            'risk_level': 'medium'
+            'risk_level': 'medium',
+            'data_insights': {}
         }
         
         try:
@@ -57,6 +58,8 @@ class AIResponseExtractor:
                     result['recommendation'] = parsed['recommendation']
                 if 'risk_level' in parsed:
                     result['risk_level'] = parsed['risk_level']
+                if 'data_insights' in parsed:
+                    result['data_insights'] = parsed['data_insights']
                     
                 return result
             
@@ -538,7 +541,7 @@ class PricePredictor:
     def build_ai_prompt_for_extraction(self, prediction_months: int = 6,
                                        target_district: Optional[str] = None) -> str:
         """
-        构建专门用于数据提取的 AI 提示词（纯 JSON 输出）
+        构建专门用于数据提取的 AI 提示词（JSON 输出 + 详细解释）
         """
         context = self.get_prediction_context(target_district)
         base_price = context['statistical_forecast']['base_price']
@@ -555,26 +558,43 @@ class PricePredictor:
                 year += 1
             future_months.append(f"{year}-{month:02d}")
         
-        prompt = f"""你是一位房地产数据分析专家。基于以下{self.city_name}的房价数据，预测未来{prediction_months}个月的价格。
+        prompt = f"""你是一位资深房地产数据分析专家。基于以下{self.city_name}的房价数据，进行深度分析并预测未来{prediction_months}个月的价格走势。
 
 ## 关键数据
 - 当前均价：{base_price}万元（{base_month}）
 - 近期趋势：月均变化 {trend_pct}%
 - 市场热度：{context['market_factors']['market_heat']}/100
 - 价格波动率：{context['historical_summary']['price_volatility']}%
+- 价格稳定性：{context['market_factors']['stability_score']}/100
+- 成交量趋势：{context['market_factors']['volume_trend']}%
 
-## 最近6个月价格
+## 最近6个月价格走势
 """
         for m in context['recent_trend']['months']:
             price = m.get('均价', m.get('成交价（万元）', 0))
             prompt += f"- {m['年月']}: {price:.1f}万元\n"
 
-        prompt += f"""
-## 任务
-请预测以下月份的房价：{', '.join(future_months)}
+        # 添加区域信息
+        if context['districts_summary']['top_3']:
+            prompt += "\n## 热门区域价格（Top 3）\n"
+            for d in context['districts_summary']['top_3']:
+                prompt += f"- {d['name']}: {d['latest_price']}万元 (累计变化: {'+' if d['total_change'] > 0 else ''}{d['total_change']}%)\n"
 
-## 输出要求
-只输出 JSON，不要其他任何文字：
+        # 季节性信息
+        prompt += f"""
+## 季节性特征
+- 价格低谷月份：{context['seasonality']['best_buy_month']}月（适合买入）
+- 价格高峰月份：{context['seasonality']['peak_price_month']}月
+- 季节性强度：{context['seasonality']['strength']}%
+"""
+
+        prompt += f"""
+## 任务要求
+1. **数据提取**：从历史数据中提取关键趋势特征
+2. **预测分析**：预测以下月份的房价：{', '.join(future_months)}
+3. **深度解释**：解释预测背后的逻辑和依据
+
+## 输出格式（JSON）
 
 ```json
 {{
@@ -586,15 +606,28 @@ class PricePredictor:
   "trend": "up或down或stable",
   "confidence": 置信度0-100,
   "risk_level": "low或medium或high",
-  "summary": "一句话总结预测"
+  "key_factors": [
+    "影响因素1：具体说明",
+    "影响因素2：具体说明",
+    "影响因素3：具体说明"
+  ],
+  "data_insights": {{
+    "price_pattern": "从数据中发现的价格规律",
+    "volume_analysis": "成交量变化分析",
+    "seasonal_effect": "季节性因素影响说明"
+  }},
+  "recommendation": "综合购房建议（2-3句话，包含时机判断和风险提示）"
 }}
 ```
 
-注意：
-1. 价格单位是万元，保留1位小数
-2. low 约等于 price×0.93，high 约等于 price×1.07
-3. 基于趋势合理推断，不要简单线性外推
-4. 只输出JSON，不要其他解释"""
+## 分析要求
+1. **价格单位**：万元，保留1位小数
+2. **预测区间**：low 约为 price×0.93，high 约为 price×1.07
+3. **key_factors**：必须结合实际数据解释，不要泛泛而谈
+4. **data_insights**：从数据中提取的具体发现，引用具体数值
+5. **recommendation**：基于分析给出可操作的建议
+
+请直接输出JSON格式的分析结果。"""
 
         return prompt
 
