@@ -607,8 +607,42 @@ def ai_chat_stream():
     user = session.get('user', {})
     role = user.get('role', 'investment_advisor')
     
-    # 获取全局数据概览
+    # 获取全局数据概览（如果前端没传，则自动生成）
     global_data = data.get('global_data')
+    if not global_data:
+        # 自动获取系统统计数据（包含价格信息）
+        provinces = data_manager.get_enabled_provinces()
+        province_stats = []
+        total_records = 0
+        for prov in provinces:
+            df = data_manager.load_city_data(prov['name_en'])
+            if df is not None and len(df) > 0:
+                count = len(df)
+                avg_price = float(df['成交价（万元）'].mean())
+                avg_unit_price = float(df['成交单价（元）'].mean())
+                avg_area = float(df['面积（m²）'].mean())
+                total_records += count
+                province_stats.append({
+                    'name': prov['name'],
+                    'count': count,
+                    'avg_price': round(avg_price, 2),
+                    'avg_unit_price': round(avg_unit_price, 0),
+                    'avg_area': round(avg_area, 1),
+                    'cities_count': prov.get('cities_count', 1)
+                })
+            else:
+                province_stats.append({
+                    'name': prov['name'],
+                    'count': 0,
+                    'avg_price': 0,
+                    'avg_unit_price': 0,
+                    'avg_area': 0,
+                    'cities_count': prov.get('cities_count', 1)
+                })
+        global_data = {
+            'total_records': total_records,
+            'provinces': province_stats
+        }
     
     # 获取城市数据（如果指定了城市）
     city_data = None
@@ -628,9 +662,7 @@ def ai_chat_stream():
             }
     
     # 合并全局数据和城市数据
-    context_data = {}
-    if global_data:
-        context_data['global_data'] = global_data
+    context_data = {'global_data': global_data}
     if city_data:
         context_data['city_data'] = city_data
     

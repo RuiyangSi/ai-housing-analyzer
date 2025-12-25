@@ -1827,138 +1827,10 @@
     </div>
 </div>
 
-<!-- AI助手浮动按钮 -->
-<div id="ai-float-btn" onclick="openAIChat()" style="
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
-    z-index: 100;
-">
-    <span style="font-size: 1.8em;">🤖</span>
-</div>
-
-<!-- AI助手侧边栏 -->
-<div id="ai-sidebar" style="
-    position: fixed;
-    right: -400px;
-    top: 0;
-    width: 400px;
-    height: 100vh;
-    background: white;
-    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
-    transition: right 0.3s ease;
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-">
-    <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h3 style="margin: 0;">🤖 AI 智能助手</h3>
-            <p style="margin: 5px 0 0 0; font-size: 0.85em; opacity: 0.9;">DeepSeek-V3 支持</p>
-        </div>
-        <button onclick="closeAIChat()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">✕</button>
-    </div>
-    
-    <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 20px;">
-        <div style="background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
-            <p style="margin: 0; color: #1e293b;">你好！我是AI房价分析助手，有什么可以帮你的吗？</p>
-            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 0.85em;">💡 点击下方按钮可生成AI可视化图像</p>
-        </div>
-    </div>
-    
-    <!-- AI创意图像生成按钮 -->
-    <div style="padding: 10px 15px; border-top: 1px solid #e2e8f0;">
-        <p style="margin: 0 0 8px 0; font-size: 0.75em; color: #94a3b8;">✨ AI创意图像生成</p>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button onclick="generateAIImage('dream_home')" class="ai-img-btn" style="
-                padding: 5px 10px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                border: none;
-                border-radius: 12px;
-                cursor: pointer;
-                font-size: 0.75em;
-                color: white;
-                transition: all 0.2s;
-            ">🏠 梦想之家</button>
-            <button onclick="generateAIImage('lifestyle')" class="ai-img-btn" style="
-                padding: 5px 10px;
-                background: #f1f5f9;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                cursor: pointer;
-                font-size: 0.75em;
-                color: #64748b;
-                transition: all 0.2s;
-            ">🌟 生活场景</button>
-            <button onclick="generateAIImage('renovation')" class="ai-img-btn" style="
-                padding: 5px 10px;
-                background: #f1f5f9;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                cursor: pointer;
-                font-size: 0.75em;
-                color: #64748b;
-                transition: all 0.2s;
-            ">🔨 装修效果</button>
-            <button onclick="generateAIImage('seasonal')" class="ai-img-btn" style="
-                padding: 5px 10px;
-                background: #f1f5f9;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                cursor: pointer;
-                font-size: 0.75em;
-                color: #64748b;
-                transition: all 0.2s;
-            ">🍂 四季氛围</button>
-        </div>
-    </div>
-    
-    <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px;">
-        <input type="text" id="chat-input" placeholder="输入你的问题..." style="
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 0.95em;
-            outline: none;
-        " onkeypress="if(event.key === 'Enter') sendChatMessage()">
-        <button onclick="sendChatMessage()" style="
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-        ">发送</button>
-    </div>
-</div>
-
-<div id="ai-overlay" onclick="closeAIChat()" style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    display: none;
-"></div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
 <script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
@@ -2378,16 +2250,7 @@
         });
     }
     
-    function openAIChat() {
-        document.getElementById('ai-sidebar').style.right = '0';
-        document.getElementById('ai-overlay').style.display = 'block';
-    }
-    
-    function closeAIChat() {
-        document.getElementById('ai-sidebar').style.right = '-400px';
-        document.getElementById('ai-overlay').style.display = 'none';
-    }
-    
+    // 覆盖基础模板的 sendChatMessage，添加全局数据支持
     async function sendChatMessage() {
         const input = document.getElementById('chat-input');
         const message = input.value.trim();

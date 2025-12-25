@@ -530,6 +530,90 @@
         {% block content %}{% endblock %}
     </main>
     
+    <!-- AI助手浮动按钮 -->
+    <div id="ai-float-btn" onclick="openAIChat()" style="
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 100;
+    ">
+        <span style="font-size: 1.8em;">🤖</span>
+    </div>
+
+    <!-- AI助手侧边栏 -->
+    <div id="ai-sidebar" style="
+        position: fixed;
+        right: -400px;
+        top: 0;
+        width: 400px;
+        height: 100vh;
+        background: white;
+        box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+        transition: right 0.3s ease;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+    ">
+        <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0;">🤖 AI 智能助手</h3>
+                <p style="margin: 5px 0 0 0; font-size: 0.85em; opacity: 0.9;">DeepSeek-V3 支持</p>
+            </div>
+            <button onclick="closeAIChat()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">✕</button>
+        </div>
+        
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 20px;">
+            <div style="background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                <p style="margin: 0; color: #1e293b;">你好！我是AI房价分析助手，有什么可以帮你的吗？</p>
+                <p style="margin: 8px 0 0 0; color: #64748b; font-size: 0.85em;">💡 可以问我任何关于房价、购房策略的问题</p>
+            </div>
+        </div>
+        
+        <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px;">
+            <input type="text" id="chat-input" placeholder="输入你的问题..." style="
+                flex: 1;
+                padding: 12px 15px;
+                border: 2px solid #e2e8f0;
+                border-radius: 25px;
+                font-size: 0.95em;
+                outline: none;
+            " onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()" style="
+                padding: 12px 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                font-weight: 600;
+            ">发送</button>
+        </div>
+    </div>
+
+    <div id="ai-overlay" onclick="closeAIChat()" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: none;
+    "></div>
+    
+    <!-- 引入 marked.js 用于 AI 回复的 Markdown 渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <script>
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('open');
@@ -547,6 +631,103 @@
                 } catch (error) {
                     console.error('登出错误:', error);
                     alert('登出失败，请重试');
+                }
+            }
+        }
+        
+        // ==================== AI 智能助手 ====================
+        function openAIChat() {
+            document.getElementById('ai-sidebar').style.right = '0';
+            document.getElementById('ai-overlay').style.display = 'block';
+        }
+        
+        function closeAIChat() {
+            document.getElementById('ai-sidebar').style.right = '-400px';
+            document.getElementById('ai-overlay').style.display = 'none';
+        }
+        
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // 显示用户消息
+            chatMessages.innerHTML += `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; margin-left: 50px;">
+                    <p style="margin: 0;">${message}</p>
+                </div>
+            `;
+            
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // 创建 AI 回复容器
+            const responseId = 'ai-response-' + Date.now();
+            chatMessages.innerHTML += `
+                <div id="${responseId}" style="background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+                    <p style="margin: 0; color: #1e293b; white-space: pre-wrap;"><span class="typing-cursor">🤖 思考中...</span></p>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            try {
+                // 使用流式 API
+                const response = await fetch('/api/ai/chat-stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+                const responseDiv = document.getElementById(responseId);
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    fullText += json.content;
+                                    // 使用marked渲染markdown
+                                    const renderedHtml = typeof marked !== 'undefined' ? marked.parse(fullText) : fullText;
+                                    responseDiv.innerHTML = `
+                                        <div style="margin: 0; color: #1e293b; line-height: 1.6;">${renderedHtml}</div>
+                                    `;
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+                
+                // 如果没有收到任何内容
+                if (!fullText) {
+                    responseDiv.innerHTML = `
+                        <p style="margin: 0; color: #1e293b;">抱歉，出现了一些问题，请重试。</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                const responseDiv = document.getElementById(responseId);
+                if (responseDiv) {
+                    responseDiv.innerHTML = `
+                        <p style="margin: 0; color: #dc2626;">❌ 发送失败: ${error.message}</p>
+                    `;
                 }
             }
         }
@@ -1032,6 +1213,29 @@
         
         body.dark-mode ::-webkit-scrollbar-thumb:hover {
             background: #64748b;
+        }
+        
+        /* AI 助手深色模式 */
+        body.dark-mode #ai-sidebar {
+            background: linear-gradient(135deg, #1e293b 0%, #293548 100%) !important;
+        }
+        
+        body.dark-mode #ai-sidebar #chat-messages > div {
+            background: #0f172a !important;
+        }
+        
+        body.dark-mode #ai-sidebar #chat-messages > div p {
+            color: #e2e8f0 !important;
+        }
+        
+        body.dark-mode #ai-sidebar #chat-input {
+            background: #0f172a !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+        
+        body.dark-mode #ai-sidebar #chat-input::placeholder {
+            color: #64748b !important;
         }
         
         /* 模态框深色 */
