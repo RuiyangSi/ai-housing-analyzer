@@ -251,22 +251,37 @@
                 <span style="font-size: 2.5em;">🤖</span>
                 <div>
                     <h2 style="margin: 0; color: white;">AI 智能概览</h2>
-                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9em;">DeepSeek-V3 深度分析</p>
+                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9em;">全国房价 · DeepSeek-V3 深度分析</p>
                 </div>
-                <button onclick="refreshAIOverview()" style="
-                    margin-left: auto;
-                    background: rgba(255,255,255,0.2);
-                    border: 1px solid rgba(255,255,255,0.5);
-                    color: white;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
-                   onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                    🔄 刷新分析
-                </button>
+                <div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="national-quick-insight-btn" onclick="generateNationalQuickInsight()" style="
+                        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+                        color: white;
+                        border: none;
+                        padding: 10px 24px;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-size: 0.95em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        ⚡ 一键AI洞察
+                    </button>
+                    <button onclick="refreshAIOverview()" style="
+                        background: rgba(255,255,255,0.2);
+                        border: 1px solid rgba(255,255,255,0.5);
+                        color: white;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🔄 刷新分析
+                    </button>
+                </div>
             </div>
             <div id="ai-overview-content" style="
                 background: rgba(255,255,255,0.15);
@@ -280,6 +295,8 @@
                 <div class="spinner" style="margin: 50px auto;"></div>
                 <p style="text-align: center;">AI正在分析数据...</p>
             </div>
+            <!-- 一键洞察内容区域 -->
+            <div id="national-quick-insight-content" style="display: none; margin-top: 20px;"></div>
         </div>
         
         <!-- 总体概览 -->

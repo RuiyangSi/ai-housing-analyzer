@@ -36,13 +36,17 @@ async function analyzeChart(chartType, chartId, chartTitle) {
     
     const button = event.target;
     
-    // 显示加载状态
+    // 显示加载状态，重置外层样式
     insightDiv.style.display = 'block';
+    insightDiv.style.background = 'transparent';
+    insightDiv.style.padding = '0';
+    insightDiv.style.borderLeft = 'none';
+    
     insightDiv.innerHTML = `
-        <div style="padding: 20px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #667eea;">
+        <div style="padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; border-left: 4px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                 <div class="spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>
-                <strong>🤖 AI正在分析图表...</strong>
+                <strong style="color: #4f46e5;">🤖 AI正在分析图表...</strong>
             </div>
             <p style="margin: 0; color: #64748b; font-size: 0.9em;">DeepSeek-V3正在深度解读数据，请稍候...</p>
         </div>
@@ -92,8 +96,13 @@ async function analyzeChart(chartType, chartId, chartTitle) {
         const decoder = new TextDecoder();
         let fullText = '';
         
+        // 重置外层容器样式，避免两层背景
+        insightDiv.style.background = 'transparent';
+        insightDiv.style.padding = '0';
+        insightDiv.style.borderLeft = 'none';
+        
         insightDiv.innerHTML = `
-            <div style="padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%); border-radius: 10px; border-left: 4px solid #667eea;">
+            <div style="padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; border-left: 4px solid #667eea; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <span style="font-size: 1.5em;">🤖</span>
                     <strong style="color: #667eea; font-size: 1.1em;">AI 智能洞察</strong>
@@ -138,9 +147,12 @@ async function analyzeChart(chartType, chartId, chartTitle) {
         
     } catch (error) {
         console.error('AI分析错误:', error);
+        insightDiv.style.background = 'transparent';
+        insightDiv.style.padding = '0';
+        insightDiv.style.borderLeft = 'none';
         insightDiv.innerHTML = `
-            <div style="padding: 20px; background: #fef2f2; border-radius: 10px; border-left: 4px solid #ef4444;">
-                <p style="margin: 0; color: #ef4444;"><strong>❌ 分析失败</strong></p>
+            <div style="padding: 20px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <p style="margin: 0; color: #dc2626;"><strong>❌ 分析失败</strong></p>
                 <p style="margin: 10px 0 0 0; color: #64748b; font-size: 0.9em;">${error.message}</p>
             </div>
         `;

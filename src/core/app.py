@@ -1019,6 +1019,182 @@ def get_national_ai_overview_stream():
     
     return Response(generate(), mimetype='text/event-stream')
 
+@app.route('/api/national-comparison/quick-insight-stream')
+def get_national_quick_insight_stream():
+    """全国房价一键AI洞察 - 流式返回深度分析"""
+    role = request.args.get('role', 'investment_advisor')
+    
+    def generate():
+        try:
+            # 加载所有启用的城市数据
+            cities_data = {}
+            for city in data_manager.get_enabled_cities():
+                df = data_manager.load_city_data(city['name_en'])
+                if df is not None and len(df) > 0:
+                    cities_data[city['name']] = df
+            
+            if not cities_data:
+                yield f"data: {json.dumps({'error': '没有可用的城市数据'}, ensure_ascii=False)}\n\n"
+                return
+            
+            # 创建对比分析器
+            comparator = NationalComparator(cities_data)
+            comparison_result = comparator.get_comprehensive_comparison()
+            
+            # 提取关键数据
+            overview = comparison_result.get('overview', {})
+            price_comp = comparison_result.get('price_comparison', {})
+            growth = comparison_result.get('growth_rates', {})
+            investment = comparison_result.get('investment_scores', {})
+            volatility = comparison_result.get('volatility_comparison', {})
+            affordability = comparison_result.get('affordability', {})
+            
+            # 基础数据
+            base_data = f"""
+## 全国房产市场数据
+
+### 市场概况
+- 总成交量：{overview.get('total_transactions_all', 0):,} 套
+- 覆盖城市：{len(cities_data)} 个省份/城市
+- 价格最高：{overview.get('highest_price_city', '')}
+- 价格最低：{overview.get('lowest_price_city', '')}
+- 最活跃市场：{overview.get('most_active_city', '')}
+
+### 价格对比
+- 价格差距：{price_comp.get('price_gap', 0)} 万元
+- 价格倍数：{price_comp.get('price_ratio', 0)} 倍
+- 差距评级：{price_comp.get('price_disparity_level', '')}
+
+### 市场趋势
+- 整体趋势：{growth.get('overall_trend', '')}
+- 涨幅最大：{growth.get('best_performer', '')} ({growth.get('best_growth_rate', 0)}%)
+- 跌幅最大：{growth.get('worst_performer', '')} ({growth.get('worst_growth_rate', 0)}%)
+
+### 投资指数排名（前5）
+"""
+            # 添加投资排名
+            scores = investment.get('scores', [])[:5]
+            for i, score in enumerate(scores, 1):
+                base_data += f"- {i}. {score.get('city', '')}: {score.get('investment_score', 0)}分\n"
+            
+            # 根据角色定制深度分析prompt
+            if role == 'first_time_buyer':
+                context = f"""请为首次购房者提供全国房价深度洞察报告，用通俗易懂的语言。
+
+{base_data}
+
+# 请提供以下分析（用大白话，就像跟朋友聊天）
+
+1. **全国房价差别有多大？**（2-3段，每段80-100字）
+   - 最贵的和最便宜的城市差多少？
+   - 各城市房价大概什么水平？
+   - 我的预算能在哪些城市买房？
+
+2. **哪些城市房价在涨/跌？**（2-3段）
+   - 最近表现好的城市有哪些？
+   - 房价在跌的城市要不要考虑？
+   - 房价稳不稳定？
+
+3. **首次买房适合去哪里？**（2-3段）
+   - 推荐哪些城市？（考虑价格、稳定性）
+   - 有哪些性价比高的选择？
+   - 不同预算适合的城市
+
+4. **购房注意事项**（1-2段）
+   - 在不同城市买房要注意什么？
+   - 有什么风险要警惕？
+
+要求：
+- 不要用"投资"、"ROI"等专业词
+- 用"房子稳不稳定"代替"市场波动"
+- 语气亲切，给出具体的城市建议
+- 总字数800-1000字"""
+
+            elif role == 'upgrader':
+                context = f"""请为换房者提供全国房价深度洞察报告，关注换房策略。
+
+{base_data}
+
+# 请提供以下分析
+
+1. **市场分化与换房机会**（2-3段，每段80-100字）
+   - 城市间价格差距对换房有什么影响？
+   - 跨城换房值不值得考虑？
+   - 哪些城市适合"卖旧房"？哪些适合"买新房"？
+
+2. **增值潜力分析**（2-3段）
+   - 哪些城市房价还在涨？值得换过去吗？
+   - 房价下跌的城市有没有"捡漏"机会？
+   - 换房后资产保值增值怎么样？
+
+3. **换房城市推荐**（2-3段）
+   - 同价位换更大房子：去哪些城市？
+   - 改善居住品质：推荐哪些城市？
+   - 考虑子女教育/养老：选哪里？
+
+4. **换房策略建议**（2-3段）
+   - 现在是跨城换房的好时机吗？
+   - 换房的资金规划和税费考虑
+   - 需要注意的风险和陷阱
+
+要求：平衡专业性和实用性，每段开头用小标题（加粗），总字数800-1000字"""
+
+            else:  # investment_advisor
+                context = f"""请为投资者提供全国房地产市场专业投资洞察报告。
+
+{base_data}
+
+### 市场稳定性排名
+"""
+                # 添加稳定性数据
+                stable_cities = volatility.get('stable_cities', [])[:3]
+                for city in stable_cities:
+                    context += f"- {city.get('city', '')}: 变异系数 {city.get('cv', 0)}%\n"
+                
+                context += f"""
+# 请提供以下专业分析
+
+1. **市场格局分析**（2-3段，每段80-100字）
+   - 全国房地产市场的整体格局和分化特征
+   - 一二三线城市的价格梯度和投资机会
+   - 市场活跃度和流动性分析
+
+2. **投资价值评估**（3-4段）
+   - 基于投资指数的城市排名分析
+   - 各城市的ROI预期和风险收益比
+   - 价值洼地和热点区域识别
+   - 不同投资策略的城市匹配
+
+3. **趋势研判**（2-3段）
+   - 近期价格走势和成交量变化
+   - 市场周期判断和拐点信号
+   - 未来6-12个月市场预判
+
+4. **投资策略建议**（2-3段）
+   - 明确的投资建议（重点配置/观望/规避城市）
+   - 资产配置策略（分散vs集中）
+   - 入市时机和退出策略
+
+5. **风险提示**（1-2段）
+   - 主要风险点和预警信号
+   - 需要关注的政策和市场动态
+
+要求：使用专业术语，数据支撑，每段开头用小标题（加粗），总字数800-1000字"""
+            
+            # 流式生成
+            for chunk in ai_assistant.chat_stream(context, None, role=role):
+                yield f"data: {json.dumps({'chunk': chunk}, ensure_ascii=False)}\n\n"
+            
+            yield "data: [DONE]\n\n"
+            
+        except Exception as e:
+            logger.error(f"National quick insight stream error: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            yield f"data: {json.dumps({'error': str(e)}, ensure_ascii=False)}\n\n"
+    
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
+
 @app.route('/api/city/<city_name_en>/ai-overview')
 def get_city_ai_overview(city_name_en):
     """获取单城市的AI智能概览分析"""

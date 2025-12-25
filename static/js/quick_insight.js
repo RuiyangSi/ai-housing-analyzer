@@ -25,11 +25,20 @@ function generateQuickInsight() {
         currentEventSource = null;
     }
     
-    // 获取当前角色
-    const roleInfo = typeof getCurrentRole === 'function' ? getCurrentRole() : null;
+    // 获取当前角色（使用 getRole 函数，返回字符串）
+    const currentRole = typeof getRole === 'function' ? getRole() : 'investment_advisor';
+    console.log('[QuickInsight] 当前用户角色:', currentRole);
     
     const button = document.getElementById('quick-insight-btn');
     const contentDiv = document.getElementById('quick-insight-content');
+    
+    // 根据角色显示不同的提示文案
+    const roleHints = {
+        'investment_advisor': '市场定位、投资价值、趋势研判、投资建议和风险提示',
+        'first_time_buyer': '房价分析、购买时机、注意事项和实用建议',
+        'upgrader': '换房时机、市场行情、资金规划和换房策略'
+    };
+    const hintText = roleHints[currentRole] || roleHints['investment_advisor'];
     
     // 立即禁用按钮
     button.disabled = true;
@@ -64,14 +73,15 @@ function generateQuickInsight() {
                 font-size: 0.85em;
                 color: #64748b;
             ">
-                💡 <strong>提示</strong>: AI正在分析市场定位、投资价值、趋势研判、投资建议和风险提示...
+                💡 <strong>提示</strong>: AI正在为您分析${hintText}...
             </div>
         </div>
     `;
     
     // 创建EventSource（添加角色参数）
-    const roleParam = roleInfo ? `?role=${roleInfo.id}` : '';
+    const roleParam = `?role=${currentRole}`;
     currentEventSource = new EventSource(`/api/ai/quick-insight-stream/${cityNameEn}${roleParam}`);
+    console.log('[QuickInsight] 请求URL:', `/api/ai/quick-insight-stream/${cityNameEn}${roleParam}`);
     const insightTextDiv = document.getElementById('insight-text');
     let fullText = '';
     
@@ -152,47 +162,36 @@ function generateQuickInsight() {
 function formatInsightText(text) {
     if (!text) return '';
     
-    // 替换标题（## 标题 -> <h3>）
-    text = text.replace(/##\s+(.+)/g, '<h3 style="color: #1e293b; margin-top: 25px; margin-bottom: 15px; font-size: 1.2em; border-bottom: 2px solid #f59e0b; padding-bottom: 8px;">$1</h3>');
+    let html = text;
     
-    // 替换加粗（**文字** -> <strong>）
-    text = text.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1e293b;">$1</strong>');
+    // 1. 先处理标题（## 标题 或 ### 标题）
+    html = html.replace(/^###\s+(.+)$/gm, '<h4 style="color: #ea580c; margin: 20px 0 12px 0; font-size: 1.05em; font-weight: 700;">$1</h4>');
+    html = html.replace(/^##\s+(.+)$/gm, '<h3 style="color: #1e293b; margin: 25px 0 15px 0; font-size: 1.15em; font-weight: 700; border-bottom: 2px solid #f59e0b; padding-bottom: 8px;">$1</h3>');
     
-    // 替换数字列表（1. -> <ol><li>）
-    const lines = text.split('\n');
-    let inList = false;
-    let formattedLines = [];
+    // 2. 处理加粗 **文字**
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1e40af; font-weight: 700;">$1</strong>');
     
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const listMatch = line.match(/^(\d+)\.\s+(.+)/);
-        
-        if (listMatch) {
-            if (!inList) {
-                formattedLines.push('<ol style="margin: 15px 0; padding-left: 25px;">');
-                inList = true;
-            }
-            formattedLines.push(`<li style="margin: 10px 0; line-height: 1.8;">${listMatch[2]}</li>`);
-        } else {
-            if (inList && line.trim() === '') {
-                formattedLines.push('</ol>');
-                inList = false;
-            }
-            if (line.trim() !== '') {
-                formattedLines.push(`<p style="margin: 12px 0;">${line}</p>`);
-            }
-        }
-    }
+    // 3. 处理数字标题（如 "1. **标题**" 格式，常用于首次购房者的报告）
+    html = html.replace(/^(\d+)\.\s+\*\*(.+?)\*\*(.*)$/gm, 
+        '<div style="margin: 20px 0 12px 0; padding: 12px 16px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid #f59e0b;"><span style="color: #d97706; font-weight: 800; font-size: 1.1em;">$1.</span> <strong style="color: #92400e; font-weight: 700;">$2</strong>$3</div>');
     
-    if (inList) {
-        formattedLines.push('</ol>');
-    }
+    // 4. 处理普通数字列表
+    html = html.replace(/^(\d+)\.\s+(.+)$/gm, 
+        '<div style="margin: 10px 0; padding-left: 8px;"><span style="color: #f59e0b; font-weight: 700;">$1.</span> $2</div>');
     
-    text = formattedLines.join('\n');
+    // 5. 处理无序列表
+    html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin: 8px 0; margin-left: 24px; line-height: 1.8; list-style: disc;">$1</li>');
     
-    // 替换项目符号（- -> <li>）
-    text = text.replace(/^-\s+(.+)/gm, '<li style="margin: 8px 0; line-height: 1.8;">$1</li>');
+    // 6. 处理段落（跳过已经是HTML标签的行）
+    const lines = html.split('\n');
+    html = lines.map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+        // 已经是 HTML 标签的不再包裹
+        if (trimmed.startsWith('<')) return trimmed;
+        return `<p style="margin: 12px 0; line-height: 1.85; color: #374151;">${trimmed}</p>`;
+    }).filter(line => line).join('');
     
-    return text;
+    return html;
 }
 

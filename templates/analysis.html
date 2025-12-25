@@ -453,30 +453,30 @@
             
             <!-- 户型分布图表 -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                <div class="chart-container">
+                <div class="chart-container" style="height: auto; min-height: 420px;">
                     <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">📊 户型分布占比</h3>
                     <div id="house-type-distribution-chart" style="width: 100%; height: 350px;"></div>
                 </div>
-                <div class="chart-container">
+                <div class="chart-container" style="height: auto; min-height: 420px;">
                     <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">💰 户型平均价格对比</h3>
                     <div id="house-type-price-chart" style="width: 100%; height: 350px;"></div>
                 </div>
             </div>
             
             <!-- 按室数统计 -->
-            <div class="chart-container" style="margin-bottom: 25px;">
+            <div class="chart-container" style="margin-bottom: 25px; height: auto; min-height: 460px;">
                 <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">🔢 按室数统计分析</h3>
                 <div id="room-statistics-chart" style="width: 100%; height: 400px;"></div>
             </div>
             
             <!-- 户型价格趋势 -->
-            <div class="chart-container">
+            <div class="chart-container" style="height: auto; min-height: 520px;">
                 <h3 style="text-align: center; color: #475569; font-size: 1.1em; margin-bottom: 15px;">📈 主流户型价格趋势</h3>
                 <div id="house-type-trend-chart" style="width: 100%; height: 450px;"></div>
             </div>
             
             <!-- AI分析结果 -->
-            <div id="house-type-ai-insight" style="display: none; margin-top: 20px;"></div>
+            <div id="house-type-ai-insight" class="ai-insight" style="display: none; margin-top: 25px;"></div>
         </div>
         
         <!-- 区域深度分析 - 所有角色可见 -->
