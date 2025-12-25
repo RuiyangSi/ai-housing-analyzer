@@ -4,12 +4,12 @@
     "cities": [
       "合肥市"
     ],
-    "total_count": 14569,
-    "avg_price": 149.04,
-    "median_price": 110.0,
-    "avg_unit_price": 15655.12,
-    "avg_area": 92.89,
-    "min_price": 4.0,
+    "total_count": 7293,
+    "avg_price": 175.32,
+    "median_price": 144.0,
+    "avg_unit_price": 17433.79,
+    "avg_area": 96.75,
+    "min_price": 10.0,
     "max_price": 1448.0
   },
   "河北": {
@@ -17,25 +17,25 @@
     "cities": [
       "保定市"
     ],
-    "total_count": 34435,
-    "avg_price": 103.23,
-    "median_price": 91.0,
-    "avg_unit_price": 10551.47,
-    "avg_area": 96.75,
-    "min_price": 1.0,
-    "max_price": 1608.0
+    "total_count": 21472,
+    "avg_price": 102.98,
+    "median_price": 90.0,
+    "avg_unit_price": 10510.15,
+    "avg_area": 96.49,
+    "min_price": 10.0,
+    "max_price": 1380.0
   },
   "黑龙江": {
     "province": "黑龙江",
     "cities": [
       "哈尔滨市"
     ],
-    "total_count": 19184,
-    "avg_price": 59.58,
-    "median_price": 52.0,
-    "avg_unit_price": 7104.25,
-    "avg_area": 81.94,
-    "min_price": 4.0,
+    "total_count": 4754,
+    "avg_price": 59.44,
+    "median_price": 50.0,
+    "avg_unit_price": 7100.92,
+    "avg_area": 81.37,
+    "min_price": 10.0,
     "max_price": 470.0
   },
   "江苏": {
@@ -43,25 +43,25 @@
     "cities": [
       "无锡市"
     ],
-    "total_count": 18359,
-    "avg_price": 110.27,
-    "median_price": 100.0,
-    "avg_unit_price": 10160.59,
-    "avg_area": 107.38,
-    "min_price": 1.0,
-    "max_price": 1178.0
+    "total_count": 16067,
+    "avg_price": 112.3,
+    "median_price": 102.0,
+    "avg_unit_price": 10330.65,
+    "avg_area": 107.17,
+    "min_price": 10.0,
+    "max_price": 836.0
   },
   "吉林": {
     "province": "吉林",
     "cities": [
       "长春市"
     ],
-    "total_count": 33503,
-    "avg_price": 48.85,
+    "total_count": 7890,
+    "avg_price": 49.98,
     "median_price": 47.0,
-    "avg_unit_price": 5524.79,
-    "avg_area": 87.37,
-    "min_price": 3.0,
+    "avg_unit_price": 5588.26,
+    "avg_area": 88.46,
+    "min_price": 10.0,
     "max_price": 324.0
   },
   "辽宁": {
@@ -69,12 +69,12 @@
     "cities": [
       "沈阳市"
     ],
-    "total_count": 26897,
-    "avg_price": 82.0,
-    "median_price": 69.0,
-    "avg_unit_price": 8742.06,
-    "avg_area": 91.73,
-    "min_price": 1.0,
+    "total_count": 22217,
+    "avg_price": 79.51,
+    "median_price": 68.0,
+    "avg_unit_price": 8406.14,
+    "avg_area": 92.19,
+    "min_price": 10.0,
     "max_price": 1470.0
   },
   "山西": {
@@ -83,25 +83,25 @@
       "大同市",
       "太原市"
     ],
-    "total_count": 37364,
-    "avg_price": 106.6,
-    "median_price": 87.0,
-    "avg_unit_price": 8986.1,
-    "avg_area": 114.15,
-    "min_price": 1.0,
-    "max_price": 2500.0
+    "total_count": 11893,
+    "avg_price": 114.12,
+    "median_price": 89.0,
+    "avg_unit_price": 9196.84,
+    "avg_area": 114.99,
+    "min_price": 10.0,
+    "max_price": 1530.0
   },
   "浙江": {
     "province": "浙江",
     "cities": [
       "宁波市"
     ],
-    "total_count": 23693,
-    "avg_price": 218.71,
-    "median_price": 170.0,
-    "avg_unit_price": 21014.81,
-    "avg_area": 105.39,
-    "min_price": 5.0,
+    "total_count": 6060,
+    "avg_price": 277.48,
+    "median_price": 240.0,
+    "avg_unit_price": 27893.08,
+    "avg_area": 100.08,
+    "min_price": 14.0,
     "max_price": 2320.0
   },
   "上海": {
@@ -109,25 +109,25 @@
     "cities": [
       "上海市"
     ],
-    "total_count": 37424,
-    "avg_price": 364.61,
-    "median_price": 300.0,
-    "avg_unit_price": 47642.13,
-    "avg_area": 75.51,
-    "min_price": 1.0,
-    "max_price": 5879.0
+    "total_count": 30799,
+    "avg_price": 363.86,
+    "median_price": 299.0,
+    "avg_unit_price": 47190.96,
+    "avg_area": 75.95,
+    "min_price": 10.0,
+    "max_price": 4800.0
   },
   "云南": {
     "province": "云南",
     "cities": [
       "昆明市"
     ],
-    "total_count": 76301,
-    "avg_price": 100.79,
-    "median_price": 93.0,
-    "avg_unit_price": 9434.35,
-    "avg_area": 103.82,
-    "min_price": 1.0,
+    "total_count": 28840,
+    "avg_price": 108.21,
+    "median_price": 100.0,
+    "avg_unit_price": 9868.7,
+    "avg_area": 106.66,
+    "min_price": 10.0,
     "max_price": 1130.0
   },
   "内蒙古": {
@@ -136,12 +136,12 @@
       "包头市",
       "呼和浩特市"
     ],
-    "total_count": 98334,
-    "avg_price": 83.28,
-    "median_price": 79.0,
-    "avg_unit_price": 7974.77,
-    "avg_area": 102.61,
-    "min_price": 1.0,
+    "total_count": 26185,
+    "avg_price": 82.71,
+    "median_price": 76.0,
+    "avg_unit_price": 7901.87,
+    "avg_area": 102.6,
+    "min_price": 10.0,
     "max_price": 770.0
   },
   "北京": {
@@ -149,12 +149,12 @@
     "cities": [
       "北京市"
     ],
-    "total_count": 58927,
-    "avg_price": 420.57,
+    "total_count": 37616,
+    "avg_price": 425.1,
     "median_price": 369.0,
-    "avg_unit_price": 52172.54,
-    "avg_area": 81.05,
-    "min_price": 1.0,
+    "avg_unit_price": 52980.51,
+    "avg_area": 80.99,
+    "min_price": 10.0,
     "max_price": 3799.0
   },
   "福建": {
@@ -165,13 +165,13 @@
       "漳州市",
       "福州市"
     ],
-    "total_count": 149122,
-    "avg_price": 221.56,
-    "median_price": 188.0,
-    "avg_unit_price": 22758.45,
-    "avg_area": 92.07,
-    "min_price": 1.0,
-    "max_price": 3500.0
+    "total_count": 41166,
+    "avg_price": 222.08,
+    "median_price": 181.0,
+    "avg_unit_price": 22852.09,
+    "avg_area": 94.76,
+    "min_price": 10.0,
+    "max_price": 3100.0
   },
   "四川": {
     "province": "四川",
@@ -179,12 +179,12 @@
       "成都市",
       "绵阳市"
     ],
-    "total_count": 181471,
-    "avg_price": 87.49,
-    "median_price": 77.0,
-    "avg_unit_price": 9149.41,
-    "avg_area": 96.36,
-    "min_price": 1.0,
+    "total_count": 60817,
+    "avg_price": 105.28,
+    "median_price": 88.0,
+    "avg_unit_price": 11294.52,
+    "avg_area": 92.71,
+    "min_price": 10.0,
     "max_price": 1260.0
   },
   "天津": {
@@ -192,26 +192,26 @@
     "cities": [
       "天津市"
     ],
-    "total_count": 213983,
-    "avg_price": 123.98,
-    "median_price": 102.0,
-    "avg_unit_price": 15664.63,
-    "avg_area": 84.58,
-    "min_price": 4.0,
-    "max_price": 2300.0
+    "total_count": 104633,
+    "avg_price": 127.59,
+    "median_price": 105.0,
+    "avg_unit_price": 16499.94,
+    "avg_area": 82.29,
+    "min_price": 10.0,
+    "max_price": 2150.0
   },
   "宁夏": {
     "province": "宁夏",
     "cities": [
       "银川市"
     ],
-    "total_count": 43938,
-    "avg_price": 76.42,
-    "median_price": 72.0,
-    "avg_unit_price": 6860.8,
-    "avg_area": 108.67,
-    "min_price": 1.0,
-    "max_price": 1136.0
+    "total_count": 25156,
+    "avg_price": 75.01,
+    "median_price": 68.0,
+    "avg_unit_price": 6649.55,
+    "avg_area": 109.08,
+    "min_price": 10.0,
+    "max_price": 810.0
   },
   "山东": {
     "province": "山东",
@@ -220,12 +220,12 @@
       "淄博市",
       "青岛市"
     ],
-    "total_count": 51840,
-    "avg_price": 119.97,
-    "median_price": 103.0,
-    "avg_unit_price": 11481.74,
-    "avg_area": 103.21,
-    "min_price": 1.0,
+    "total_count": 37580,
+    "avg_price": 130.34,
+    "median_price": 112.0,
+    "avg_unit_price": 12349.95,
+    "avg_area": 103.51,
+    "min_price": 10.0,
     "max_price": 2345.0
   },
   "广东": {
@@ -234,12 +234,12 @@
       "广州市",
       "深圳市"
     ],
-    "total_count": 138595,
-    "avg_price": 309.11,
-    "median_price": 248.0,
-    "avg_unit_price": 37112.73,
-    "avg_area": 84.32,
-    "min_price": 1.0,
+    "total_count": 69060,
+    "avg_price": 299.18,
+    "median_price": 228.0,
+    "avg_unit_price": 33967.58,
+    "avg_area": 88.1,
+    "min_price": 10.0,
     "max_price": 5000.0
   },
   "广西": {
@@ -249,12 +249,12 @@
       "柳州市",
       "桂林市"
     ],
-    "total_count": 108749,
-    "avg_price": 76.43,
-    "median_price": 61.0,
-    "avg_unit_price": 7382.12,
-    "avg_area": 104.05,
-    "min_price": 1.0,
+    "total_count": 24269,
+    "avg_price": 82.53,
+    "median_price": 68.0,
+    "avg_unit_price": 7752.36,
+    "avg_area": 105.2,
+    "min_price": 10.0,
     "max_price": 1170.0
   },
   "新疆": {
@@ -262,12 +262,12 @@
     "cities": [
       "乌鲁木齐市"
     ],
-    "total_count": 37901,
-    "avg_price": 80.14,
-    "median_price": 70.0,
-    "avg_unit_price": 8179.93,
-    "avg_area": 99.45,
-    "min_price": 1.0,
+    "total_count": 14665,
+    "avg_price": 80.36,
+    "median_price": 69.0,
+    "avg_unit_price": 8278.72,
+    "avg_area": 98.23,
+    "min_price": 11.0,
     "max_price": 1100.0
   },
   "江西": {
@@ -277,12 +277,12 @@
       "南昌市_新",
       "赣州市_新"
     ],
-    "total_count": 199099,
-    "avg_price": 91.94,
-    "median_price": 82.0,
-    "avg_unit_price": 8377.29,
-    "avg_area": 110.5,
-    "min_price": 1.0,
+    "total_count": 46171,
+    "avg_price": 97.08,
+    "median_price": 81.0,
+    "avg_unit_price": 8842.09,
+    "avg_area": 107.98,
+    "min_price": 10.0,
     "max_price": 1266.0
   },
   "河南": {
@@ -292,12 +292,12 @@
       "洛阳市",
       "郑州市_新"
     ],
-    "total_count": 48152,
-    "avg_price": 84.72,
-    "median_price": 76.0,
-    "avg_unit_price": 8253.79,
-    "avg_area": 104.08,
-    "min_price": 1.0,
+    "total_count": 26381,
+    "avg_price": 88.69,
+    "median_price": 80.0,
+    "avg_unit_price": 8253.01,
+    "avg_area": 106.43,
+    "min_price": 10.0,
     "max_price": 1128.0
   },
   "湖北": {
@@ -305,12 +305,12 @@
     "cities": [
       "襄阳市"
     ],
-    "total_count": 31835,
-    "avg_price": 68.8,
-    "median_price": 65.0,
-    "avg_unit_price": 6358.08,
-    "avg_area": 108.66,
-    "min_price": 5.0,
+    "total_count": 11599,
+    "avg_price": 70.05,
+    "median_price": 66.0,
+    "avg_unit_price": 6553.88,
+    "avg_area": 107.43,
+    "min_price": 10.0,
     "max_price": 360.0
   },
   "湖南": {
@@ -321,13 +321,13 @@
       "衡阳市",
       "长沙市"
     ],
-    "total_count": 56015,
-    "avg_price": 70.97,
-    "median_price": 62.0,
-    "avg_unit_price": 6447.54,
-    "avg_area": 110.88,
-    "min_price": 1.0,
-    "max_price": 1580.0
+    "total_count": 25474,
+    "avg_price": 86.06,
+    "median_price": 73.0,
+    "avg_unit_price": 7896.51,
+    "avg_area": 108.57,
+    "min_price": 10.0,
+    "max_price": 758.0
   },
   "贵州": {
     "province": "贵州",
@@ -335,25 +335,25 @@
       "贵阳市",
       "遵义市"
     ],
-    "total_count": 455658,
-    "avg_price": 71.77,
-    "median_price": 62.0,
-    "avg_unit_price": 6593.66,
-    "avg_area": 107.86,
-    "min_price": 1.0,
-    "max_price": 1220.0
+    "total_count": 78201,
+    "avg_price": 82.13,
+    "median_price": 74.0,
+    "avg_unit_price": 7305.5,
+    "avg_area": 109.81,
+    "min_price": 10.0,
+    "max_price": 1168.0
   },
   "重庆": {
     "province": "重庆",
     "cities": [
       "重庆市"
     ],
-    "total_count": 82116,
-    "avg_price": 110.19,
-    "median_price": 95.0,
-    "avg_unit_price": 10687.84,
-    "avg_area": 100.11,
-    "min_price": 3.0,
-    "max_price": 3420.0
+    "total_count": 52736,
+    "avg_price": 108.62,
+    "median_price": 93.0,
+    "avg_unit_price": 10500.95,
+    "avg_area": 100.1,
+    "min_price": 10.0,
+    "max_price": 2320.0
   }
 }

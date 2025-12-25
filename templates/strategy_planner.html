@@ -3,6 +3,7 @@
 {% block title %}AI购房策略规划师 - 个性化购房方案生成{% endblock %}
 
 {% block extra_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chart_explainer.css') }}">
 <style>
     .strategy-container {
         max-width: 900px;
@@ -650,5 +651,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/strategy.js') }}"></script>
 {% endblock %}

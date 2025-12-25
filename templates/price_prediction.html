@@ -4,6 +4,7 @@
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-theme.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chart_explainer.css') }}">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
     body {
@@ -538,9 +539,10 @@
     <div id="results-area" style="display: none;">
         <!-- 预测对比图表（全宽） -->
         <div class="stat-card" style="margin-bottom: 25px;">
-            <div class="card-header">
+            <div class="card-header" style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <span class="card-icon">📈</span>
                 <span class="card-title">预测对比图表</span>
+                <button class="explain-btn" onclick="showChartExplanation('prediction')" style="margin-left: 15px;">❓ 计算方法</button>
                 <span style="margin-left: auto; font-size: 0.85em; color: #64748b;">
                     🔵 历史数据 &nbsp; 🟠 统计预测 &nbsp; 🟢 AI预测
                 </span>
@@ -638,6 +640,7 @@
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
 <script>
     let predictionChart = null;
     let currentData = null;

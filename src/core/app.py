@@ -468,6 +468,83 @@ def get_cities():
     cities = data_manager.get_enabled_cities()
     return jsonify({'cities': cities})
 
+@app.route('/api/province/price-map')
+def get_province_price_map():
+    """获取各省份均价数据（用于中国地图可视化）"""
+    provinces = data_manager.get_enabled_provinces()
+    
+    # 省份名称映射（用于ECharts中国地图）
+    province_name_map = {
+        'beijing': '北京',
+        'shanghai': '上海',
+        'tianjin': '天津',
+        'hebei': '河北',
+        'shanxi': '山西',
+        'neimenggu': '内蒙古',
+        'liaoning': '辽宁',
+        'jilin': '吉林',
+        'heilongjiang': '黑龙江',
+        'jiangsu': '江苏',
+        'zhejiang': '浙江',
+        'anhui': '安徽',
+        'fujian': '福建',
+        'jiangxi': '江西',
+        'shandong': '山东',
+        'henan': '河南',
+        'hubei': '湖北',
+        'hunan': '湖南',
+        'guangdong': '广东',
+        'guangxi': '广西',
+        'sichuan': '四川',
+        'guizhou': '贵州',
+        'yunnan': '云南',
+        'chongqing': '重庆',
+        'shaanxi': '陕西',
+        'gansu': '甘肃',
+        'ningxia': '宁夏',
+        'xinjiang': '新疆',
+        'qinghai': '青海',
+        'xizang': '西藏',
+        'hainan': '海南'
+    }
+    
+    price_data = []
+    
+    for province in provinces:
+        try:
+            df = data_manager.load_city_data(province['name_en'])
+            if df is not None and len(df) > 0:
+                # 计算平均成交价（万元）
+                avg_price = df['成交价（万元）'].mean()
+                # 计算平均单价（元/㎡）
+                avg_unit_price = df['成交单价（元）'].mean()
+                # 成交量
+                count = len(df)
+                
+                # 获取ECharts地图需要的省份名称
+                map_name = province_name_map.get(province['name_en'], province['name'])
+                
+                price_data.append({
+                    'name': map_name,
+                    'name_en': province['name_en'],
+                    'value': round(avg_unit_price, 0),  # 用单价作为主要展示值
+                    'avg_price': round(avg_price, 2),
+                    'avg_unit_price': round(avg_unit_price, 0),
+                    'count': count
+                })
+        except Exception as e:
+            logger.warning(f"计算 {province['name']} 均价失败: {e}")
+    
+    # 按单价排序
+    price_data.sort(key=lambda x: x['value'], reverse=True)
+    
+    return jsonify({
+        'success': True,
+        'data': price_data,
+        'min_price': min([p['value'] for p in price_data]) if price_data else 0,
+        'max_price': max([p['value'] for p in price_data]) if price_data else 0
+    })
+
 @app.route('/api/city/<city_name_en>/statistics')
 def get_city_statistics(city_name_en):
     """获取城市统计数据"""
@@ -1737,6 +1814,82 @@ def view_report():
         return send_file(str(report_path), mimetype='application/pdf', as_attachment=False)
     else:
         return jsonify({'error': '报告文件未找到'}), 404
+
+# ============== 数据质量校验 ==============
+@app.route('/data-validation')
+@login_required
+def data_validation_page():
+    """数据质量校验页面"""
+    user = session.get('user', {})
+    return render_template('data_validation.html', user=user, active_page='data_validation')
+
+@app.route('/api/data-validation')
+def get_data_validation():
+    """获取数据校验结果"""
+    import glob
+    
+    processed_dir = PROJECT_ROOT / 'data' / 'processed'
+    files = glob.glob(str(processed_dir / 'data_*_2023_2025.csv'))
+    
+    results = []
+    total_count = 0
+    total_weighted_error = 0
+    total_lt_1 = 0
+    total_lt_5 = 0
+    
+    for f in sorted(files):
+        try:
+            province = os.path.basename(f).replace('data_', '').replace('_2023_2025.csv', '')
+            df = pd.read_csv(f)
+            
+            # 计算预期成交价
+            df['预期成交价'] = df['成交单价（元）'] * df['面积（m²）'] / 10000
+            
+            # 计算误差
+            df['误差'] = abs(df['成交价（万元）'] - df['预期成交价']) / df['预期成交价'] * 100
+            
+            avg_err = float(df['误差'].mean())
+            max_err = float(df['误差'].max())
+            count = len(df)
+            
+            # 统计误差分布
+            lt_1 = float((df['误差'] < 1).sum() / count * 100)
+            lt_5 = float((df['误差'] < 5).sum() / count * 100)
+            
+            results.append({
+                'province': province,
+                'count': count,
+                'avg_error': avg_err,
+                'max_error': max_err,
+                'lt_1_percent': lt_1,
+                'lt_5_percent': lt_5
+            })
+            
+            total_count += count
+            total_weighted_error += avg_err * count
+            total_lt_1 += lt_1 * count
+            total_lt_5 += lt_5 * count
+            
+        except Exception as e:
+            logger.warning(f"处理 {f} 时出错: {e}")
+            continue
+    
+    # 按平均误差排序
+    results.sort(key=lambda x: x['avg_error'])
+    
+    # 计算汇总统计
+    avg_error = total_weighted_error / total_count if total_count > 0 else 0
+    avg_lt_1 = total_lt_1 / total_count if total_count > 0 else 0
+    avg_lt_5 = total_lt_5 / total_count if total_count > 0 else 0
+    
+    return jsonify({
+        'provinces': results,
+        'total_count': total_count,
+        'province_count': len(results),
+        'avg_error': avg_error,
+        'lt_1_percent': avg_lt_1,
+        'lt_5_percent': avg_lt_5
+    })
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

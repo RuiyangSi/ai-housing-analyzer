@@ -287,7 +287,10 @@ function displayResult(strategy) {
         
         <!-- 购买力分析 -->
         <div class="result-card">
-            <h3>💪 购买力分析</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">💪 购买力分析</h3>
+                <button class="explain-btn" onclick="showChartExplanation('strategy_affordability')">❓ 计算方法</button>
+            </div>
             <div class="stat-grid">
                 <div class="stat-item">
                     <div class="stat-label">市场定位</div>
@@ -318,7 +321,10 @@ function displayResult(strategy) {
         
         <!-- 市场时机 -->
         <div class="result-card">
-            <h3>⏰ 市场时机评估</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0;">⏰ 市场时机评估</h3>
+                <button class="explain-btn" onclick="showChartExplanation('strategy_timing')">❓ 计算方法</button>
+            </div>
             <div style="text-align: center; padding: 30px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 15px; margin-bottom: 20px;">
                 <div style="font-size: 4em; font-weight: bold; color: #0284c7; margin-bottom: 10px;">
                     ${strategy.timing.timing_score}分
@@ -352,7 +358,10 @@ function displayResult(strategy) {
         
         <!-- 推荐区域 -->
         <div class="result-card">
-            <h3>🎯 推荐区域（Top ${strategy.recommendations.length}）</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0;">🎯 推荐区域（Top ${strategy.recommendations.length}）</h3>
+                <button class="explain-btn" onclick="showChartExplanation('strategy_district')">❓ 计算方法</button>
+            </div>
             <div class="district-list">
                 ${strategy.recommendations.map((district, index) => `
                     <div class="district-item ${district.is_preferred ? 'preferred' : ''}">
@@ -377,7 +386,10 @@ function displayResult(strategy) {
         
         <!-- 贷款方案 -->
         <div class="result-card">
-            <h3>🏦 贷款方案（供参考）</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0;">🏦 贷款方案（供参考）</h3>
+                <button class="explain-btn" onclick="showChartExplanation('strategy_loan')">❓ 计算方法</button>
+            </div>
             <div class="stat-grid">
                 <div class="stat-item">
                     <div class="stat-label">总价</div>
@@ -419,7 +431,10 @@ function displayResult(strategy) {
         
         <!-- AI建议 -->
         <div class="result-card">
-            <h3>🤖 AI专业建议</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0;">🤖 AI专业建议</h3>
+                <button class="explain-btn" onclick="showChartExplanation('strategy_ai')">❓ 计算方法</button>
+            </div>
             <div class="ai-advice-box">
                 ${renderMarkdown(strategy.ai_advice)}
             </div>

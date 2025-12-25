@@ -1,0 +1,416 @@
+/**
+ * 图表计算方法说明组件样式
+ */
+
+/* 说明按钮样式 */
+.explain-btn {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+    color: #4338ca;
+    border: 1px solid #a5b4fc;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.explain-btn:hover {
+    background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+.explain-btn:active {
+    transform: translateY(0);
+}
+
+.explain-btn-inline {
+    padding: 4px 10px;
+    font-size: 0.78em;
+}
+
+.explain-btn-compact {
+    padding: 3px 8px;
+    font-size: 0.75em;
+    border-radius: 12px;
+}
+
+/* 深色模式按钮 */
+body.dark-mode .explain-btn,
+.dark-mode .explain-btn {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+    color: #a5b4fc;
+    border-color: rgba(165, 180, 252, 0.3);
+}
+
+body.dark-mode .explain-btn:hover,
+.dark-mode .explain-btn:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+}
+
+/* 弹窗遮罩层 */
+.chart-explanation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.chart-explanation-overlay.show {
+    opacity: 1;
+}
+
+/* 弹窗主体 */
+.chart-explanation-modal {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.chart-explanation-overlay.show .chart-explanation-modal {
+    transform: scale(1) translateY(0);
+}
+
+/* 弹窗头部 */
+.explanation-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.explanation-header h2 {
+    margin: 0;
+    font-size: 1.4em;
+    font-weight: 700;
+}
+
+.explanation-header .close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.explanation-header .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* 图表类型标签 */
+.explanation-type {
+    padding: 16px 28px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.type-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.type-value {
+    color: #475569;
+    font-size: 0.95em;
+}
+
+/* 弹窗内容区 */
+.explanation-content {
+    padding: 24px 28px;
+    max-height: calc(85vh - 180px);
+    overflow-y: auto;
+    line-height: 1.7;
+}
+
+.explanation-content h3 {
+    color: #1e293b;
+    font-size: 1.15em;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* 计算说明区块 */
+.calc-section {
+    margin-bottom: 24px;
+    padding: 18px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border-left: 4px solid #6366f1;
+}
+
+.calc-section h4 {
+    color: #4338ca;
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+.calc-section ul,
+.calc-section ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.calc-section li {
+    margin: 8px 0;
+    color: #475569;
+}
+
+.calc-section li strong {
+    color: #1e293b;
+}
+
+/* 公式样式 */
+.formula {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-size: 0.95em;
+    margin: 12px 0;
+    text-align: center;
+}
+
+/* 代码样式 */
+.calc-section code {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-size: 0.9em;
+}
+
+/* 注释说明 */
+.note {
+    color: #64748b;
+    font-size: 0.9em;
+    font-style: italic;
+    margin-top: 8px;
+    padding-left: 10px;
+    border-left: 3px solid #94a3b8;
+}
+
+/* 表格样式 */
+.calc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.9em;
+}
+
+.calc-table th,
+.calc-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+}
+
+.calc-table th {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.calc-table tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.calc-table tr:hover {
+    background: #e0e7ff;
+}
+
+/* 评级标签 */
+.level-excellent {
+    color: #059669;
+    font-weight: 600;
+}
+
+.level-good {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.level-normal {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.level-poor {
+    color: #f97316;
+    font-weight: 600;
+}
+
+.level-bad {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* 滚动条样式 */
+.explanation-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.explanation-content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.explanation-content::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
+}
+
+.explanation-content::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .chart-explanation-modal {
+        width: 95%;
+        max-height: 90vh;
+        border-radius: 16px;
+    }
+    
+    .explanation-header {
+        padding: 18px 20px;
+    }
+    
+    .explanation-header h2 {
+        font-size: 1.2em;
+    }
+    
+    .explanation-content {
+        padding: 18px 20px;
+    }
+    
+    .calc-section {
+        padding: 14px;
+    }
+    
+    .calc-table {
+        font-size: 0.82em;
+    }
+    
+    .calc-table th,
+    .calc-table td {
+        padding: 8px 10px;
+    }
+}
+
+/* 深色模式 */
+body.dark-mode .chart-explanation-modal,
+.dark-mode .chart-explanation-modal {
+    background: #1e293b;
+}
+
+body.dark-mode .explanation-type,
+.dark-mode .explanation-type {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+body.dark-mode .type-value,
+.dark-mode .type-value {
+    color: #94a3b8;
+}
+
+body.dark-mode .explanation-content,
+.dark-mode .explanation-content {
+    color: #e2e8f0;
+}
+
+body.dark-mode .explanation-content h3,
+.dark-mode .explanation-content h3 {
+    color: #f1f5f9;
+    border-color: #334155;
+}
+
+body.dark-mode .calc-section,
+.dark-mode .calc-section {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+body.dark-mode .calc-section li,
+.dark-mode .calc-section li {
+    color: #94a3b8;
+}
+
+body.dark-mode .calc-section li strong,
+.dark-mode .calc-section li strong {
+    color: #e2e8f0;
+}
+
+body.dark-mode .calc-section code,
+.dark-mode .calc-section code {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+}
+
+body.dark-mode .calc-table th,
+.dark-mode .calc-table th {
+    background: #334155;
+}
+
+body.dark-mode .calc-table td,
+.dark-mode .calc-table td {
+    border-color: #334155;
+}
+
+body.dark-mode .calc-table tr:nth-child(even),
+.dark-mode .calc-table tr:nth-child(even) {
+    background: #0f172a;
+}
+
+body.dark-mode .calc-table tr:hover,
+.dark-mode .calc-table tr:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+body.dark-mode .note,
+.dark-mode .note {
+    color: #64748b;
+    border-color: #475569;
+}
+

@@ -6,6 +6,7 @@
     <title>{{ city_name }} - 3D房价地图</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/role_selector.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chart_explainer.css') }}">
     <style>
         body {
             margin: 0;
@@ -333,7 +334,9 @@
             <a href="/" class="back-btn">← 返回首页</a>
             <div class="title-area">
                 <h1>🗺️ {{ city_name }} 3D房价地图</h1>
-                <p>2023-2025年房价空间分布 · 动态可视化 <span id="role-badge" class="role-badge"></span></p>
+                <p>2023-2025年房价空间分布 · 动态可视化 <span id="role-badge" class="role-badge"></span>
+                    <button class="explain-btn" onclick="showChartExplanation('map3d')" style="margin-left: 15px;">❓ 计算方法</button>
+                </p>
             </div>
             <div style="opacity: 0.5; font-size: 0.9em;">
                 滚轮缩放 · 拖拽旋转
@@ -408,6 +411,7 @@
         const cityName = '{{ city_name }}';
     </script>
     <script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/map_3d.js') }}"></script>
 </body>
 </html>

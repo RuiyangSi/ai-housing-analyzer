@@ -37,6 +37,67 @@ def clean_total_price(price_str):
     except:
         return None
 
+def clean_data(df, province_name):
+    """
+    数据清洗函数
+    1. 一致性校验：成交价 ≈ 单价 × 面积 / 10000
+    2. 异常值过滤：删除极端价格
+    3. 去重处理：删除重复记录
+    """
+    original_len = len(df)
+    print(f"     🔧 开始数据清洗...")
+    
+    # 1. 一致性校验：计算预期成交价，检查误差
+    # 预期成交价 = 单价 × 面积 / 10000 (转换为万元)
+    df['预期成交价'] = df['成交单价（元）'] * df['面积（m²）'] / 10000
+    
+    # 计算误差比例：|实际 - 预期| / 预期
+    df['价格误差'] = abs(df['成交价（万元）'] - df['预期成交价']) / df['预期成交价']
+    
+    # 删除误差超过50%的记录（价格不一致）
+    before_consistency = len(df)
+    df = df[df['价格误差'] <= 0.5]
+    consistency_removed = before_consistency - len(df)
+    if consistency_removed > 0:
+        print(f"     ⚠️  一致性校验: 删除 {consistency_removed:,} 条价格不一致记录")
+    
+    # 2. 异常值过滤
+    # 成交价范围：10万 - 5000万（合理的住宅价格范围）
+    before_outlier = len(df)
+    df = df[(df['成交价（万元）'] >= 10) & (df['成交价（万元）'] <= 5000)]
+    outlier_removed = before_outlier - len(df)
+    if outlier_removed > 0:
+        print(f"     ⚠️  异常值过滤: 删除 {outlier_removed:,} 条极端价格记录")
+    
+    # 单价范围：1000元/㎡ - 300000元/㎡
+    before_unit_outlier = len(df)
+    df = df[(df['成交单价（元）'] >= 1000) & (df['成交单价（元）'] <= 300000)]
+    unit_outlier_removed = before_unit_outlier - len(df)
+    if unit_outlier_removed > 0:
+        print(f"     ⚠️  单价异常过滤: 删除 {unit_outlier_removed:,} 条单价异常记录")
+    
+    # 面积范围：10㎡ - 500㎡
+    before_area_outlier = len(df)
+    df = df[(df['面积（m²）'] >= 10) & (df['面积（m²）'] <= 500)]
+    area_outlier_removed = before_area_outlier - len(df)
+    if area_outlier_removed > 0:
+        print(f"     ⚠️  面积异常过滤: 删除 {area_outlier_removed:,} 条面积异常记录")
+    
+    # 3. 去重处理（基于小区、户型、面积、成交日期、成交价）
+    before_dedup = len(df)
+    df = df.drop_duplicates(subset=['小区', '户型', '面积（m²）', '成交日期', '成交价（万元）'])
+    dedup_removed = before_dedup - len(df)
+    if dedup_removed > 0:
+        print(f"     ⚠️  去重处理: 删除 {dedup_removed:,} 条重复记录")
+    
+    # 删除临时列
+    df = df.drop(columns=['预期成交价', '价格误差'])
+    
+    total_removed = original_len - len(df)
+    print(f"     ✅ 清洗完成: 共删除 {total_removed:,} 条 ({total_removed/original_len*100:.1f}%), 剩余 {len(df):,} 条")
+    
+    return df
+
 def process_all_data(data_dir='data/raw', output_dir='data/processed', start_year=2023, end_year=2025):
     """处理所有城市数据"""
     print("\n" + "="*80)
@@ -177,6 +238,13 @@ def process_all_data(data_dir='data/raw', output_dir='data/processed', start_yea
         # 合并省份数据
         if province_data:
             province_df = pd.concat(province_data, ignore_index=True)
+            
+            # 数据清洗
+            province_df = clean_data(province_df, province)
+            
+            if len(province_df) == 0:
+                print(f"     ⚠️  警告：{province} 清洗后无有效数据")
+                continue
             
             # 保存省份数据
             output_file = os.path.join(output_dir, f'data_{province}_2023_2025.csv')

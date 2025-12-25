@@ -5,6 +5,7 @@
 {% block extra_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/role_selector.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chart_explainer.css') }}">
 <style>
     .analysis-page-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -206,7 +207,9 @@
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📊 价格分布统计（箱线图）</h2>
-                <button class="ai-analyze-btn" onclick="analyzeChart('boxplot')" style="
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('boxplot')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeChart('boxplot')" style="
                     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
                     color: white;
                     border: none;
@@ -216,8 +219,9 @@
                     font-size: 0.9em;
                     transition: all 0.3s ease;
                 " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container" id="price-boxplot" style="height: 350px;"></div>
             <div id="boxplot-ai-insight" class="ai-insight" style="display: none;"></div>
@@ -227,18 +231,21 @@
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🎯 投资综合评分雷达图</h2>
-                <button class="ai-analyze-btn" onclick="analyzeChart('radar')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('radar')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeChart('radar')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container" id="investment-radar" style="height: 400px;"></div>
             <div id="radar-ai-insight" class="ai-insight" style="display: none;"></div>
@@ -248,18 +255,21 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📉 价格趋势分析</h2>
-                <button class="ai-analyze-btn" onclick="analyzeChart('trend')" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('trend')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeChart('trend')" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="trend-summary" id="trend-summary"></div>
             <div class="chart-container" id="trend-chart" style="height: 450px;"></div>
@@ -268,7 +278,10 @@
 
         <!-- 波动性分析 - 所有角色可见 -->
         <div class="analysis-section">
-            <h2>💹 市场波动性分析</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">💹 市场波动性分析</h2>
+                <button class="explain-btn" onclick="showChartExplanation('volatility')">❓ 计算方法</button>
+            </div>
             <div id="volatility-analysis"></div>
         </div>
 
@@ -280,7 +293,10 @@
 
         <!-- 同比分析 - 仅投资顾问和改善型购房者可见 -->
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
-            <h2>📊 年度同比分析（增长率对比）</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">📊 年度同比分析（增长率对比）</h2>
+                <button class="explain-btn" onclick="showChartExplanation('yoy')">❓ 计算方法</button>
+            </div>
             <div class="table-wrapper">
                 <table id="yoy-table"></table>
             </div>
@@ -290,18 +306,21 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">💰 价格区间分布</h2>
-                <button class="ai-analyze-btn" onclick="analyzeChart('priceRange')" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('priceRange')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeChart('priceRange')" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container" id="price-range-chart" style="height: 400px;"></div>
             <div id="priceRange-ai-insight" class="ai-insight" style="display: none;"></div>
@@ -311,18 +330,21 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🏠 户型面积分布</h2>
-                <button class="ai-analyze-btn" onclick="analyzeChart('area')" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('area')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeChart('area')" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container" id="area-chart" style="height: 400px;"></div>
             <div id="area-ai-insight" class="ai-insight" style="display: none;"></div>
@@ -332,19 +354,22 @@
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🎻 价格分布小提琴图</h2>
-                <button onclick="analyzeChart('violin')" style="
-                    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('violin')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('violin')" style="
+                        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div id="price-violin" style="width: 100%; height: 400px;"></div>
             <div id="violin-ai-insight" style="display: none; margin-top: 20px;"></div>
@@ -354,19 +379,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🗺️ 区域-时间价格热力图</h2>
-                <button onclick="analyzeChart('heatmap')" style="
-                    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('heatmap')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('heatmap')" style="
+                        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div id="district-heatmap" style="width: 100%; height: 600px;"></div>
             <div id="heatmap-ai-insight" style="display: none; margin-top: 20px;"></div>
@@ -376,19 +404,22 @@
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📊 价格变化因素拆解</h2>
-                <button onclick="analyzeChart('waterfall')" style="
-                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('waterfall')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('waterfall')" style="
+                        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div id="price-waterfall" style="width: 100%; height: 450px;"></div>
             <div id="waterfall-ai-insight" style="display: none; margin-top: 20px;"></div>
@@ -398,18 +429,21 @@
         <div class="analysis-section" id="house-type-section" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🏠 户型分析（几室几厅）</h2>
-                <button class="ai-analyze-btn" onclick="analyzeHouseTypeChart()" style="
-                    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.85em;
-                    transition: all 0.3s ease;
-                ">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('house-type')">❓ 计算方法</button>
+                    <button class="ai-analyze-btn" onclick="analyzeHouseTypeChart()" style="
+                        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.85em;
+                        transition: all 0.3s ease;
+                    ">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             
             <!-- 户型统计卡片 -->
@@ -455,7 +489,10 @@
 
         <!-- 季节性分析 - 仅投资顾问和改善型购房者可见 -->
         <div class="analysis-section role-filter" data-hide-for="first_time_buyer">
-            <h2>🌸 季节性特征分析</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">🌸 季节性特征分析</h2>
+                <button class="explain-btn" onclick="showChartExplanation('seasonal')">❓ 计算方法</button>
+            </div>
             <div id="seasonal-analysis"></div>
         </div>
 
@@ -480,6 +517,7 @@
 <script src="{{ url_for('static', filename='js/chart_ai.js') }}"></script>
 <script src="{{ url_for('static', filename='js/echarts_renderer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/quick_insight.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
 
 <script>

@@ -4,6 +4,7 @@
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chart_explainer.css') }}">
 <style>
     .page-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -291,7 +292,9 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🏆 投资价值指数对比</h2>
-                <button onclick="analyzeChart('investment_comparison', 'investment-chart', '投资价值指数对比')" style="
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('investment_comparison')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('investment_comparison', 'investment-chart', '投资价值指数对比')" style="
                     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
                     color: white;
                     border: none;
@@ -302,8 +305,9 @@
                     font-weight: 600;
                     transition: all 0.3s ease;
                 " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="comparison-grid" id="investment-cards"></div>
             <div class="chart-container comparison-chart">
@@ -316,19 +320,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">💰 价格水平对比</h2>
-                <button onclick="analyzeChart('price_comparison', 'price-comparison-chart', '价格水平对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('price_comparison')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('price_comparison', 'price-comparison-chart', '价格水平对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container comparison-chart">
                 <canvas id="price-comparison-chart"></canvas>
@@ -341,19 +348,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📏 城市平均面积对比</h2>
-                <button onclick="analyzeChart('area_comparison', 'area-comparison-chart', '城市平均面积对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('area_comparison')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('area_comparison', 'area-comparison-chart', '城市平均面积对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container comparison-chart">
                 <canvas id="area-comparison-chart"></canvas>
@@ -366,19 +376,22 @@
         <div class="analysis-section" id="house-type-comparison-section" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">🏠 全国户型分布对比</h2>
-                <button onclick="analyzeChart('house_type_comparison', 'house-type-comparison-chart', '全国户型分布对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('house_type_comparison')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('house_type_comparison', 'house-type-comparison-chart', '全国户型分布对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             
             <!-- 户型统计摘要 -->
@@ -411,19 +424,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📈 市场规模对比</h2>
-                <button onclick="analyzeChart('market_scale', 'market-scale-chart', '市场规模对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('market_scale')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('market_scale', 'market-scale-chart', '市场规模对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container comparison-chart">
                 <canvas id="market-scale-chart"></canvas>
@@ -435,19 +451,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">📊 增长率对比</h2>
-                <button onclick="analyzeChart('growth_comparison', 'growth-chart', '增长率对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('growth_comparison')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('growth_comparison', 'growth-chart', '增长率对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container comparison-chart">
                 <canvas id="growth-chart"></canvas>
@@ -458,7 +477,10 @@
 
         <!-- 波动性对比 -->
         <div class="analysis-section">
-            <h2>💹 市场稳定性对比</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;">💹 市场稳定性对比</h2>
+                <button class="explain-btn" onclick="showChartExplanation('volatility')">❓ 计算方法</button>
+            </div>
             <div class="comparison-grid" id="volatility-cards"></div>
         </div>
 
@@ -466,19 +488,22 @@
         <div class="analysis-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h2 style="margin: 0;">💸 购房可负担性对比</h2>
-                <button onclick="analyzeChart('affordability', 'affordability-chart', '购房可负担性对比')" style="
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                    🤖 AI分析此图表
-                </button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="explain-btn" onclick="showChartExplanation('affordability')">❓ 计算方法</button>
+                    <button onclick="analyzeChart('affordability', 'affordability-chart', '购房可负担性对比')" style="
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 20px;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9em;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🤖 AI分析此图表
+                    </button>
+                </div>
             </div>
             <div class="chart-container comparison-chart">
                 <canvas id="affordability-chart"></canvas>
@@ -515,7 +540,7 @@
     </div>
 
     <div class="analysis-footer" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9em;">
-        <p>数据来源：贝壳找房 | 分析时间：<span id="analysis-time"></span></p>
+        <p>数据来源：房天下 | 分析时间：<span id="analysis-time"></span></p>
         <p>⚠️ 本报告仅供参考，不构成投资建议。投资有风险，决策需谨慎。</p>
     </div>
 </div>
@@ -526,6 +551,7 @@
 <script src="{{ url_for('static', filename='js/user_role.js') }}"></script>
 <script src="{{ url_for('static', filename='js/role_content_filter.js') }}"></script>
 <script src="{{ url_for('static', filename='js/chart_ai.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chart_explainer.js') }}"></script>
 <script src="{{ url_for('static', filename='js/national_comparison.js') }}"></script>
 
 <script>
